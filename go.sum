@@ -2,6 +2,8 @@ github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211105135014-6cd
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211105135014-6cd62f9dd11f/go.mod h1:BuP+AQ3yaxED1eepQOURa9QFtFm2V5c+DWUHMV3JNJk=
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211106112434-13fffaa51fc6 h1:L03eRCfdbFBEhnwmdkh3OUZkcHudCP65ke1bvS0ma00=
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211106112434-13fffaa51fc6/go.mod h1:BuP+AQ3yaxED1eepQOURa9QFtFm2V5c+DWUHMV3JNJk=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211108130756-64fcce3f18aa h1:ELdaC/nGuUN5zRa8TcrCDA4zD3gbE5RN+LLsNhUhU4M=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211108130756-64fcce3f18aa/go.mod h1:BuP+AQ3yaxED1eepQOURa9QFtFm2V5c+DWUHMV3JNJk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
