@@ -20,6 +20,6 @@ func main() {
 	bus := fbdl.Compile(cmdLineArgs["global"]["main"])
 
 	if _, ok := cmdLineArgs["vhdl"]; ok {
-		vhdl.Generate(bus, cmdLineArgs)
+		vhdl.Generate(bus, cmdLineArgs["vhdl"])
 	}
 }
