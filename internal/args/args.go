@@ -111,3 +111,17 @@ func Parse() map[string]map[string]string {
 
 	return args
 }
+
+func SetOutputPaths(args map[string]map[string]string) {
+	for target, v := range args {
+		if target == "global" {
+			continue
+		}
+
+		if _, exists := v["--path"]; exists {
+			continue
+		}
+
+		args[target]["--path"] = args["global"]["--path"]
+	}
+}
