@@ -69,6 +69,10 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 		currentSubblockAddr = generateSubblock(&sb, addrBitsCount, currentSubblockAddr, fmts)
 	}
 
+	for _, st := range entity.Block.Statuses {
+		generateStatus(&st, &fmts)
+	}
+
 	f, err := os.Create(outputPath + entity.Name + ".vhd")
 	if err != nil {
 		log.Fatalf("generate VHDL: %v", err)
