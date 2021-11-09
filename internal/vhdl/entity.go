@@ -66,14 +66,15 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 
 	currentSubblockAddr := entity.Block.Sizes.BlockAligned
 	for _, sb := range entity.Block.Subblocks {
-		currentSubblockAddr = generateSubblock(&sb, addrBitsCount, currentSubblockAddr, fmts)
+		currentSubblockAddr = generateSubblock(sb, addrBitsCount, currentSubblockAddr, fmts)
 	}
 
 	for _, st := range entity.Block.Statuses {
-		generateStatus(&st, &fmts)
+		generateStatus(st, &fmts)
 	}
 
-	f, err := os.Create(outputPath + entity.Name + ".vhd")
+	filePath := outputPath + entity.Name + ".vhd"
+	f, err := os.Create(filePath)
 	if err != nil {
 		log.Fatalf("generate VHDL: %v", err)
 	}
@@ -83,6 +84,8 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 	if err != nil {
 		log.Fatalf("generate VHDL: %v", err)
 	}
+
+	addGeneratedFile(filePath)
 }
 
 func generateSubblock(
