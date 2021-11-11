@@ -1,5 +1,7 @@
 PROJECT_NAME=wbfbd
 
+.PHONY: default all build help fmt vet install uninstall
+
 default: build
 
 all: fmt vet build

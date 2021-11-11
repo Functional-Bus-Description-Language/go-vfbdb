@@ -52,8 +52,8 @@ func generateStatusSingleSingle(status *fbdl.Status, fmts *EntityFormatters) {
 	var routing string
 	if status.Name == "x_uuid_x" || status.Name == "x_timestamp_x" {
 		routing = fmt.Sprintf(
-			"   registers(%d)(%d downto %d) <= XXX;\n",
-			addr, mask.Upper, mask.Lower,
+			"   registers(%d)(%d downto %d) <= %s;\n",
+			addr, mask.Upper, mask.Lower, string(status.Default),
 		)
 	} else {
 		routing = fmt.Sprintf(
