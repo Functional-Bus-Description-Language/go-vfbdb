@@ -82,12 +82,15 @@ func generateStatuses(block *fbdl.Block) string {
 		if st.IsArray {
 
 		} else {
-			access := st.Access.(*fbdl.AccessSingle)
-			if access.Strategy == "Single" {
+			switch st.Access.(type) {
+			case fbdl.AccessSingleSingle:
+				access := st.Access.(fbdl.AccessSingleSingle)
 				code += indent + fmt.Sprintf(
 					"self.%s = StatusSingleSingle(interface, %d, (%d, %d))\n",
-					st.Name, block.AddrSpace.Start()+access.Address, access.Mask.Upper, access.Mask.Lower,
+					st.Name, block.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 				)
+			default:
+				panic("not yet implemented")
 			}
 		}
 	}

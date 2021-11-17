@@ -24,16 +24,17 @@ func generateStatusSingle(status *fbdl.Status, fmts *EntityFormatters) {
 		fmts.EntityFunctionalPorts = s
 	}
 
-	fbdlAccess := status.Access.(*fbdl.AccessSingle)
-	strategy := fbdlAccess.Strategy
-	if strategy == "Single" {
+	switch status.Access.(type) {
+	case fbdl.AccessSingleSingle:
 		generateStatusSingleSingle(status, fmts)
+	default:
+		panic("unknown single access strategy")
 	}
 }
 
 func generateStatusSingleSingle(status *fbdl.Status, fmts *EntityFormatters) {
-	fbdlAccess := status.Access.(*fbdl.AccessSingle)
-	addr := fbdlAccess.Address
+	fbdlAccess := status.Access.(fbdl.AccessSingleSingle)
+	addr := fbdlAccess.Addr
 	mask := fbdlAccess.Mask
 
 	access := `

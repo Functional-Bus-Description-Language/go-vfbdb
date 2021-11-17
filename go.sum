@@ -1,14 +1,10 @@
-github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211111151835-e2b756b611e9 h1:wHWM/CiKp26KlZnwgaHtaYClkwYUmf4PSEL9L/kbwUM=
-github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211111151835-e2b756b611e9/go.mod h1:BuP+AQ3yaxED1eepQOURa9QFtFm2V5c+DWUHMV3JNJk=
-github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211111163438-fca95b506369 h1:ff5z0+EQALPpgH6R9dJau7sk9qaAzXXLo5r/wWNh1VA=
-github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20211111163438-fca95b506369/go.mod h1:BuP+AQ3yaxED1eepQOURa9QFtFm2V5c+DWUHMV3JNJk=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
-github.com/smacker/go-tree-sitter v0.0.0-20210922091224-7d35f700adf0 h1:VH4+QBd2KmyWDPeQrG163tW+BZnoDbHDnZmyvxPj5RY=
-github.com/smacker/go-tree-sitter v0.0.0-20210922091224-7d35f700adf0/go.mod h1:EiUuVMUfLQj8Sul+S8aKWJwQy7FRYnJCO2EWzf8F5hk=
+github.com/smacker/go-tree-sitter v0.0.0-20211114065855-be4f36e5c50e h1:7LxTZxgRRhKEHO2HhE4wefMWG1o7ksLyksWtVC/AKgo=
+github.com/smacker/go-tree-sitter v0.0.0-20211114065855-be4f36e5c50e/go.mod h1:EiUuVMUfLQj8Sul+S8aKWJwQy7FRYnJCO2EWzf8F5hk=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/testify v1.4.0 h1:2E4SXV/wtOkTonXsotYi4li6zVWxYlZuYNCXe9XRJyk=
 github.com/stretchr/testify v1.4.0/go.mod h1:j7eGeouHqKxXV5pUuKE4zz7dFj8WfuZ+81PSLYec5m4=
