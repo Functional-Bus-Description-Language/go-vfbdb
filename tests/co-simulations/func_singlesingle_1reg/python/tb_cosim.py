@@ -14,7 +14,7 @@ import wbfbd
 WRITE_FIFO_PATH = sys.argv[1]
 READ_FIFO_PATH  = sys.argv[2]
 
-CLK_PERIOD = 10
+CLK_PERIOD = 25
 
 
 def delay_function():
@@ -28,8 +28,18 @@ try:
 
     main = wbfbd.main(cosim_interface)
 
-    log.info(f"UUID: {main.x_uuid_x.read()}")
-    log.info(f"Timestamp: {main.x_timestamp_x.read()}")
+    a = random.randint(0, 2**16-1)
+    b = random.randint(0, 2**16-1)
+
+    log.info(f"Calling add function, a = {a}, b = {b}")
+    main.add(a, b)
+
+    log.info(f"Reading result")
+    result = main.result.read()
+
+    if a + b != result:
+        log.error(f"Wrong result, got {result}, expecting {a+b}")
+        cosim_interface.end(1)
 
     cosim_interface.wait(5 * CLK_PERIOD)
     log.info("Ending cosimulation")

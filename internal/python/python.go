@@ -69,29 +69,35 @@ func generateClass(block *fbdl.Block) string {
 	increaseIndent(1)
 	code += indent + "def __init__(self, interface):\n"
 	increaseIndent(1)
+	code += indent + "self.interface = interface\n"
 
-	code += generateStatuses(block)
+	for _, st := range block.Statuses {
+		code += generateStatus(block, st)
+	}
+	decreaseIndent(1)
+
+	for _, fun := range block.Funcs {
+		code += generateFunc(block, fun)
+	}
 
 	return code
 }
 
-func generateStatuses(block *fbdl.Block) string {
+func generateStatus(block *fbdl.Block, st *fbdl.Status) string {
 	var code string
 
-	for _, st := range block.Statuses {
-		if st.IsArray {
+	if st.IsArray {
 
-		} else {
-			switch st.Access.(type) {
-			case fbdl.AccessSingleSingle:
-				access := st.Access.(fbdl.AccessSingleSingle)
-				code += indent + fmt.Sprintf(
-					"self.%s = StatusSingleSingle(interface, %d, (%d, %d))\n",
-					st.Name, block.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
-				)
-			default:
-				panic("not yet implemented")
-			}
+	} else {
+		switch st.Access.(type) {
+		case fbdl.AccessSingleSingle:
+			access := st.Access.(fbdl.AccessSingleSingle)
+			code += indent + fmt.Sprintf(
+				"self.%s = StatusSingleSingle(interface, %d, (%d, %d))\n",
+				st.Name, block.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
+			)
+		default:
+			panic("not yet implemented")
 		}
 	}
 

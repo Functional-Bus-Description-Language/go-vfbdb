@@ -31,7 +31,9 @@ type EntityFormatters struct {
 	InternalAddrBitsCount int64
 	SubblocksCount        int64
 
+	// Things going to package.
 	// Constants string // TODO: Decide how to implement this.
+	FuncTypes string
 
 	EntitySubblockPorts   string
 	EntityFunctionalPorts string
@@ -39,9 +41,16 @@ type EntityFormatters struct {
 	SignalDeclarations    string
 	AddressValues         string
 	MaskValues            string
-	StatusesAccess        string
-	StatusesRouting       string
-	DefaultValues         string
+
+	StatusesAccess  string
+	StatusesRouting string
+
+	FuncsAccess       string
+	FuncsRouting      string
+	FuncsStrobesClear string
+	FuncsStrobesSet   string
+
+	DefaultValues string
 }
 
 func generateEntity(entity Entity, wg *sync.WaitGroup) {
@@ -67,6 +76,10 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 	currentSubblockAddr := entity.Block.Sizes.BlockAligned
 	for _, sb := range entity.Block.Subblocks {
 		currentSubblockAddr = generateSubblock(sb, addrBitsCount, currentSubblockAddr, fmts)
+	}
+
+	for _, fun := range entity.Block.Funcs {
+		generateFunc(fun, &fmts)
 	}
 
 	for _, st := range entity.Block.Statuses {

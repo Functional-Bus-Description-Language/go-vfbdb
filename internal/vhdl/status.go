@@ -20,8 +20,8 @@ func generateStatusArray(status *fbdl.Status, fmts *EntityFormatters) {
 
 func generateStatusSingle(status *fbdl.Status, fmts *EntityFormatters) {
 	if status.Name != "x_uuid_x" && status.Name != "x_timestamp_x" {
-		s := fmt.Sprintf(";\n      %s_i : in std_logic_vector(%d - 1 downto 0)", status.Name, status.Width)
-		fmts.EntityFunctionalPorts = s
+		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d - 1 downto 0)", status.Name, status.Width)
+		fmts.EntityFunctionalPorts += s
 	}
 
 	switch status.Access.(type) {
@@ -38,14 +38,14 @@ func generateStatusSingleSingle(status *fbdl.Status, fmts *EntityFormatters) {
 	mask := fbdlAccess.Mask
 
 	access := `
-            %s : if internal_addr = %d then
-               internal_master_in.dat(%d downto %d) <= registers(internal_addr)(%[3]d downto %[4]d);
+         %s : if internal_addr = %d then
+            internal_master_in.dat(%d downto %d) <= registers(internal_addr)(%[3]d downto %[4]d);
 
-               if internal_master_out.we = '0' then
-                  internal_master_in.ack <= '1';
-                  internal_master_in.err <= '0';
-               end if;
+            if internal_master_out.we = '0' then
+               internal_master_in.ack <= '1';
+               internal_master_in.err <= '0';
             end if;
+         end if;
 `
 	access = fmt.Sprintf(access, status.Name, addr, mask.Upper, mask.Lower)
 	fmts.StatusesAccess += access

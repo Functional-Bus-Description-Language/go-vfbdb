@@ -17,7 +17,7 @@ library bitvis_vip_wishbone;
 
 package cosim is
 
-   constant C_CLK_PERIOD : time := 25 ns;
+   constant C_CLK_PERIOD : time := 10 ns;
 
    constant C_WB_BFM_CONFIG : t_wishbone_bfm_config := (
       max_wait_cycles          => 10,

@@ -8,6 +8,8 @@ library ieee;
 package {{.EntityName}}_pkg is
 
 --{Constants}
+
+{{.FuncTypes}}
 end package;
 
 
@@ -20,90 +22,99 @@ library general_cores;
 
 library work;
    use work.wbfbd.all;
-
-use work.{{.EntityName}}_pkg.all;
+   use work.{{.EntityName}}_pkg.all;
 
 
 entity {{.EntityName}} is
-   generic (
-      G_REGISTERED : boolean := true
-   );
-   port (
-      clk_i : in std_logic;
-      rst_i : in std_logic;
-      slave_i : in  t_wishbone_slave_in_array ({{.MastersCount}} - 1 downto 0);
-      slave_o : out t_wishbone_slave_out_array({{.MastersCount}} - 1 downto 0){{.EntitySubblockPorts}}{{.EntityFunctionalPorts}}
-   );
+generic (
+   G_REGISTERED : boolean := true
+);
+port (
+   clk_i : in std_logic;
+   rst_i : in std_logic;
+   slave_i : in  t_wishbone_slave_in_array ({{.MastersCount}} - 1 downto 0);
+   slave_o : out t_wishbone_slave_out_array({{.MastersCount}} - 1 downto 0){{.EntitySubblockPorts}}{{.EntityFunctionalPorts}}
+);
 end entity;
 
 
 architecture rtl of {{.EntityName}} is
 
-   constant C_ADDRESSES : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.AddressValues}});
-   constant C_MASKS     : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.MaskValues}});
+constant C_ADDRESSES : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.AddressValues}});
+constant C_MASKS     : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.MaskValues}});
 
-   constant C_REGISTER_UNINITIALIZED_VALUE : std_logic_vector({{.BusWidth}} - 1 downto 0) := (others => 'U');
-   subtype t_register_vector is t_slv_vector({{.RegistersCount}} - 1 downto 0)({{.BusWidth}} - 1 downto 0);
-   signal registers : t_register_vector := ({{.DefaultValues}}others => C_REGISTER_UNINITIALIZED_VALUE);
+constant C_REGISTER_UNINITIALIZED_VALUE : std_logic_vector({{.BusWidth}} - 1 downto 0) := (others => 'U');
+subtype t_register_vector is t_slv_vector({{.RegistersCount}} - 1 downto 0)({{.BusWidth}} - 1 downto 0);
+signal registers : t_register_vector := ({{.DefaultValues}}others => C_REGISTER_UNINITIALIZED_VALUE);
 
-   signal internal_master_out : t_wishbone_master_out;
-   signal internal_master_in  : t_wishbone_master_in;
+signal internal_master_out : t_wishbone_master_out;
+signal internal_master_in  : t_wishbone_master_in;
 
 {{.SignalDeclarations}}
 begin
 
-   crossbar: entity general_cores.xwb_crossbar
-   generic map (
-      G_NUM_MASTERS => {{.MastersCount}},
-      G_NUM_SLAVES  => {{.SubblocksCount}} + 1,
-      G_REGISTERED  => G_REGISTERED,
-      G_ADDRESS     => C_ADDRESSES,
-      G_MASK        => C_MASKS
-   )
-   port map (
-      clk_sys_i   => clk_i,
-      rst_n_i     => not rst_i,
-      slave_i     => slave_i,
-      slave_o     => slave_o,
-      master_i(0) => internal_master_in,
-      master_o(0) => internal_master_out{{.CrossbarSubblockPorts}}
-   );
+crossbar: entity general_cores.xwb_crossbar
+generic map (
+   G_NUM_MASTERS => {{.MastersCount}},
+   G_NUM_SLAVES  => {{.SubblocksCount}} + 1,
+   G_REGISTERED  => G_REGISTERED,
+   G_ADDRESS     => C_ADDRESSES,
+   G_MASK        => C_MASKS
+)
+port map (
+   clk_sys_i   => clk_i,
+   rst_n_i     => not rst_i,
+   slave_i     => slave_i,
+   slave_o     => slave_o,
+   master_i(0) => internal_master_in,
+   master_o(0) => internal_master_out{{.CrossbarSubblockPorts}}
+);
 
 
+register_access : process (all) is
+   variable internal_addr : natural range 0 to {{.RegistersCount}} - 1;
+begin
+
+   -- Statuses Routing
 {{.StatusesRouting}}
 
-   register_access : process (clk_i) is
-      variable internal_addr : natural range 0 to {{.RegistersCount}} - 1;
-   begin
-      if rising_edge(clk_i) then
-         -- Normal operation.
-         internal_master_in.rty <= '0';
+   -- Funcs Routing
+{{.FuncsRouting}}
+
+   if rising_edge(clk_i) then
+      -- Normal operation.
+      internal_master_in.rty <= '0';
+      internal_master_in.ack <= '0';
+      internal_master_in.err <= '0';
+
+      -- Funcs Strobes Clear{{.FuncsStrobesClear}}
+
+      transfer : if
+         internal_master_out.cyc = '1'
+         and internal_master_out.stb = '1'
+         and internal_master_in.err = '0'
+         and internal_master_in.rty = '0'
+         and internal_master_in.ack = '0'
+      then
+         internal_addr := to_integer(unsigned(internal_master_out.adr({{.InternalAddrBitsCount}} - 1 downto 0)));
+
+         -- First assume there is some kind of error.
+         -- For example internal address is invalid or there is a try to write status.
+         internal_master_in.err <= '1';
+         -- '0' for security reasons, '-' can lead to the information leak.
+         internal_master_in.dat <= (others => '0');
          internal_master_in.ack <= '0';
-         internal_master_in.err <= '0';
 
-         transfer : if
-            internal_master_out.cyc = '1'
-            and internal_master_out.stb = '1'
-            and internal_master_in.err = '0'
-            and internal_master_in.rty = '0'
-            and internal_master_in.ack = '0'
-         then
-            internal_addr := to_integer(unsigned(internal_master_out.adr({{.InternalAddrBitsCount}} - 1 downto 0)));
+         -- Statuses Access{{.StatusesAccess}}
 
-            -- First assume there is some kind of error.
-            -- For example internal address is invalid or there is a try to write status.
-            internal_master_in.err <= '1';
-            -- '0' for security reasons, '-' can lead to the information leak.
-            internal_master_in.dat <= (others => '0');
-            internal_master_in.ack <= '0';
+         -- Funcs Access{{.FuncsAccess}}
+         -- Funcs Strobes Set{{.FuncsStrobesSet}}
+      end if transfer;
 
-            {{.StatusesAccess}}
-         end if transfer;
-
-         if rst_i = '1' then
-            internal_master_in <= C_DUMMY_WB_MASTER_IN;
-         end if;
+      if rst_i = '1' then
+         internal_master_in <= C_DUMMY_WB_MASTER_IN;
       end if;
-   end process;
+   end if;
+end process;
 
 end architecture;
