@@ -1,17 +1,20 @@
 #!/bin/bash
 set -e
-ENTITY=$1
-FW_LANGUAGE=$2
-DIR="/tmp/go-wbfbd/python/"
-LOG_FILE="$ENTITY.log"
-PYTHON_FILE="../../../tests/co-simulations/$ENTITY/python/tb_cosim.py"
+CONTEXT=$1
+ENTITY=$2
+HDL=$3
+DIR="/tmp/go-wbfbd/$CONTEXT/$ENTITY/python"
+PYTHON_FILE="../../../tests/co-simulations/$CONTEXT/$ENTITY/python/tb_cosim.py"
 
 export PYTHONPATH="$PYTHONPATH:$PWD/../../../tests/co-simulations/common/python/"
-export PYTHONPATH="$PYTHONPATH:$PWD/../../wbfbd/$ENTITY/python/$FW_LANGUAGE"
+export PYTHONPATH="$PYTHONPATH:$PWD/../../wbfbd/$CONTEXT/$ENTITY/python/$HDL"
 
 mkdir -p $DIR
 if [ ! -f "$PYTHON_FILE" ]; then
 	>&2 echo "$PYTHON_FILE not found"
 	exit 1
 fi
-python3 $PYTHON_FILE $3 $4 > "$DIR$LOG_FILE" 2>&1 &
+python3 $PYTHON_FILE \
+	/tmp/go-wbfbd/$CONTEXT/$ENTITY/python_"$HDL" \
+	/tmp/go-wbfbd/$CONTEXT/$ENTITY/"$HDL"_python \
+	> "$DIR/$HDL.log" 2>&1 &

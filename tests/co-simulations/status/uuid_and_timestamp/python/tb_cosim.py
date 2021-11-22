@@ -11,20 +11,20 @@ import random
 from cosim_interface import CosimInterface
 import wbfbd
 
+
 WRITE_FIFO_PATH = sys.argv[1]
 READ_FIFO_PATH  = sys.argv[2]
 
 CLK_PERIOD = 10
 
-
 def delay_function():
     return CLK_PERIOD * random.randrange(5, 10)
 
 
+cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH, delay_function, True)
+
 try:
     log.info("Starting cosimulation")
-
-    cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH, delay_function, True)
 
     main = wbfbd.main(cosim_interface)
 

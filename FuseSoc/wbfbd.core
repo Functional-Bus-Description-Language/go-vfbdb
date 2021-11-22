@@ -9,7 +9,7 @@ filesets:
       - cern:general_cores:xwb_crossbar:0.0.0
 
 generators:
-  addr_gen_wb:
+  wbfbd:
     interpreter: python3
     command: wbfbd.py
     description: Generator for Functional Bus Description Language compiler for Wishbone backend.

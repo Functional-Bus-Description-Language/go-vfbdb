@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: wbfbd:vhdl:func_singlesingle_1reg
+name: wbfbd:vhdl:uuid_and_timestamp
 
 filesets:
   tb_cosim:
@@ -24,16 +24,16 @@ targets:
       - wbfbd_dep
       - tb_cosim
     hooks:
-      pre_run: [tb_cosim]
+      pre_run: [tb_cosim_python]
     parameters:
-      - G_SW_FW_FIFO_PATH=/tmp/go-wbfbd/func_singlesingle_1reg_python_vhdl
-      - G_FW_SW_FIFO_PATH=/tmp/go-wbfbd/func_singlesingle_1reg_vhdl_python
+      - G_SW_FW_FIFO_PATH=/tmp/go-wbfbd/status/uuid_and_timestamp/python_vhdl
+      - G_FW_SW_FIFO_PATH=/tmp/go-wbfbd/status/uuid_and_timestamp/vhdl_python
 
 generate:
   wbfbd_regs:
-    generator: addr_gen_wb
+    generator: wbfbd
     parameters:
-      python: [--path, ../../../../build/wbfbd/func_singlesingle_1reg/python/vhdl]
+      python: [--path, ../../../../../build/wbfbd/status/uuid_and_timestamp/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 
@@ -46,10 +46,9 @@ parameters:
     paramtype: generic
 
 scripts:
-  tb_cosim:
+  tb_cosim_python:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
-      - func_singlesingle_1reg
+      - status
+      - uuid_and_timestamp
       - vhdl
-      - /tmp/go-wbfbd/func_singlesingle_1reg_python_vhdl
-      - /tmp/go-wbfbd/func_singlesingle_1reg_vhdl_python
