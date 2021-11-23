@@ -64,26 +64,26 @@ func decreaseIndent(val int) {
 	indent = indent[:len(indent)-val*4]
 }
 
-func generateClass(block *fbdl.Block) string {
-	code := fmt.Sprintf("class %s:\n", block.Name)
+func generateClass(blk *fbdl.Block) string {
+	code := fmt.Sprintf("class %s:\n", blk.Name)
 	increaseIndent(1)
 	code += indent + "def __init__(self, interface):\n"
 	increaseIndent(1)
 	code += indent + "self.interface = interface\n"
 
-	for _, st := range block.Statuses {
-		code += generateStatus(block, st)
+	for _, st := range blk.Statuses {
+		code += generateStatus(blk, st)
 	}
 	decreaseIndent(1)
 
-	for _, fun := range block.Funcs {
-		code += generateFunc(block, fun)
+	for _, fun := range blk.Funcs {
+		code += generateFunc(blk, fun)
 	}
 
 	return code
 }
 
-func generateStatus(block *fbdl.Block, st *fbdl.Status) string {
+func generateStatus(blk *fbdl.Block, st *fbdl.Status) string {
 	var code string
 
 	if st.IsArray {
@@ -92,7 +92,7 @@ func generateStatus(block *fbdl.Block, st *fbdl.Status) string {
 			access := st.Access.(fbdl.AccessArrayMultiple)
 			code += indent + fmt.Sprintf(
 				"self.%s = StatusArrayMultiple(interface, %d, %d, %d)\n",
-				st.Name, block.AddrSpace.Start()+access.StartAddr(), access.ItemWidth, access.ItemCount,
+				st.Name, blk.AddrSpace.Start()+access.StartAddr(), access.ItemWidth, access.ItemCount,
 			)
 		default:
 			panic("not yet implemented")
@@ -103,7 +103,7 @@ func generateStatus(block *fbdl.Block, st *fbdl.Status) string {
 			access := st.Access.(fbdl.AccessSingleSingle)
 			code += indent + fmt.Sprintf(
 				"self.%s = StatusSingleSingle(interface, %d, (%d, %d))\n",
-				st.Name, block.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
+				st.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 			)
 		default:
 			panic("not yet implemented")

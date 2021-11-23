@@ -38,9 +38,9 @@ func Generate(bus *fbdl.Block, cmdLineArgs map[string]string) {
 	}
 }
 
-func collectEntities(block *fbdl.Block, entities []Entity, path []string) []Entity {
+func collectEntities(blk *fbdl.Block, entities []Entity, path []string) []Entity {
 	if entities == nil {
-		entities = []Entity{Entity{Name: "main", Path: []string{"main"}, Block: block}}
+		entities = []Entity{Entity{Name: "main", Path: []string{"main"}, Block: blk}}
 		path = append(path, "main")
 	} else {
 		p := make([]string, len(path))
@@ -49,12 +49,12 @@ func collectEntities(block *fbdl.Block, entities []Entity, path []string) []Enti
 			log.Fatalf("generate vhdl: copying entity path failed, copied %d, expected %d", n, len(path))
 		}
 
-		ent := Entity{Name: block.Name, Path: p, Block: block}
+		ent := Entity{Name: blk.Name, Path: p, Block: blk}
 		entities = append(entities, ent)
 	}
 
 	fmt.Println(path)
-	for _, b := range block.Subblocks {
+	for _, b := range blk.Subblocks {
 		path = append(path, b.Name)
 		entities = collectEntities(b, entities, path)
 		path = path[:len(path)-1]

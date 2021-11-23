@@ -5,11 +5,11 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateFunc(block *fbdl.Block, fun *fbdl.Func) string {
+func generateFunc(blk *fbdl.Block, fun *fbdl.Func) string {
 	var code string
 
 	if fun.AreAllParamsSingleSingle() {
-		code = generateFuncSingleSingle(block, fun)
+		code = generateFuncSingleSingle(blk, fun)
 	} else {
 		panic("not yet implemented")
 	}
@@ -32,7 +32,7 @@ func generateFuncFunctionSignature(fun *fbdl.Func) string {
 
 // generateFuncSingleSingle generates function body for func which all parameters are of type AccessSingleSingle.
 // In such case there is no Python for loop as it is relatiely easy to unroll during code generation.
-func generateFuncSingleSingle(block *fbdl.Block, fun *fbdl.Func) string {
+func generateFuncSingleSingle(blk *fbdl.Block, fun *fbdl.Func) string {
 	code := generateFuncFunctionSignature(fun)
 
 	val := ""
@@ -41,7 +41,7 @@ func generateFuncSingleSingle(block *fbdl.Block, fun *fbdl.Func) string {
 		val += fmt.Sprintf("%s << %d | ", p.Name, access.Mask.Lower)
 		if i == len(fun.Params)-1 || fun.Params[i+1].Access.StartAddr() != access.Addr {
 			val = val[:len(val)-3]
-			code += indent + fmt.Sprintf("self.interface.write(%d, %s)\n", block.AddrSpace.Start()+access.Addr, val)
+			code += indent + fmt.Sprintf("self.interface.write(%d, %s)\n", blk.AddrSpace.Start()+access.Addr, val)
 			val = ""
 		}
 	}

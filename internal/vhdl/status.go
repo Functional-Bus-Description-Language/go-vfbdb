@@ -6,39 +6,39 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateStatus(status *fbdl.Status, fmts *EntityFormatters) {
-	if status.IsArray {
-		generateStatusArray(status, fmts)
+func generateStatus(st *fbdl.Status, fmts *EntityFormatters) {
+	if st.IsArray {
+		generateStatusArray(st, fmts)
 	} else {
-		generateStatusSingle(status, fmts)
+		generateStatusSingle(st, fmts)
 	}
 }
 
-func generateStatusArray(status *fbdl.Status, fmts *EntityFormatters) {
-	switch status.Access.(type) {
+func generateStatusArray(st *fbdl.Status, fmts *EntityFormatters) {
+	switch st.Access.(type) {
 	case fbdl.AccessArrayMultiple:
-		generateStatusArrayMultiple(status, fmts)
+		generateStatusArrayMultiple(st, fmts)
 	default:
 		panic("not yet implemented")
 	}
 }
 
-func generateStatusSingle(status *fbdl.Status, fmts *EntityFormatters) {
-	if status.Name != "x_uuid_x" && status.Name != "x_timestamp_x" {
-		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d - 1 downto 0)", status.Name, status.Width)
+func generateStatusSingle(st *fbdl.Status, fmts *EntityFormatters) {
+	if st.Name != "x_uuid_x" && st.Name != "x_timestamp_x" {
+		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d - 1 downto 0)", st.Name, st.Width)
 		fmts.EntityFunctionalPorts += s
 	}
 
-	switch status.Access.(type) {
+	switch st.Access.(type) {
 	case fbdl.AccessSingleSingle:
-		generateStatusSingleSingle(status, fmts)
+		generateStatusSingleSingle(st, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
 }
 
-func generateStatusSingleSingle(status *fbdl.Status, fmts *EntityFormatters) {
-	fbdlAccess := status.Access.(fbdl.AccessSingleSingle)
+func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
+	fbdlAccess := st.Access.(fbdl.AccessSingleSingle)
 	addr := fbdlAccess.Addr
 	mask := fbdlAccess.Mask
 
@@ -52,29 +52,29 @@ func generateStatusSingleSingle(status *fbdl.Status, fmts *EntityFormatters) {
             end if;
          end if;
 `
-	access = fmt.Sprintf(access, status.Name, addr, mask.Upper, mask.Lower)
+	access = fmt.Sprintf(access, st.Name, addr, mask.Upper, mask.Lower)
 	fmts.StatusesAccess += access
 
 	var routing string
-	if status.Name == "x_uuid_x" || status.Name == "x_timestamp_x" {
+	if st.Name == "x_uuid_x" || st.Name == "x_timestamp_x" {
 		routing = fmt.Sprintf(
 			"   registers(%d)(%d downto %d) <= %s;\n",
-			addr, mask.Upper, mask.Lower, string(status.Default),
+			addr, mask.Upper, mask.Lower, string(st.Default),
 		)
 	} else {
 		routing = fmt.Sprintf(
 			"   registers(%d)(%d downto %d) <= %s_i(%[2]d downto %[3]d);\n",
-			addr, mask.Upper, mask.Lower, status.Name,
+			addr, mask.Upper, mask.Lower, st.Name,
 		)
 	}
 
 	fmts.StatusesRouting += routing
 }
 
-func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
-	fbdlAccess := status.Access.(fbdl.AccessArrayMultiple)
+func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
+	fbdlAccess := st.Access.(fbdl.AccessArrayMultiple)
 
-	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", status.Name, status.Count-1, status.Width-1)
+	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
 	fmts.EntityFunctionalPorts += port
 
 	itemsPerAccess := busWidth / fbdlAccess.ItemWidth
@@ -90,7 +90,7 @@ func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
             end if;
          end if;
 `,
-			status.Name,
+			st.Name,
 			fbdlAccess.StartAddr(), fbdlAccess.StartAddr()+fbdlAccess.Count()-1,
 			fbdlAccess.ItemWidth*itemsPerAccess-1,
 		)
@@ -104,7 +104,7 @@ func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
             end if;
          end if;
 `,
-			status.Name, fbdlAccess.StartAddr(), fbdlAccess.ItemWidth*fbdlAccess.ItemCount-1,
+			st.Name, fbdlAccess.StartAddr(), fbdlAccess.ItemWidth*fbdlAccess.ItemCount-1,
 		)
 	} else {
 		access = fmt.Sprintf(`
@@ -120,7 +120,7 @@ func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
             end if;
          end if;
 `,
-			status.Name, fbdlAccess.StartAddr(), fbdlAccess.StartAddr()+fbdlAccess.Count()-1,
+			st.Name, fbdlAccess.StartAddr(), fbdlAccess.StartAddr()+fbdlAccess.Count()-1,
 			fbdlAccess.ItemWidth*(fbdlAccess.ItemCount%itemsPerAccess)-1, fbdlAccess.ItemWidth*itemsPerAccess-1,
 		)
 	}
@@ -136,7 +136,7 @@ func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
       end loop;
    end loop;
 `,
-			status.Name,
+			st.Name,
 			fbdlAccess.Count()-1,
 			itemsPerAccess-1,
 			fbdlAccess.StartAddr(),
@@ -151,7 +151,7 @@ func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
       end loop;
    end loop;
 `,
-			status.Name,
+			st.Name,
 			fbdlAccess.Count()-1,
 			fbdlAccess.ItemCount-1,
 			fbdlAccess.StartAddr(),
@@ -171,9 +171,9 @@ func generateStatusArrayMultiple(status *fbdl.Status, fmts *EntityFormatters) {
       end if;
    end loop;
 `,
-			status.Name,
+			st.Name,
 			fbdlAccess.Count()-1,
-			status.Count%itemsPerAccess-1,
+			st.Count%itemsPerAccess-1,
 			fbdlAccess.StartAddr(),
 			fbdlAccess.ItemWidth,
 			itemsPerAccess,
