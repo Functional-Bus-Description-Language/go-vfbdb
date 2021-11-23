@@ -26,8 +26,8 @@ targets:
     hooks:
       pre_run: [tb_cosim]
     parameters:
-      - G_SW_FW_FIFO_PATH=/tmp/go-wbfbd/func/singlesingle_1reg/python_vhdl
-      - G_FW_SW_FIFO_PATH=/tmp/go-wbfbd/func/singlesingle_1reg/vhdl_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/func/singlesingle_1reg/python_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/func/singlesingle_1reg/vhdl_python
 
 generate:
   wbfbd_regs:
@@ -38,10 +38,10 @@ generate:
       main: ../bus.fbd
 
 parameters:
-  G_SW_FW_FIFO_PATH:
+  G_SW_GW_FIFO_PATH:
     datatype: str
     paramtype: generic
-  G_FW_SW_FIFO_PATH:
+  G_GW_SW_FIFO_PATH:
     datatype: str
     paramtype: generic
 

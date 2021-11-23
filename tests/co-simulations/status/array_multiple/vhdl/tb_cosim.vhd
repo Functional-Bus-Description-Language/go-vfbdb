@@ -5,8 +5,8 @@ library work;
 
 entity tb_cosim is
    generic(
-      G_SW_FW_FIFO_PATH : string;
-      G_FW_SW_FIFO_PATH : string
+      G_SW_GW_FIFO_PATH : string;
+      G_GW_SW_FIFO_PATH : string
    );
 end entity;
 
@@ -58,7 +58,7 @@ begin
    uvvm_wb_if.dat_i <= wb_sm.dat;
    uvvm_wb_if.ack_i <= wb_sm.ack;
 
-   cosim_interface(G_SW_FW_FIFO_PATH, G_FW_SW_FIFO_PATH, clk, uvvm_wb_if, C_WB_BFM_CONFIG);
+   cosim_interface(G_SW_GW_FIFO_PATH, G_GW_SW_FIFO_PATH, clk, uvvm_wb_if, C_WB_BFM_CONFIG);
 
 
    wbfbd_main : entity wbfbd.main
