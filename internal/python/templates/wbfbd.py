@@ -39,13 +39,13 @@ class StatusArraySingle:
 
 
 class StatusArrayMultiple:
-    def __init__(self, interface, addr, width, count, items_per_access):
+    def __init__(self, interface, addr, width, count):
         self.interface = interface
         self.addr = addr
         self.width = width
         self.count = count
-        self.items_per_access = items_per_access
-        self.regs_count = math.ceil(count / items_per_access)
+        self.items_per_access = BUS_WIDTH // width
+        self.regs_count = math.ceil(count / self.items_per_access)
 
     def read(self, idx=None):
         if idx is None:

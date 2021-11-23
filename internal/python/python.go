@@ -87,7 +87,16 @@ func generateStatus(block *fbdl.Block, st *fbdl.Status) string {
 	var code string
 
 	if st.IsArray {
-
+		switch st.Access.(type) {
+		case fbdl.AccessArrayMultiple:
+			access := st.Access.(fbdl.AccessArrayMultiple)
+			code += indent + fmt.Sprintf(
+				"self.%s = StatusArrayMultiple(interface, %d, %d, %d)\n",
+				st.Name, block.AddrSpace.Start()+access.StartAddr(), access.ItemWidth, access.ItemCount,
+			)
+		default:
+			panic("not yet implemented")
+		}
 	} else {
 		switch st.Access.(type) {
 		case fbdl.AccessSingleSingle:
