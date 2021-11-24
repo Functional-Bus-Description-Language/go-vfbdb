@@ -24,7 +24,7 @@ func generateStatusArray(st *fbdl.Status, fmts *EntityFormatters) {
 
 func generateStatusSingle(st *fbdl.Status, fmts *EntityFormatters) {
 	if st.Name != "x_uuid_x" && st.Name != "x_timestamp_x" {
-		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d - 1 downto 0)", st.Name, st.Width)
+		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d downto 0)", st.Name, st.Width-1)
 		fmts.EntityFunctionalPorts += s
 	}
 
@@ -62,7 +62,7 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
 		)
 	} else {
 		routing = fmt.Sprintf(
-			"   registers(%d)(%d downto %d) <= %s_i(%[2]d downto %[3]d);\n",
+			"   registers(%d)(%d downto %d) <= %s_i;\n",
 			addr, mask.Upper, mask.Lower, st.Name,
 		)
 	}

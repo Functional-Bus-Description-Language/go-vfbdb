@@ -18,7 +18,7 @@ func generateConfigArray(cfg *fbdl.Config, fmts *EntityFormatters) {
 }
 
 func generateConfigSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
-	s := fmt.Sprintf(";\n   %s_o : out std_logic_vector(%d - 1 downto 0)", cfg.Name, cfg.Width)
+	s := fmt.Sprintf(";\n   %s_o : out std_logic_vector(%d downto 0)", cfg.Name, cfg.Width-1)
 	fmts.EntityFunctionalPorts += s
 
 	switch cfg.Access.(type) {
@@ -53,7 +53,7 @@ func generateConfigSingleSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
 
 	var routing string
 	routing = fmt.Sprintf(
-		"   %[1]s_o(%[2]d downto %[3]d) <= registers(%[4]d)(%[2]d downto %[3]d);\n", cfg.Name, mask.Upper, mask.Lower, addr,
+		"   %s_o <= registers(%d)(%d downto %d);\n", cfg.Name, addr, mask.Upper, mask.Lower,
 	)
 
 	fmts.ConfigsRouting += routing
