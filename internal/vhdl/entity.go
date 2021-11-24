@@ -45,6 +45,9 @@ type EntityFormatters struct {
 	StatusesAccess  string
 	StatusesRouting string
 
+	ConfigsAccess  string
+	ConfigsRouting string
+
 	FuncsAccess       string
 	FuncsRouting      string
 	FuncsStrobesClear string
@@ -84,6 +87,10 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 
 	for _, st := range entity.Block.Statuses {
 		generateStatus(st, &fmts)
+	}
+
+	for _, cfg := range entity.Block.Configs {
+		generateConfig(cfg, &fmts)
 	}
 
 	filePath := outputPath + entity.Name + ".vhd"

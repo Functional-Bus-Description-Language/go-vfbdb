@@ -1,0 +1,5 @@
+main bus
+	cfg config
+		width = 7
+	st status
+		width = 7

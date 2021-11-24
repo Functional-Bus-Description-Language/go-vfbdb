@@ -74,6 +74,11 @@ func generateClass(blk *fbdl.Block) string {
 	for _, st := range blk.Statuses {
 		code += generateStatus(st, blk)
 	}
+
+	for _, cfg := range blk.Configs {
+		code += generateConfig(cfg, blk)
+	}
+
 	decreaseIndent(1)
 
 	for _, fun := range blk.Funcs {

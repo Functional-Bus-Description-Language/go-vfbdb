@@ -1,7 +1,6 @@
 package vhdl
 
 import (
-	_ "embed"
 	"fmt"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )

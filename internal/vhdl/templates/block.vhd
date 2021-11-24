@@ -81,6 +81,9 @@ begin
    -- Funcs Routing
 {{.FuncsRouting}}
 
+   -- Configs Routing
+{{.ConfigsRouting}}
+
    if rising_edge(clk_i) then
       -- Normal operation.
       internal_master_in.rty <= '0';
@@ -109,6 +112,8 @@ begin
 
          -- Funcs Access{{.FuncsAccess}}
          -- Funcs Strobes Set{{.FuncsStrobesSet}}
+
+         -- Configs Access{{.ConfigsAccess}}
       end if transfer;
 
       if rst_i = '1' then

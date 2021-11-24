@@ -73,4 +73,17 @@ class StatusArrayMultiple:
 
         return values
 
+class ConfigSingleSingle:
+    def __init__(self, interface, addr, mask):
+        self.interface = interface
+        self.addr = addr
+        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.shift = mask[1]
+
+    def read(self):
+        return (self.interface.read(self.addr) & self.mask) >> self.shift
+
+    def write(self, val):
+        self.interface.write(self.addr, val << self.shift)
+
 {{.Code}}
