@@ -72,12 +72,12 @@ func generateClass(blk *fbdl.Block) string {
 	code += indent + "self.interface = interface\n"
 
 	for _, st := range blk.Statuses {
-		code += generateStatus(blk, st)
+		code += generateStatus(st, blk)
 	}
 	decreaseIndent(1)
 
 	for _, fun := range blk.Funcs {
-		code += generateFunc(blk, fun)
+		code += generateFunc(fun, blk)
 	}
 
 	return code

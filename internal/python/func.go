@@ -5,11 +5,11 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateFunc(blk *fbdl.Block, fun *fbdl.Func) string {
+func generateFunc(fun *fbdl.Func, blk *fbdl.Block) string {
 	var code string
 
 	if fun.AreAllParamsSingleSingle() {
-		code = generateFuncSingleSingle(blk, fun)
+		code = generateFuncSingleSingle(fun, blk)
 	} else {
 		panic("not yet implemented")
 	}
@@ -32,7 +32,7 @@ func generateFuncFunctionSignature(fun *fbdl.Func) string {
 
 // generateFuncSingleSingle generates function body for func which all parameters are of type AccessSingleSingle.
 // In such case there is no Python for loop as it is relatiely easy to unroll during code generation.
-func generateFuncSingleSingle(blk *fbdl.Block, fun *fbdl.Func) string {
+func generateFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
 	code := generateFuncFunctionSignature(fun)
 
 	val := ""

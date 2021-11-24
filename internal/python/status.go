@@ -5,15 +5,15 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateStatus(blk *fbdl.Block, st *fbdl.Status) string {
+func generateStatus(st *fbdl.Status, blk *fbdl.Block) string {
 	if st.IsArray {
-		return generateStatusArray(blk, st)
+		return generateStatusArray(st, blk)
 	} else {
-		return generateStatusSingle(blk, st)
+		return generateStatusSingle(st, blk)
 	}
 }
 
-func generateStatusSingle(blk *fbdl.Block, st *fbdl.Status) string {
+func generateStatusSingle(st *fbdl.Status, blk *fbdl.Block) string {
 	var code string
 
 	switch st.Access.(type) {
@@ -30,7 +30,7 @@ func generateStatusSingle(blk *fbdl.Block, st *fbdl.Status) string {
 	return code
 }
 
-func generateStatusArray(blk *fbdl.Block, st *fbdl.Status) string {
+func generateStatusArray(st *fbdl.Status, blk *fbdl.Block) string {
 	var code string
 
 	switch st.Access.(type) {
