@@ -59,6 +59,8 @@ func Parse() map[string]map[string]string {
 				expectArg = false
 			} else if arg == "--fusesoc" || arg == "--times" {
 				args["global"][arg] = ""
+			} else if arg == "-d" || arg == "--debug" {
+				args["global"]["--debug"] = ""
 			} else if arg == "--fusesoc-vlnv" || arg == "--path" {
 				currentOption = arg
 				expectArg = true

@@ -2,11 +2,9 @@ package vhdl
 
 import (
 	_ "embed"
-	"fmt"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"log"
 	"os"
-	_ "strings"
 	"sync"
 	"text/template"
 )
@@ -53,7 +51,6 @@ func collectEntities(blk *fbdl.Block, entities []Entity, path []string) []Entity
 		entities = append(entities, ent)
 	}
 
-	fmt.Println(path)
 	for _, b := range blk.Subblocks {
 		path = append(path, b.Name)
 		entities = collectEntities(b, entities, path)

@@ -21,6 +21,7 @@ Usage:
 Flags:
   -h, --help     Display help.
   -v, --version  Display version.
+  -d, --debug    Print debug messages.
   --fusesoc  Generate FuseSoc '.core' file.
              This flag rather should not be set manually.
              It is recommended to use wbfbd as a generator inside FuseSoc.

@@ -12,11 +12,35 @@ import (
 	"os"
 )
 
+var printDebug bool = false
+
+type Logger struct{}
+
+func (l Logger) Write(p []byte) (int, error) {
+	print := true
+
+	if len(p) > 4 && string(p)[:5] == "debug" {
+		print = printDebug
+	}
+
+	if print {
+		fmt.Fprintf(os.Stderr, string(p))
+	}
+
+	return len(p), nil
+}
+
 func main() {
+	logger := Logger{}
+	log.SetOutput(logger)
 	log.SetFlags(0)
 
 	cmdLineArgs := args.Parse()
 	args.SetOutputPaths(cmdLineArgs)
+
+	if _, ok := cmdLineArgs["global"]["--debug"]; ok {
+		printDebug = true
+	}
 
 	bus := fbdl.Compile(cmdLineArgs["global"]["main"])
 
