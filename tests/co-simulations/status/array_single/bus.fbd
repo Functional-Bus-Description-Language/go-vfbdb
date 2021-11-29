@@ -1,0 +1,3 @@
+main bus
+	status_array [9]status
+		width = 17

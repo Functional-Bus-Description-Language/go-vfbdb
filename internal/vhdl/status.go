@@ -15,6 +15,8 @@ func generateStatus(st *fbdl.Status, fmts *EntityFormatters) {
 
 func generateStatusArray(st *fbdl.Status, fmts *EntityFormatters) {
 	switch st.Access.(type) {
+	case fbdl.AccessArraySingle:
+		generateStatusArraySingle(st, fmts)
 	case fbdl.AccessArrayMultiple:
 		generateStatusArrayMultiple(st, fmts)
 	default:
@@ -66,6 +68,45 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
 			addr, mask.Upper, mask.Lower, st.Name,
 		)
 	}
+
+	fmts.StatusesRouting += routing
+}
+
+func generateStatusArraySingle(st *fbdl.Status, fmts *EntityFormatters) {
+	fbdlAccess := st.Access.(fbdl.AccessArraySingle)
+
+	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
+	fmts.EntityFunctionalPorts += port
+
+	access := fmt.Sprintf(`
+         %[1]s : if %[2]d <= internal_addr and internal_addr <= %[3]d then
+            internal_master_in.dat(%[4]d downto %[5]d) <= registers(internal_addr)(%[4]d downto %[5]d);
+            if internal_master_out.we = '0' then
+               internal_master_in.ack <= '1';
+               internal_master_in.err <= '0';
+            end if;
+         end if;
+`,
+		st.Name,
+		fbdlAccess.StartAddr(),
+		fbdlAccess.StartAddr()+fbdlAccess.RegCount()-1,
+		fbdlAccess.Mask.Upper,
+		fbdlAccess.Mask.Lower,
+	)
+
+	fmts.StatusesAccess += access
+
+	routing := fmt.Sprintf(`
+   %[1]s_registers : for reg in 0 to %[2]d loop
+      registers(%[3]d + reg)(%[4]d downto %[5]d) <= %[1]s_i(reg);
+   end loop;
+`,
+		st.Name,
+		fbdlAccess.RegCount()-1,
+		fbdlAccess.StartAddr(),
+		fbdlAccess.Mask.Upper,
+		fbdlAccess.Mask.Lower,
+	)
 
 	fmts.StatusesRouting += routing
 }
