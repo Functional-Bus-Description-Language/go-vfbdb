@@ -18,42 +18,42 @@ class StatusSingleSingle:
 
 
 class StatusArraySingle:
-    def __init__(self, interface, addr, mask, count):
+    def __init__(self, interface, addr, mask, item_count):
         self.interface = interface
         self.addr = addr
         self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
         self.shift = mask[1]
-        self.count = count
+        self.item_count = item_count
 
     def read(self, idx=None):
         if idx is None:
-            idx = tuple(range(0, self.count))
+            idx = tuple(range(0, self.item_count))
         elif type(idx) == int:
-            assert 0 <= idx < self.count
+            assert 0 <= idx < self.item_count
             return (self.interface.read(self.addr + idx) & self.mask) >> self.shift
         else:
             for i in idx:
-                assert 0 <= i < self.count
+                assert 0 <= i < self.item_count
 
         return [(self.interface.read(self.addr + i) & self.mask) >> self.shift for i in idx]
 
 
 class StatusArrayMultiple:
-    def __init__(self, interface, addr, start_bit, width, count, items_per_access):
+    def __init__(self, interface, addr, start_bit, width, item_count, items_per_access):
         self.interface = interface
         self.addr = addr
         self.start_bit = start_bit
         self.width = width
-        self.count = count
+        self.item_count = item_count
         self.items_per_access = items_per_access
-        self.regs_count = math.ceil(count / self.items_per_access)
+        self.reg_count = math.ceil(item_count / self.items_per_access)
 
     def read(self, idx=None):
         if idx is None:
-            idx = tuple(range(0, self.count))
-            reg_idx = tuple(range(self.regs_count))
+            idx = tuple(range(0, self.item_count))
+            reg_idx = tuple(range(self.reg_count))
         elif type(idx) == int:
-            assert 0 <= idx < self.count
+            assert 0 <= idx < self.item_count
             reg_idx = idx // self.items_per_access
             shift = self.start_bit + self.width * (idx % self.items_per_access)
             mask = (1 << self.width) - 1
@@ -61,7 +61,7 @@ class StatusArrayMultiple:
         else:
             reg_idx = set()
             for i in idx:
-                assert 0 <= i < self.count
+                assert 0 <= i < self.item_count
                 reg_idx.add(i // self.items_per_access)
 
         reg_values = {reg_i : self.interface.read(self.addr + reg_i) for reg_i in reg_idx}
