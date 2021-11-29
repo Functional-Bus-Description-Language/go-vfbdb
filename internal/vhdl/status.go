@@ -106,7 +106,7 @@ func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
 `,
 			st.Name,
 			fbdlAccess.StartAddr(),
-			fbdlAccess.StartAddr()+fbdlAccess.Count()-1,
+			fbdlAccess.StartAddr()+fbdlAccess.RegCount()-1,
 			fbdlAccess.EndBit(),
 			fbdlAccess.StartBit,
 		)
@@ -126,7 +126,7 @@ func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
 `,
 			st.Name,
 			fbdlAccess.StartAddr(),
-			fbdlAccess.StartAddr()+fbdlAccess.Count()-1,
+			fbdlAccess.StartAddr()+fbdlAccess.RegCount()-1,
 			fbdlAccess.EndBit(),
 			fbdlAccess.StartBit,
 			fbdlAccess.ItemWidth*itemsPerAccess-1,
@@ -159,7 +159,7 @@ func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
    end loop;
 `,
 			st.Name,
-			fbdlAccess.Count()-1,
+			fbdlAccess.RegCount()-1,
 			itemsPerAccess-1,
 			fbdlAccess.StartAddr(),
 			fbdlAccess.ItemWidth,
@@ -181,7 +181,7 @@ func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
    end loop;
 `,
 			st.Name,
-			fbdlAccess.Count()-1,
+			fbdlAccess.RegCount()-1,
 			st.Count%itemsPerAccess-1,
 			fbdlAccess.StartAddr(),
 			fbdlAccess.ItemWidth,
