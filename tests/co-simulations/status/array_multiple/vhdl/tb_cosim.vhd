@@ -33,6 +33,15 @@ architecture test of tb_cosim is
       3 => "00011"
    );
 
+   signal status_array2 : t_slv_vector(5 downto 0)(6 downto 0) := (
+      0 => "0000000",
+      1 => "0000001",
+      2 => "0000010",
+      3 => "0000011",
+      4 => "0000100",
+      5 => "0000101"
+   );
+
    -- Wishbone interfaces.
    signal uvvm_wb_if : t_wishbone_if (
       dat_o(31 downto 0),
@@ -68,7 +77,8 @@ begin
       slave_i(0) => wb_ms,
       slave_o(0) => wb_sm,
       status_array0_i => status_array0,
-      status_array1_i => status_array1
+      status_array1_i => status_array1,
+      status_array2_i => status_array2
    );
 
 end architecture;

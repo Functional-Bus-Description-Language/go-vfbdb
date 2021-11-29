@@ -39,12 +39,13 @@ class StatusArraySingle:
 
 
 class StatusArrayMultiple:
-    def __init__(self, interface, addr, width, count):
+    def __init__(self, interface, addr, start_bit, width, count, items_per_access):
         self.interface = interface
         self.addr = addr
+        self.start_bit = start_bit
         self.width = width
         self.count = count
-        self.items_per_access = BUS_WIDTH // width
+        self.items_per_access = items_per_access
         self.regs_count = math.ceil(count / self.items_per_access)
 
     def read(self, idx=None):
@@ -54,7 +55,7 @@ class StatusArrayMultiple:
         elif type(idx) == int:
             assert 0 <= idx < self.count
             reg_idx = idx // self.items_per_access
-            shift = self.width * (idx % self.items_per_access)
+            shift = self.start_bit + self.width * (idx % self.items_per_access)
             mask = (1 << self.width) - 1
             return (self.interface.read(self.addr + reg_idx) >> shift) & mask
         else:
@@ -67,7 +68,7 @@ class StatusArrayMultiple:
 
         values = []
         for i in idx:
-            shift = self.width * (i % self.items_per_access)
+            shift = self.start_bit + self.width * (i % self.items_per_access)
             mask = (1 << self.width) - 1
             values.append((reg_values[i // self.items_per_access] >> shift) & mask)
 

@@ -60,6 +60,19 @@ try:
 
     log.info("Testing scenerio when the number of items in the last register is different.")
 
+    values = main.status_array2.read()
+    assert len(values) == 6
+    for i, v in enumerate(values):
+        assert v == i
+
+    idx = [1, 5]
+    values = main.status_array2.read(idx)
+    assert values[0] == 1
+    assert values[1] == 5
+
+    value = main.status_array2.read(0)
+    assert value == 0
+
     cosim_interface.wait(5 * CLOCK_PERIOD)
 
     log.info("Ending cosimulation")

@@ -4,3 +4,6 @@ main bus
 
 	status_array1 [4]status
 		width = 5
+
+	status_array2 [6]status
+		width = 7

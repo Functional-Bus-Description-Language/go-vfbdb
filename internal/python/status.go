@@ -37,8 +37,8 @@ func generateStatusArray(st *fbdl.Status, blk *fbdl.Block) string {
 	case fbdl.AccessArrayMultiple:
 		access := st.Access.(fbdl.AccessArrayMultiple)
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusArrayMultiple(interface, %d, %d, %d)\n",
-			st.Name, blk.AddrSpace.Start()+access.StartAddr(), access.ItemWidth, access.ItemCount,
+			"self.%s = StatusArrayMultiple(interface, %d, %d, %d, %d, %d)\n",
+			st.Name, blk.AddrSpace.Start()+access.StartAddr(), access.StartBit, access.ItemWidth, access.ItemCount, access.ItemsPerAccess,
 		)
 	default:
 		panic("not yet implemented")
