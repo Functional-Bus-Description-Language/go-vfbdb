@@ -111,6 +111,11 @@ func Parse() map[string]map[string]string {
 		args["global"]["--path"] = "wbfbd"
 	}
 
+	if len(args) == 1 {
+		fmt.Println("No target specified.\n")
+		printHelp()
+	}
+
 	return args
 }
 

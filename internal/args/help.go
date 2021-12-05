@@ -8,11 +8,11 @@ import (
 var helpMsg string = `Functional Bus Description Language compiler back-end written in Go.
 Version: %s
 
-Supported targets: python, vhdl
-To check valid flags and options for a given target type: 'wbfbd {target} --help'
+Supported targets: python, vhdl.
+To check valid flags and options for a given target type: 'wbfbd {target} --help'.
 
 Usage:
-  wbfbd [{{target}} [target flag or option] ...] ... path/to/fbd/file/with/main/bus
+  wbfbd [global flag or option] [{{target}} [target flag or option] ...] ... path/to/fbd/file/with/main/bus
 
   At least one target must be specified. The last argument is always a path
   to the fbd file containing a definition of the main bus, unless it is
