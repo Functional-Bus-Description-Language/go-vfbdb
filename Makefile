@@ -10,15 +10,15 @@ build:
 	go build -v -o $(PROJECT_NAME) .
 
 help:
-	@echo "Build related targets:"
+	@echo "Build targets:"
 	@echo "  all      Run fmt vet build."
 	@echo "  build    Build binary."
 	@echo "  default  Run build."
-	@echo "Quality related targets:"
+	@echo "Quality targets:"
 	@echo "  fmt  Format files with go fmt."
 	@echo "  vet  Examine go sources with go vet."
-	@echo "Test related targets:"
-	@echo "  test                Run all tests."
+	@echo "Test targets:"
+	@echo "  test  Run go test."
 	@echo "Other targets:"
 	@echo "  help  Print help message."
 
@@ -28,6 +28,9 @@ fmt:
 vet:
 	go vet ./...
 
+test:
+	go test ./...
+	
 install:
 	cp $(PROJECT_NAME) /usr/bin
 

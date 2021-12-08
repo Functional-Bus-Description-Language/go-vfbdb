@@ -112,8 +112,8 @@ func Parse() map[string]map[string]string {
 	}
 
 	if len(args) == 1 {
-		fmt.Println("No target specified.\n")
-		printHelp()
+		fmt.Println("No target specified, run 'wbfbd --help' to check valid targets.")
+		os.Exit(1)
 	}
 
 	return args

@@ -42,14 +42,8 @@ type EntityFormatters struct {
 	AddressValues         string
 	MaskValues            string
 
-	StatusesAccess  string
-	StatusesRouting string
+	RegistersAccess RegisterMap
 
-	ConfigsAccess  string
-	ConfigsRouting string
-
-	FuncsAccess       string
-	FuncsRouting      string
 	FuncsStrobesClear string
 	FuncsStrobesSet   string
 
@@ -66,6 +60,7 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 		RegistersCount:        entity.Block.Sizes.Own,
 		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(entity.Block.Sizes.Own)))),
 		AddressValues:         fmt.Sprintf("0 => \"%032b\"", 0),
+		RegistersAccess:       make(RegisterMap),
 	}
 
 	addrBitsCount := int(math.Log2(float64(entity.Block.Sizes.BlockAligned)))

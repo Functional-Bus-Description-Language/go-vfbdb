@@ -38,12 +38,12 @@ try:
     log.info("Reading cfg")
     read_val = main.cfg.read()
     if read_val != val:
-        raise Exception("Read wrong value form cfg {read_val}")
+        raise Exception(f"Read wrong value form cfg {read_val}")
 
     log.info("Reading st")
     read_val = main.st.read()
     if read_val != val:
-        raise Exception("Read wrong value form st {read_val}")
+        raise Exception(f"Read wrong value form st {read_val}")
 
     cosim_interface.wait(5 * CLK_PERIOD)
     log.info("Ending cosimulation")

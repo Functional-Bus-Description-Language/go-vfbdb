@@ -18,7 +18,12 @@ func generateConfigArray(cfg *fbdl.Config, fmts *EntityFormatters) {
 }
 
 func generateConfigSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
-	s := fmt.Sprintf(";\n   %s_o : out std_logic_vector(%d downto 0)", cfg.Name, cfg.Width-1)
+	dflt := ""
+	if cfg.Default != "" {
+		dflt = fmt.Sprintf(" := %s", cfg.Default.Extend(cfg.Width))
+	}
+
+	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", cfg.Name, cfg.Width-1, dflt)
 	fmts.EntityFunctionalPorts += s
 
 	switch cfg.Access.(type) {
@@ -30,31 +35,16 @@ func generateConfigSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
 }
 
 func generateConfigSingleSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
-	fbdlAccess := cfg.Access.(fbdl.AccessSingleSingle)
-	addr := fbdlAccess.Addr
-	mask := fbdlAccess.Mask
+	access := cfg.Access.(fbdl.AccessSingleSingle)
+	mask := access.Mask
 
-	access := `
-         %[1]s : if internal_addr = %[2]d then
-            if internal_master_out.we = '0' then
-               internal_master_in.dat(%[3]d downto %[4]d) <= registers(internal_addr)(%[3]d downto %[4]d);
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-            if internal_master_out.we = '1' then
-               registers(internal_addr)(%[3]d downto %[4]d) <= internal_master_out.dat(%[3]d downto %[4]d);
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`
-	access = fmt.Sprintf(access, cfg.Name, addr, mask.Upper, mask.Lower)
-	fmts.ConfigsAccess += access
-
-	var routing string
-	routing = fmt.Sprintf(
-		"   %s_o <= registers(%d)(%d downto %d);\n", cfg.Name, addr, mask.Upper, mask.Lower,
+	code := fmt.Sprintf(
+		"      if internal_master_out.we = '1' then\n"+
+			"         %[1]s_o <= internal_master_out.dat(%[2]d downto %[3]d);\n"+
+			"      end if;\n"+
+			"      internal_master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
+		cfg.Name, mask.Upper, mask.Lower,
 	)
 
-	fmts.ConfigsRouting += routing
+	fmts.RegistersAccess.add([2]int64{access.Addr, access.Addr}, code)
 }

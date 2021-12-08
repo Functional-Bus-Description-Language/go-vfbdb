@@ -8,7 +8,6 @@ import (
 func generateFunc(fun *fbdl.Func, fmts *EntityFormatters) {
 	generateFuncType(fun, fmts)
 	generateFuncPort(fun, fmts)
-	generateFuncRouting(fun, fmts)
 	generateFuncAccess(fun, fmts)
 	generateFuncStrobe(fun, fmts)
 }
@@ -34,61 +33,36 @@ func generateFuncPort(fun *fbdl.Func, fmts *EntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 }
 
-func generateFuncRouting(fun *fbdl.Func, fmts *EntityFormatters) {
-	s := ""
-
-	for _, p := range fun.Params {
-		switch p.Access.(type) {
-		case fbdl.AccessSingleSingle:
-			a := p.Access.(fbdl.AccessSingleSingle)
-			s += fmt.Sprintf(
-				"   %s_o.%s <= registers(%d)(%d downto %d);\n",
-				fun.Name, p.Name, a.Addr, a.Mask.Upper, a.Mask.Lower,
-			)
-		default:
-			panic("not yet implemented")
-		}
-	}
-
-	fmts.FuncsRouting += s
-}
-
 func generateFuncAccess(fun *fbdl.Func, fmts *EntityFormatters) {
-	param_access := `
-         %s_%s : if internal_addr = %d then
-            if internal_master_out.we = '1' then
-               registers(internal_addr)(%d downto %d) <= internal_master_out.dat(%[4]d downto %[5]d);
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`
-
-	s := ""
 	for _, p := range fun.Params {
 		switch p.Access.(type) {
 		case fbdl.AccessSingleSingle:
-			a := p.Access.(fbdl.AccessSingleSingle)
-			s += fmt.Sprintf(param_access, fun.Name, p.Name, a.Addr, a.Mask.Upper, a.Mask.Lower)
+			access := p.Access.(fbdl.AccessSingleSingle)
+
+			addr := [2]int64{access.StartAddr(), access.StartAddr()}
+			code := fmt.Sprintf(
+				"      %s_o.%s <= internal_master_out.dat(%d downto %d);\n",
+				fun.Name, p.Name, access.Mask.Upper, access.Mask.Lower,
+			)
+
+			fmts.RegistersAccess.add(addr, code)
 		default:
 			panic("not yet implemented")
 		}
 	}
-
-	fmts.FuncsAccess += s
 }
 
 func generateFuncStrobe(fun *fbdl.Func, fmts *EntityFormatters) {
-	clear := fmt.Sprintf("\n      %s_o.stb <= '0';", fun.Name)
+	clear := fmt.Sprintf("\n%s_o.stb <= '0';", fun.Name)
 
 	fmts.FuncsStrobesClear += clear
 
 	stb_set := `
-         %s_stb : if internal_addr = %d then
-            if internal_master_out.we = '1' then
-               %[1]s_o.stb <= '1';
-            end if;
-         end if;
+   %s_stb : if internal_addr = %d then
+      if internal_master_out.we = '1' then
+         %[1]s_o.stb <= '1';
+      end if;
+   end if;
 `
 	set := fmt.Sprintf(stb_set, fun.Name, fun.EndAddr())
 

@@ -43,194 +43,80 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
 	addr := fbdlAccess.Addr
 	mask := fbdlAccess.Mask
 
-	access := `
-         %s : if internal_addr = %d then
-            internal_master_in.dat(%d downto %d) <= registers(internal_addr)(%[3]d downto %[4]d);
-
-            if internal_master_out.we = '0' then
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`
-	access = fmt.Sprintf(access, st.Name, addr, mask.Upper, mask.Lower)
-	fmts.StatusesAccess += access
-
-	var routing string
+	var code string
 	if st.Name == "x_uuid_x" || st.Name == "x_timestamp_x" {
-		routing = fmt.Sprintf(
-			"   registers(%d)(%d downto %d) <= %s;\n",
-			addr, mask.Upper, mask.Lower, string(st.Default),
+		code = fmt.Sprintf(
+			"      internal_master_in.dat(%d downto %d) <= %s; -- %s",
+			mask.Upper, mask.Lower, string(st.Default), st.Name,
 		)
 	} else {
-		routing = fmt.Sprintf(
-			"   registers(%d)(%d downto %d) <= %s_i;\n",
-			addr, mask.Upper, mask.Lower, st.Name,
+		code = fmt.Sprintf(
+			"      internal_master_in.dat(%d downto %d) <= %s_i;",
+			mask.Upper, mask.Lower, st.Name,
 		)
 	}
 
-	fmts.StatusesRouting += routing
+	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
 }
 
 func generateStatusArraySingle(st *fbdl.Status, fmts *EntityFormatters) {
-	fbdlAccess := st.Access.(fbdl.AccessArraySingle)
+	access := st.Access.(fbdl.AccessArraySingle)
 
 	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
 	fmts.EntityFunctionalPorts += port
 
-	access := fmt.Sprintf(`
-         %[1]s : if %[2]d <= internal_addr and internal_addr <= %[3]d then
-            internal_master_in.dat(%[4]d downto %[5]d) <= registers(internal_addr)(%[4]d downto %[5]d);
-            if internal_master_out.we = '0' then
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`,
-		st.Name,
-		fbdlAccess.StartAddr(),
-		fbdlAccess.StartAddr()+fbdlAccess.RegCount()-1,
-		fbdlAccess.Mask.Upper,
-		fbdlAccess.Mask.Lower,
+	code := fmt.Sprintf(
+		"      internal_master_in.dat(%d downto %d) <= %s_i(internal_addr - %d);",
+		access.Mask.Upper, access.Mask.Lower, st.Name, access.StartAddr(),
 	)
 
-	fmts.StatusesAccess += access
-
-	routing := fmt.Sprintf(`
-   %[1]s_registers : for reg in 0 to %[2]d loop
-      registers(%[3]d + reg)(%[4]d downto %[5]d) <= %[1]s_i(reg);
-   end loop;
-`,
-		st.Name,
-		fbdlAccess.RegCount()-1,
-		fbdlAccess.StartAddr(),
-		fbdlAccess.Mask.Upper,
-		fbdlAccess.Mask.Lower,
+	fmts.RegistersAccess.add(
+		[2]int64{access.StartAddr(), access.StartAddr() + access.RegCount() - 1},
+		code,
 	)
-
-	fmts.StatusesRouting += routing
 }
 
 func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
-	fbdlAccess := st.Access.(fbdl.AccessArrayMultiple)
+	access := st.Access.(fbdl.AccessArrayMultiple)
 
 	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
 	fmts.EntityFunctionalPorts += port
 
-	itemsPerAccess := fbdlAccess.ItemsPerAccess
+	itemsPerAccess := access.ItemsPerAccess
 
-	var access string
-	if fbdlAccess.ItemCount <= itemsPerAccess {
-		access = fmt.Sprintf(`
-         %[1]s : if internal_addr = %[2]d then
-            internal_master_in.dat(%[3]d downto %[4]d) <= registers(internal_addr)(%[3]d downto %[4]d);
-            if internal_master_out.we = '0' then
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`,
-			st.Name,
-			fbdlAccess.StartAddr(),
-			fbdlAccess.EndBit(),
-			fbdlAccess.StartBit,
+	var addr [2]int64
+	var code string
+
+	if access.ItemCount <= itemsPerAccess {
+		addr = [2]int64{access.StartAddr(), access.EndAddr()}
+		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+         internal_master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
+      end loop;`,
+			st.Count-1, access.ItemWidth, access.StartBit, st.Name,
 		)
-	} else if fbdlAccess.ItemCount%itemsPerAccess == 0 {
-		access = fmt.Sprintf(`
-         %[1]s : if %[2]d <= internal_addr and internal_addr <= %[3]d then
-            internal_master_in.dat(%[4]d downto %[5]d) <= registers(internal_addr)(%[4]d downto %[5]d);
-            if internal_master_out.we = '0' then
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`,
-			st.Name,
-			fbdlAccess.StartAddr(),
-			fbdlAccess.StartAddr()+fbdlAccess.RegCount()-1,
-			fbdlAccess.EndBit(),
-			fbdlAccess.StartBit,
+	} else if access.ItemsInLastReg() == 0 {
+		addr = [2]int64{access.StartAddr(), access.EndAddr()}
+		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+         internal_master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((internal_addr-%[5]d)*%[6]d+i);
+      end loop;`,
+			itemsPerAccess-1, access.ItemWidth, access.StartBit, st.Name, access.StartAddr(), access.ItemsPerAccess,
 		)
 	} else {
-		access = fmt.Sprintf(`
-         %[1]s : if %[2]d <= internal_addr and internal_addr <= %[3]d then
-            if internal_addr = %[3]d then
-               internal_master_in.dat(%[4]d downto %[5]d) <= registers(internal_addr)(%[4]d downto %[5]d);
-            else
-               internal_master_in.dat(%[6]d downto %[5]d) <= registers(internal_addr)(%[6]d downto %[5]d);
-            end if;
-            if internal_master_out.we = '0' then
-               internal_master_in.ack <= '1';
-               internal_master_in.err <= '0';
-            end if;
-         end if;
-`,
-			st.Name,
-			fbdlAccess.StartAddr(),
-			fbdlAccess.StartAddr()+fbdlAccess.RegCount()-1,
-			fbdlAccess.EndBit(),
-			fbdlAccess.StartBit,
-			fbdlAccess.ItemWidth*itemsPerAccess-1,
+		addr = [2]int64{access.StartAddr(), access.EndAddr() - 1}
+		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+         internal_master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((internal_addr-%[5]d)*%[6]d+i);
+      end loop;`,
+			itemsPerAccess-1, access.ItemWidth, access.StartBit, st.Name, access.StartAddr(), access.ItemsPerAccess,
+		)
+		fmts.RegistersAccess.add(addr, code)
+
+		addr = [2]int64{access.EndAddr(), access.EndAddr()}
+		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+         internal_master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
+      end loop;`,
+			access.ItemsInLastReg()-1, access.ItemWidth, access.StartBit, st.Name, (access.RegCount()-1)*access.ItemsPerAccess,
 		)
 	}
 
-	fmts.StatusesAccess += access
-
-	var routing string
-	if fbdlAccess.ItemCount <= itemsPerAccess {
-		routing = fmt.Sprintf(`
-   %[1]s_registers : for reg in 0 to 0 loop
-      %[1]s_items : for item in 0 to %[2]d loop
-         registers(%[3]d + reg)(%[4]d * (item + 1) - 1 + %[5]d downto %[4]d * item + %[5]d) <= %[1]s_i(item);
-      end loop;
-   end loop;
-`,
-			st.Name,
-			fbdlAccess.ItemCount-1,
-			fbdlAccess.StartAddr(),
-			fbdlAccess.ItemWidth,
-			fbdlAccess.StartBit,
-		)
-	} else if fbdlAccess.ItemCount%itemsPerAccess == 0 {
-		routing = fmt.Sprintf(`
-   %[1]s_registers : for reg in 0 to %[2]d loop
-      %[1]s_items : for item in 0 to  %[3]d loop
-         registers(%[4]d + reg)(%[5]d * (item + 1) - 1 + %[6]d downto %[5]d * item + %[6]d) <= %[1]s_i(%[7]d * reg + item);
-      end loop;
-   end loop;
-`,
-			st.Name,
-			fbdlAccess.RegCount()-1,
-			itemsPerAccess-1,
-			fbdlAccess.StartAddr(),
-			fbdlAccess.ItemWidth,
-			fbdlAccess.StartBit,
-			itemsPerAccess,
-		)
-	} else {
-		routing = fmt.Sprintf(`
-   %[1]s_registers : for reg in 0 to %[2]d loop
-      %[1]s_last_register : if reg = %[2]d then
-         %[1]s_tail_items : for item in 0 to %[3]d loop
-            registers(%[4]d + reg)(%[5]d * (item + 1) - 1 + %[6]d downto %[5]d * item + %[6]d) <= %[1]s_i(%[7]d * reg + item);
-         end loop;
-      else
-         %[1]s_head_items : for item in 0 to %[8]d loop
-            registers(%[4]d + reg)(%[5]d * (item + 1) - 1 + %[6]d downto %[5]d * item + %[6]d) <= %[1]s_i(%[7]d * reg + item);
-         end loop;
-      end if;
-   end loop;
-`,
-			st.Name,
-			fbdlAccess.RegCount()-1,
-			st.Count%itemsPerAccess-1,
-			fbdlAccess.StartAddr(),
-			fbdlAccess.ItemWidth,
-			fbdlAccess.StartBit,
-			itemsPerAccess,
-			itemsPerAccess-1,
-		)
-	}
-
-	fmts.StatusesRouting += routing
+	fmts.RegistersAccess.add(addr, code)
 }

@@ -72,54 +72,53 @@ port map (
 
 
 register_access : process (all) is
-   variable internal_addr : natural range 0 to {{.RegistersCount}} - 1;
+
+variable internal_addr : natural range 0 to {{.RegistersCount}} - 1;
+
 begin
 
-   -- Statuses Routing
-{{.StatusesRouting}}
+if rising_edge(clk_i) then
 
-   -- Funcs Routing
-{{.FuncsRouting}}
+-- Normal operation.
+internal_master_in.rty <= '0';
+internal_master_in.ack <= '0';
+internal_master_in.err <= '0';
 
-   -- Configs Routing
-{{.ConfigsRouting}}
+-- Funcs Strobes Clear{{.FuncsStrobesClear}}
 
-   if rising_edge(clk_i) then
-      -- Normal operation.
-      internal_master_in.rty <= '0';
-      internal_master_in.ack <= '0';
+transfer : if
+   internal_master_out.cyc = '1'
+   and internal_master_out.stb = '1'
+   and internal_master_in.err = '0'
+   and internal_master_in.rty = '0'
+   and internal_master_in.ack = '0'
+then
+   internal_addr := to_integer(unsigned(internal_master_out.adr({{.InternalAddrBitsCount}} - 1 downto 0)));
+
+   -- First assume there is some kind of error.
+   -- For example internal address is invalid or there is a try to write status.
+   internal_master_in.err <= '1';
+   -- '0' for security reasons, '-' can lead to the information leak.
+   internal_master_in.dat <= (others => '0');
+   internal_master_in.ack <= '0';
+
+   -- Registers Access{{range $addr, $code := .RegistersAccess}}
+   if {{index $addr 0}} <= internal_addr and internal_addr <= {{index $addr 1}} then
+{{$code}}
+
+      internal_master_in.ack <= '1';
       internal_master_in.err <= '0';
-
-      -- Funcs Strobes Clear{{.FuncsStrobesClear}}
-
-      transfer : if
-         internal_master_out.cyc = '1'
-         and internal_master_out.stb = '1'
-         and internal_master_in.err = '0'
-         and internal_master_in.rty = '0'
-         and internal_master_in.ack = '0'
-      then
-         internal_addr := to_integer(unsigned(internal_master_out.adr({{.InternalAddrBitsCount}} - 1 downto 0)));
-
-         -- First assume there is some kind of error.
-         -- For example internal address is invalid or there is a try to write status.
-         internal_master_in.err <= '1';
-         -- '0' for security reasons, '-' can lead to the information leak.
-         internal_master_in.dat <= (others => '0');
-         internal_master_in.ack <= '0';
-
-         -- Statuses Access{{.StatusesAccess}}
-
-         -- Funcs Access{{.FuncsAccess}}
-         -- Funcs Strobes Set{{.FuncsStrobesSet}}
-
-         -- Configs Access{{.ConfigsAccess}}
-      end if transfer;
-
-      if rst_i = '1' then
-         internal_master_in <= C_DUMMY_WB_MASTER_IN;
-      end if;
    end if;
+{{end}}
+
+   -- Funcs Strobes Set{{.FuncsStrobesSet}}
+
+end if transfer;
+
+if rst_i = '1' then
+   internal_master_in <= C_DUMMY_WB_MASTER_IN;
+end if;
+end if;
 end process;
 
 end architecture;
