@@ -43,8 +43,8 @@ architecture rtl of {{.EntityName}} is
 constant C_ADDRESSES : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.AddressValues}});
 constant C_MASKS     : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.MaskValues}});
 
-signal internal_master_out : t_wishbone_master_out;
-signal internal_master_in  : t_wishbone_master_in;
+signal master_out : t_wishbone_master_out;
+signal master_in  : t_wishbone_master_in;
 
 {{.SignalDeclarations}}
 begin
@@ -62,48 +62,48 @@ port map (
    rst_n_i     => not rst_i,
    slave_i     => slave_i,
    slave_o     => slave_o,
-   master_i(0) => internal_master_in,{{.CrossbarSubblockPortsIn}}
-   master_o(0) => internal_master_out{{.CrossbarSubblockPortsOut}}
+   master_i(0) => master_in,{{.CrossbarSubblockPortsIn}}
+   master_o(0) => master_out{{.CrossbarSubblockPortsOut}}
 );
 
 
 register_access : process (all) is
 
-variable internal_addr : natural range 0 to {{.RegistersCount}} - 1;
+variable addr : natural range 0 to {{.RegistersCount}} - 1;
 
 begin
 
 if rising_edge(clk_i) then
 
 -- Normal operation.
-internal_master_in.rty <= '0';
-internal_master_in.ack <= '0';
-internal_master_in.err <= '0';
+master_in.rty <= '0';
+master_in.ack <= '0';
+master_in.err <= '0';
 
 -- Funcs Strobes Clear{{.FuncsStrobesClear}}
 
 transfer : if
-   internal_master_out.cyc = '1'
-   and internal_master_out.stb = '1'
-   and internal_master_in.err = '0'
-   and internal_master_in.rty = '0'
-   and internal_master_in.ack = '0'
+   master_out.cyc = '1'
+   and master_out.stb = '1'
+   and master_in.err = '0'
+   and master_in.rty = '0'
+   and master_in.ack = '0'
 then
-   internal_addr := to_integer(unsigned(internal_master_out.adr({{.InternalAddrBitsCount}} - 1 downto 0)));
+   addr := to_integer(unsigned(master_out.adr({{.InternalAddrBitsCount}} - 1 downto 0)));
 
    -- First assume there is some kind of error.
    -- For example internal address is invalid or there is a try to write status.
-   internal_master_in.err <= '1';
+   master_in.err <= '1';
    -- '0' for security reasons, '-' can lead to the information leak.
-   internal_master_in.dat <= (others => '0');
-   internal_master_in.ack <= '0';
+   master_in.dat <= (others => '0');
+   master_in.ack <= '0';
 
    -- Registers Access{{range $addr, $code := .RegistersAccess}}
-   if {{index $addr 0}} <= internal_addr and internal_addr <= {{index $addr 1}} then
+   if {{index $addr 0}} <= addr and addr <= {{index $addr 1}} then
 {{$code}}
 
-      internal_master_in.ack <= '1';
-      internal_master_in.err <= '0';
+      master_in.ack <= '1';
+      master_in.err <= '0';
    end if;
 {{end}}
 
@@ -112,7 +112,7 @@ then
 end if transfer;
 
 if rst_i = '1' then
-   internal_master_in <= C_DUMMY_WB_MASTER_IN;
+   master_in <= C_DUMMY_WB_MASTER_IN;
 end if;
 end if;
 end process;

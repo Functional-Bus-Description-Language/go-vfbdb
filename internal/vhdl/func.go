@@ -41,7 +41,7 @@ func generateFuncAccess(fun *fbdl.Func, fmts *EntityFormatters) {
 
 			addr := [2]int64{access.StartAddr(), access.StartAddr()}
 			code := fmt.Sprintf(
-				"      %s_o.%s <= internal_master_out.dat(%d downto %d);\n",
+				"      %s_o.%s <= master_out.dat(%d downto %d);\n",
 				fun.Name, p.Name, access.Mask.Upper, access.Mask.Lower,
 			)
 
@@ -58,8 +58,8 @@ func generateFuncStrobe(fun *fbdl.Func, fmts *EntityFormatters) {
 	fmts.FuncsStrobesClear += clear
 
 	stb_set := `
-   %s_stb : if internal_addr = %d then
-      if internal_master_out.we = '1' then
+   %s_stb : if addr = %d then
+      if master_out.we = '1' then
          %[1]s_o.stb <= '1';
       end if;
    end if;

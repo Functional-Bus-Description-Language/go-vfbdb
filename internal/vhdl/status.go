@@ -46,12 +46,12 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
 	var code string
 	if st.Name == "x_uuid_x" || st.Name == "x_timestamp_x" {
 		code = fmt.Sprintf(
-			"      internal_master_in.dat(%d downto %d) <= %s; -- %s",
+			"      master_in.dat(%d downto %d) <= %s; -- %s",
 			mask.Upper, mask.Lower, string(st.Default), st.Name,
 		)
 	} else {
 		code = fmt.Sprintf(
-			"      internal_master_in.dat(%d downto %d) <= %s_i;",
+			"      master_in.dat(%d downto %d) <= %s_i;",
 			mask.Upper, mask.Lower, st.Name,
 		)
 	}
@@ -66,7 +66,7 @@ func generateStatusArraySingle(st *fbdl.Status, fmts *EntityFormatters) {
 	fmts.EntityFunctionalPorts += port
 
 	code := fmt.Sprintf(
-		"      internal_master_in.dat(%d downto %d) <= %s_i(internal_addr - %d);",
+		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
 		access.Mask.Upper, access.Mask.Lower, st.Name, access.StartAddr(),
 	)
 
@@ -90,21 +90,21 @@ func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
 	if access.ItemCount <= itemsPerAccess {
 		addr = [2]int64{access.StartAddr(), access.EndAddr()}
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
-         internal_master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
+         master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
       end loop;`,
 			st.Count-1, access.ItemWidth, access.StartBit, st.Name,
 		)
 	} else if access.ItemsInLastReg() == 0 {
 		addr = [2]int64{access.StartAddr(), access.EndAddr()}
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
-         internal_master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((internal_addr-%[5]d)*%[6]d+i);
+         master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
 			itemsPerAccess-1, access.ItemWidth, access.StartBit, st.Name, access.StartAddr(), access.ItemsPerAccess,
 		)
 	} else {
 		addr = [2]int64{access.StartAddr(), access.EndAddr() - 1}
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
-         internal_master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((internal_addr-%[5]d)*%[6]d+i);
+         master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
 			itemsPerAccess-1, access.ItemWidth, access.StartBit, st.Name, access.StartAddr(), access.ItemsPerAccess,
 		)
@@ -112,7 +112,7 @@ func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
 
 		addr = [2]int64{access.EndAddr(), access.EndAddr()}
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
-         internal_master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
+         master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
       end loop;`,
 			access.ItemsInLastReg()-1, access.ItemWidth, access.StartBit, st.Name, (access.RegCount()-1)*access.ItemsPerAccess,
 		)

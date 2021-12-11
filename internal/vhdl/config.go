@@ -39,10 +39,10 @@ func generateConfigSingleSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
 	mask := access.Mask
 
 	code := fmt.Sprintf(
-		"      if internal_master_out.we = '1' then\n"+
-			"         %[1]s_o <= internal_master_out.dat(%[2]d downto %[3]d);\n"+
+		"      if master_out.we = '1' then\n"+
+			"         %[1]s_o <= master_out.dat(%[2]d downto %[3]d);\n"+
 			"      end if;\n"+
-			"      internal_master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
+			"      master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
 		cfg.Name, mask.Upper, mask.Lower,
 	)
 
