@@ -65,7 +65,12 @@ func decreaseIndent(val int) {
 }
 
 func generateClass(blk *fbdl.Block) string {
-	code := fmt.Sprintf("class %s:\n", blk.Name)
+	className := "main"
+	if blk.Name != "main" {
+		className = blk.Name + "Class"
+	}
+
+	code := indent + fmt.Sprintf("class %s:\n", className)
 	increaseIndent(1)
 	code += indent + "def __init__(self, interface):\n"
 	increaseIndent(1)
@@ -79,10 +84,19 @@ func generateClass(blk *fbdl.Block) string {
 		code += generateConfig(cfg, blk)
 	}
 
+	for _, sb := range blk.Subblocks {
+		code += generateSubblock(sb, blk)
+	}
+
 	decreaseIndent(1)
 
 	for _, fun := range blk.Funcs {
 		code += generateFunc(fun, blk)
+	}
+
+	for _, sb := range blk.Subblocks {
+		code += generateClass(sb)
+		decreaseIndent(1)
 	}
 
 	return code

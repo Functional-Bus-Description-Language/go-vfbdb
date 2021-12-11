@@ -43,10 +43,6 @@ architecture rtl of {{.EntityName}} is
 constant C_ADDRESSES : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.AddressValues}});
 constant C_MASKS     : t_wishbone_address_array({{.SubblocksCount}} downto 0) := ({{.MaskValues}});
 
-constant C_REGISTER_UNINITIALIZED_VALUE : std_logic_vector({{.BusWidth}} - 1 downto 0) := (others => 'U');
-subtype t_register_vector is t_slv_vector({{.RegistersCount}} - 1 downto 0)({{.BusWidth}} - 1 downto 0);
-signal registers : t_register_vector := ({{.DefaultValues}}others => C_REGISTER_UNINITIALIZED_VALUE);
-
 signal internal_master_out : t_wishbone_master_out;
 signal internal_master_in  : t_wishbone_master_in;
 
@@ -66,8 +62,8 @@ port map (
    rst_n_i     => not rst_i,
    slave_i     => slave_i,
    slave_o     => slave_o,
-   master_i(0) => internal_master_in,
-   master_o(0) => internal_master_out{{.CrossbarSubblockPorts}}
+   master_i(0) => internal_master_in,{{.CrossbarSubblockPortsIn}}
+   master_o(0) => internal_master_out{{.CrossbarSubblockPortsOut}}
 );
 
 

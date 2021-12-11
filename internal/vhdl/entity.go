@@ -37,10 +37,13 @@ type EntityFormatters struct {
 
 	EntitySubblockPorts   string
 	EntityFunctionalPorts string
-	CrossbarSubblockPorts string
-	SignalDeclarations    string
-	AddressValues         string
-	MaskValues            string
+
+	CrossbarSubblockPortsIn  string
+	CrossbarSubblockPortsOut string
+
+	SignalDeclarations string
+	AddressValues      string
+	MaskValues         string
 
 	RegistersAccess RegisterMap
 
@@ -71,9 +74,8 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
 
-	currentSubblockAddr := entity.Block.Sizes.BlockAligned
 	for _, sb := range entity.Block.Subblocks {
-		currentSubblockAddr = generateSubblock(sb, addrBitsCount, currentSubblockAddr, fmts)
+		generateSubblock(sb, entity.Block.AddrSpace.Start(), addrBitsCount, &fmts)
 	}
 
 	for _, fun := range entity.Block.Funcs {
@@ -105,50 +107,49 @@ func generateEntity(entity Entity, wg *sync.WaitGroup) {
 
 func generateSubblock(
 	sb *fbdl.Block,
+	superBlockAddrStart int64,
 	superBlockAddrBitsCount int,
-	currentSubblockAddr int64,
-	fmts EntityFormatters,
-) int64 {
+	fmts *EntityFormatters,
+) {
 	initSubblocksCount := fmts.SubblocksCount
 
 	s := fmt.Sprintf(
-		";\n      %s_master_o : out t_wishbone_master_out_array(%d - 1 downto 0);\n"+
-			"      %[1]s_master_i : in  t_wishbone_master_in_array(%[2]d - 1 downto 0)",
-		sb.Name, sb.Count,
+		";\n   %s_master_o : out t_wishbone_master_out_array(%d downto 0);\n"+
+			"   %[1]s_master_i : in  t_wishbone_master_in_array(%[2]d downto 0)",
+		sb.Name, sb.Count-1,
 	)
 	fmts.EntitySubblockPorts += s
 
 	if sb.Count == 1 {
-		s := fmt.Sprintf(
-			",\n      master_i(%d + 1) => %s_master_i,\n"+
-				"      master_o(%[1]d + 1) => %[2]s_master_o",
-			initSubblocksCount, sb.Name,
-		)
-		fmts.CrossbarSubblockPorts += s
+		s := fmt.Sprintf("\n   master_i(%d) => %s_master_i(0),", initSubblocksCount+1, sb.Name)
+		fmts.CrossbarSubblockPortsIn += s
+
+		s = fmt.Sprintf(",\n   master_o(%d) => %s_master_o(0)", initSubblocksCount+1, sb.Name)
+		fmts.CrossbarSubblockPortsOut += s
 	} else {
 		lower_bound := initSubblocksCount + 1
 		upper_bound := lower_bound + sb.Count - 1
 
-		s := fmt.Sprintf(
-			",\n      master_i(%d downto %d) => %s_master_i,\n"+
-				"      master_o(%[1]d downto %[2]d) => %[3]s_master_o",
-			lower_bound, upper_bound, sb.Name,
-		)
-		fmts.CrossbarSubblockPorts += s
+		s := fmt.Sprintf("\n   master_i(%d downto %d) => %s_master_i,", lower_bound, upper_bound, sb.Name)
+		fmts.CrossbarSubblockPortsIn += s
+
+		s = fmt.Sprintf(",\n   master_o(%d downto %d) => %s_master_o", lower_bound, upper_bound, sb.Name)
+		fmts.CrossbarSubblockPortsOut += s
 	}
 
+	fmt.Printf("%s: %s\n", fmts.EntityName, sb.Name)
+
+	subblockAddr := sb.AddrSpace.Start() - superBlockAddrStart
 	for i := int64(0); i < sb.Count; i++ {
 		fmts.SubblocksCount += 1
 
-		currentSubblockAddr -= sb.Sizes.BlockAligned
-
-		s := fmt.Sprintf(", %d => \"%032b\"", fmts.SubblocksCount, currentSubblockAddr)
+		s := fmt.Sprintf(", %d => \"%032b\"", fmts.SubblocksCount, subblockAddr)
 		fmts.AddressValues += s
 
-		mask := ((1 << superBlockAddrBitsCount) - 1) ^ ((1 << int(math.Ceil(math.Log2(float64(sb.Sizes.Own))))) - 1)
+		mask := ((1 << superBlockAddrBitsCount) - 1) ^ ((1 << int(math.Log2(float64(sb.Sizes.BlockAligned)))) - 1)
 		s = fmt.Sprintf(", %d => \"%032b\"", fmts.SubblocksCount, mask)
 		fmts.MaskValues += s
-	}
 
-	return currentSubblockAddr
+		subblockAddr += sb.Sizes.BlockAligned
+	}
 }
