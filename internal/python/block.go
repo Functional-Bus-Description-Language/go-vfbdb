@@ -5,6 +5,45 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
+func generateBlock(blk *fbdl.Block) string {
+	className := "main"
+	if blk.Name != "main" {
+		className = blk.Name + "Class"
+	}
+
+	code := indent + fmt.Sprintf("class %s:\n", className)
+	increaseIndent(1)
+	code += indent + "def __init__(self, interface):\n"
+	increaseIndent(1)
+	code += indent + "self.interface = interface\n"
+
+	for _, st := range blk.Statuses {
+		code += generateStatus(st, blk)
+	}
+
+	for _, cfg := range blk.Configs {
+		code += generateConfig(cfg, blk)
+	}
+
+	for _, sb := range blk.Subblocks {
+		code += generateSubblock(sb, blk)
+	}
+
+	decreaseIndent(1)
+
+	for _, fun := range blk.Funcs {
+		code += generateFunc(fun, blk)
+	}
+
+	for _, sb := range blk.Subblocks {
+		code += generateBlock(sb)
+	}
+
+	decreaseIndent(1)
+
+	return code
+}
+
 func generateSubblock(sb *fbdl.Block, blk *fbdl.Block) string {
 	if sb.IsArray {
 		return generateSublockArray(sb, blk)
