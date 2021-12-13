@@ -5,7 +5,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateConfig(cfg *fbdl.Config, fmts *EntityFormatters) {
+func generateConfig(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	if cfg.IsArray {
 		generateConfigArray(cfg, fmts)
 	} else {
@@ -13,11 +13,11 @@ func generateConfig(cfg *fbdl.Config, fmts *EntityFormatters) {
 	}
 }
 
-func generateConfigArray(cfg *fbdl.Config, fmts *EntityFormatters) {
+func generateConfigArray(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func generateConfigSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
+func generateConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	dflt := ""
 	if cfg.Default != "" {
 		dflt = fmt.Sprintf(" := %s", cfg.Default.Extend(cfg.Width))
@@ -34,7 +34,7 @@ func generateConfigSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
 	}
 }
 
-func generateConfigSingleSingle(cfg *fbdl.Config, fmts *EntityFormatters) {
+func generateConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	access := cfg.Access.(fbdl.AccessSingleSingle)
 	mask := access.Mask
 

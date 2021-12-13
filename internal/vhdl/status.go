@@ -5,7 +5,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateStatus(st *fbdl.Status, fmts *EntityFormatters) {
+func generateStatus(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	if st.IsArray {
 		generateStatusArray(st, fmts)
 	} else {
@@ -13,7 +13,7 @@ func generateStatus(st *fbdl.Status, fmts *EntityFormatters) {
 	}
 }
 
-func generateStatusArray(st *fbdl.Status, fmts *EntityFormatters) {
+func generateStatusArray(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case fbdl.AccessArraySingle:
 		generateStatusArraySingle(st, fmts)
@@ -24,7 +24,7 @@ func generateStatusArray(st *fbdl.Status, fmts *EntityFormatters) {
 	}
 }
 
-func generateStatusSingle(st *fbdl.Status, fmts *EntityFormatters) {
+func generateStatusSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	if st.Name != "x_uuid_x" && st.Name != "x_timestamp_x" {
 		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d downto 0)", st.Name, st.Width-1)
 		fmts.EntityFunctionalPorts += s
@@ -38,7 +38,7 @@ func generateStatusSingle(st *fbdl.Status, fmts *EntityFormatters) {
 	}
 }
 
-func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
+func generateStatusSingleSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	fbdlAccess := st.Access.(fbdl.AccessSingleSingle)
 	addr := fbdlAccess.Addr
 	mask := fbdlAccess.Mask
@@ -59,7 +59,7 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *EntityFormatters) {
 	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
 }
 
-func generateStatusArraySingle(st *fbdl.Status, fmts *EntityFormatters) {
+func generateStatusArraySingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	access := st.Access.(fbdl.AccessArraySingle)
 
 	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
@@ -76,7 +76,7 @@ func generateStatusArraySingle(st *fbdl.Status, fmts *EntityFormatters) {
 	)
 }
 
-func generateStatusArrayMultiple(st *fbdl.Status, fmts *EntityFormatters) {
+func generateStatusArrayMultiple(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	access := st.Access.(fbdl.AccessArrayMultiple)
 
 	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)

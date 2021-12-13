@@ -11,18 +11,18 @@ import (
 	"text/template"
 )
 
-type Entity struct {
+type BlockEntity struct {
 	Name  string
 	Path  []string
 	Block *fbdl.Block
 }
 
-//go:embed templates/block.vhd
-var entityTmplStr string
+//go:embed templates/blockEntity.vhd
+var blockEntityTmplStr string
 
-var entityTmpl = template.Must(template.New("VHDL entity").Parse(entityTmplStr))
+var blockEntityTmpl = template.Must(template.New("VHDL entity").Parse(blockEntityTmplStr))
 
-type EntityFormatters struct {
+type BlockEntityFormatters struct {
 	BusWidth   int64
 	EntityName string
 
@@ -53,51 +53,51 @@ type EntityFormatters struct {
 	DefaultValues string
 }
 
-func generateEntity(entity Entity, wg *sync.WaitGroup) {
+func generateBlock(be BlockEntity, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	fmts := EntityFormatters{
+	fmts := BlockEntityFormatters{
 		BusWidth:              busWidth,
-		EntityName:            entity.Name,
-		MastersCount:          entity.Block.Masters,
-		RegistersCount:        entity.Block.Sizes.Own,
-		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(entity.Block.Sizes.Own)))),
+		EntityName:            be.Name,
+		MastersCount:          be.Block.Masters,
+		RegistersCount:        be.Block.Sizes.Own,
+		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(be.Block.Sizes.Own)))),
 		AddressValues:         fmt.Sprintf("0 => \"%032b\"", 0),
 		RegistersAccess:       make(RegisterMap),
 	}
 
-	addrBitsCount := int(math.Log2(float64(entity.Block.Sizes.BlockAligned)))
+	addrBitsCount := int(math.Log2(float64(be.Block.Sizes.BlockAligned)))
 
 	mask := 0
-	if len(entity.Block.Subblocks) > 0 {
+	if len(be.Block.Subblocks) > 0 {
 		mask = ((1 << addrBitsCount) - 1) ^ ((1 << fmts.InternalAddrBitsCount) - 1)
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
 
-	for _, sb := range entity.Block.Subblocks {
-		generateSubblock(sb, entity.Block.AddrSpace.Start(), addrBitsCount, &fmts)
+	for _, sb := range be.Block.Subblocks {
+		generateSubblock(sb, be.Block.AddrSpace.Start(), addrBitsCount, &fmts)
 	}
 
-	for _, fun := range entity.Block.Funcs {
+	for _, fun := range be.Block.Funcs {
 		generateFunc(fun, &fmts)
 	}
 
-	for _, st := range entity.Block.Statuses {
+	for _, st := range be.Block.Statuses {
 		generateStatus(st, &fmts)
 	}
 
-	for _, cfg := range entity.Block.Configs {
+	for _, cfg := range be.Block.Configs {
 		generateConfig(cfg, &fmts)
 	}
 
-	filePath := outputPath + entity.Name + ".vhd"
+	filePath := outputPath + be.Name + ".vhd"
 	f, err := os.Create(filePath)
 	if err != nil {
 		log.Fatalf("generate VHDL: %v", err)
 	}
 	defer f.Close()
 
-	err = entityTmpl.Execute(f, fmts)
+	err = blockEntityTmpl.Execute(f, fmts)
 	if err != nil {
 		log.Fatalf("generate VHDL: %v", err)
 	}
@@ -109,7 +109,7 @@ func generateSubblock(
 	sb *fbdl.Block,
 	superBlockAddrStart int64,
 	superBlockAddrBitsCount int,
-	fmts *EntityFormatters,
+	fmts *BlockEntityFormatters,
 ) {
 	initSubblocksCount := fmts.SubblocksCount
 
