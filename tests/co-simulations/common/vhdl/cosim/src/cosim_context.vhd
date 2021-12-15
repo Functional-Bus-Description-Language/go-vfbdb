@@ -6,7 +6,6 @@ context cosim_context is
    library lwbfbd;
       use lwbfbd.wbfbd;
       use lwbfbd.wbfbd.all;
-      use lwbfbd.main_pkg.all;
 
    library general_cores;
       use general_cores.wishbone_pkg.all;

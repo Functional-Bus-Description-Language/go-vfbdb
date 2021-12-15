@@ -7,8 +7,9 @@ library ieee;
 
 package {{.EntityName}}_pkg is
 
---{Constants}
-
+-- Constants
+{{.Constants}}
+-- Func types
 {{.FuncTypes}}
 end package;
 

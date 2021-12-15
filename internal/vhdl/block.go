@@ -32,7 +32,7 @@ type BlockEntityFormatters struct {
 	SubblocksCount        int64
 
 	// Things going to package.
-	// Constants string // TODO: Decide how to implement this.
+	Constants string
 	FuncTypes string
 
 	EntitySubblockPorts   string
@@ -73,6 +73,8 @@ func generateBlock(be BlockEntity, wg *sync.WaitGroup) {
 		mask = ((1 << addrBitsCount) - 1) ^ ((1 << fmts.InternalAddrBitsCount) - 1)
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
+
+	generateConsts(be.Block, &fmts)
 
 	for _, sb := range be.Block.Subblocks {
 		generateSubblock(sb, be.Block.AddrSpace.Start(), addrBitsCount, &fmts)
@@ -127,13 +129,13 @@ func generateSubblock(
 		s = fmt.Sprintf(",\n   master_o(%d) => %s_master_o(0)", initSubblocksCount+1, sb.Name)
 		fmts.CrossbarSubblockPortsOut += s
 	} else {
-		lower_bound := initSubblocksCount + 1
-		upper_bound := lower_bound + sb.Count - 1
+		lowerBound := initSubblocksCount + 1
+		upperBound := lowerBound + sb.Count - 1
 
-		s := fmt.Sprintf("\n   master_i(%d downto %d) => %s_master_i,", lower_bound, upper_bound, sb.Name)
+		s := fmt.Sprintf("\n   master_i(%d downto %d) => %s_master_i,", lowerBound, upperBound, sb.Name)
 		fmts.CrossbarSubblockPortsIn += s
 
-		s = fmt.Sprintf(",\n   master_o(%d downto %d) => %s_master_o", lower_bound, upper_bound, sb.Name)
+		s = fmt.Sprintf(",\n   master_o(%d downto %d) => %s_master_o", lowerBound, upperBound, sb.Name)
 		fmts.CrossbarSubblockPortsOut += s
 	}
 
@@ -152,4 +154,17 @@ func generateSubblock(
 
 		subblockAddr += sb.Sizes.BlockAligned
 	}
+}
+
+func generateConsts(blk *fbdl.Block, fmts *BlockEntityFormatters) {
+	s := ""
+
+	for name, i := range blk.IntConsts {
+		s += fmt.Sprintf("constant %s : integer := %d;\n", name, i)
+	}
+	for name, str := range blk.StrConsts {
+		s += fmt.Sprintf("constant %s : string := %q;\n", name, str)
+	}
+
+	fmts.Constants += s
 }
