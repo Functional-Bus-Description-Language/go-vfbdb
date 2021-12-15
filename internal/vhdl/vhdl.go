@@ -1,18 +1,16 @@
 package vhdl
 
 import (
-	_ "embed"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"log"
 	"os"
 	"sync"
-	"text/template"
 )
 
 var busWidth int64
 var outputPath string
 
-func Generate(bus *fbdl.Block, cmdLineArgs map[string]string) {
+func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
 	busWidth = bus.Width
 	outputPath = cmdLineArgs["--path"] + "/"
 
@@ -28,7 +26,7 @@ func Generate(bus *fbdl.Block, cmdLineArgs map[string]string) {
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	generateWbfbdPackage()
+	generateWbfbdPackage(pkgsConsts)
 
 	for _, be := range blockEntities {
 		wg.Add(1)
@@ -58,25 +56,4 @@ func collectBlockEntities(blk *fbdl.Block, entities []BlockEntity, path []string
 	}
 
 	return entities
-}
-
-//go:embed templates/wbfbd.vhd
-var wbfbdPkgStr string
-var wbfbdPkgTmpl = template.Must(template.New("VHDL entity").Parse(wbfbdPkgStr))
-
-func generateWbfbdPackage() {
-	filePath := outputPath + "wbfbd.vhd"
-
-	f, err := os.Create(filePath)
-	if err != nil {
-		log.Fatalf("generate VHDL: %v", err)
-	}
-	defer f.Close()
-
-	err = wbfbdPkgTmpl.Execute(f, nil)
-	if err != nil {
-		log.Fatalf("generate VHDL: %v", err)
-	}
-
-	addGeneratedFile(filePath)
 }

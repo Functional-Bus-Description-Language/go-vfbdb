@@ -3,9 +3,10 @@ context cosim_context is
       use ieee.std_logic_1164.all;
       use ieee.numeric_std.all;
 
-   library wbfbd;
-      use wbfbd.wbfbd.all;
-      use wbfbd.main_pkg.all;
+   library lwbfbd;
+      use lwbfbd.wbfbd;
+      use lwbfbd.wbfbd.all;
+      use lwbfbd.main_pkg.all;
 
    library general_cores;
       use general_cores.wishbone_pkg.all;

@@ -42,14 +42,14 @@ func main() {
 		printDebug = true
 	}
 
-	bus := fbdl.Compile(cmdLineArgs["global"]["main"])
+	bus, pkgsConsts := fbdl.Compile(cmdLineArgs["global"]["main"])
 
 	if _, ok := cmdLineArgs["vhdl"]; ok {
-		vhdl.Generate(bus, cmdLineArgs["vhdl"])
+		vhdl.Generate(bus, pkgsConsts, cmdLineArgs["vhdl"])
 	}
 
 	if _, ok := cmdLineArgs["python"]; ok {
-		python.Generate(bus, cmdLineArgs["python"])
+		python.Generate(bus, pkgsConsts, cmdLineArgs["python"])
 	}
 
 	if _, ok := cmdLineArgs["global"]["--fusesoc"]; ok {
@@ -66,7 +66,7 @@ func generateFuseSocCoreFile(fusesocVLNV string) {
 
 	s := "CAPI=2:\n\n"
 	s += fmt.Sprintf("name: %s\n\n", fusesocVLNV)
-	s += "filesets:\n  vhdl:\n    file_type: vhdlSource-2008\n    logical_name: wbfbd\n    files:\n"
+	s += "filesets:\n  vhdl:\n    file_type: vhdlSource-2008\n    logical_name: lwbfbd\n    files:\n"
 
 	for _, f := range vhdl.GeneratedFiles {
 		s += fmt.Sprintf("      - %s\n", f)

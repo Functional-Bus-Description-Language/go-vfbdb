@@ -2,9 +2,6 @@ library work;
    context work.cosim_context;
    use work.cosim.all;
 
-library lwbfbd;
-   use lwbfbd.main_pkg.all;
-
 
 entity tb_cosim is
    generic(
@@ -18,8 +15,7 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal add : t_add;
-   signal result : std_logic_vector(16 downto 0) := (others => '0');
+   signal st : std_logic_vector(wbfbd.main_pkg.C - 1 downto 0) := std_logic_vector(to_unsigned(wbfbd.main_pkg.C, wbfbd.main_pkg.C));
 
    -- Wishbone interfaces.
    signal uvvm_wb_if : t_wishbone_if (
@@ -55,18 +51,7 @@ begin
       rst_i => '0',
       slave_i(0) => wb_ms,
       slave_o(0) => wb_sm,
-      add_o    => add,
-      result_i => result
+      st_i => st
    );
-
-
-   adder : process (clk) is
-   begin
-      if rising_edge(clk) then
-         if add.stb = '1' then
-            result <= std_logic_vector(resize(unsigned(add.a), result'length) + resize(unsigned(add.b), result'length));
-         end if;
-      end if;
-   end process;
 
 end architecture;

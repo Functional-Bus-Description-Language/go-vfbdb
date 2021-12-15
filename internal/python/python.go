@@ -21,7 +21,7 @@ type pythonFormatters struct {
 	Code     string
 }
 
-func Generate(bus *fbdl.Block, cmdLineArgs map[string]string) {
+func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
 	busWidth = bus.Width
 	outputPath = cmdLineArgs["--path"] + "/"
 
@@ -31,6 +31,8 @@ func Generate(bus *fbdl.Block, cmdLineArgs map[string]string) {
 	}
 
 	code := generateBlock(bus)
+
+	code += generatePkgConsts(pkgsConsts)
 
 	f, err := os.Create(outputPath + "wbfbd.py")
 	if err != nil {
