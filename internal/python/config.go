@@ -30,6 +30,6 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 	return code
 }
 
-func generateConfigArray(st *fbdl.Config, blk *fbdl.Block) string {
+func generateConfigArray(cfg *fbdl.Config, blk *fbdl.Block) string {
 	panic("not yet implemented")
 }

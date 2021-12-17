@@ -28,6 +28,10 @@ func generateBlock(blk *fbdl.Block) string {
 		code += generateConfig(cfg, blk)
 	}
 
+	for _, mask := range blk.Masks {
+		code += generateMask(mask, blk)
+	}
+
 	for _, sb := range blk.Subblocks {
 		code += generateSubblock(sb, blk)
 	}

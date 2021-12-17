@@ -92,6 +92,10 @@ func generateBlock(be BlockEntity, wg *sync.WaitGroup) {
 		generateConfig(cfg, &fmts)
 	}
 
+	for _, mask := range be.Block.Masks {
+		generateMask(mask, &fmts)
+	}
+
 	filePath := outputPath + be.Name + ".vhd"
 	f, err := os.Create(filePath)
 	if err != nil {

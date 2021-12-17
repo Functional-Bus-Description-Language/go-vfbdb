@@ -1,0 +1,4 @@
+main bus
+	const WIDTH = 7
+	mask mask; width = WIDTH
+	st status; width = WIDTH

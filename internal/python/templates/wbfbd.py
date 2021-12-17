@@ -6,6 +6,50 @@ import math
 
 BUS_WIDTH = {{.BusWidth}}
 
+class ConfigSingleSingle:
+    def __init__(self, interface, addr, mask):
+        self.interface = interface
+        self.addr = addr
+        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.shift = mask[1]
+
+    def read(self):
+        return (self.interface.read(self.addr) & self.mask) >> self.shift
+
+    def write(self, val):
+        self.interface.write(self.addr, val << self.shift)
+
+class MaskSingleSingle:
+    def __init__(self, interface, addr, mask):
+        self.interface = interface
+        self.addr = addr
+        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.shift = mask[1]
+        self.width = mask[0] - mask[1] + 1
+
+    def read(self):
+        return (self.interface.read(self.addr) & self.mask) >> self.shift
+
+    def set(self, bits=None):
+        if bits == None:
+            bits = range(self.width)
+        elif type(bits) == int:
+            bits = [bits]
+
+        mask = 0
+        for b in bits:
+            assert 0 <= b < self.width, "mask overrange"
+            mask |= 1 << b
+
+        self.interface.write(self.addr, mask << self.shift)
+
+    def update(self, bits, mode="set"):
+        if mode not in ["set", "clear"]:
+            raise Exception("invalid mode '" + mode + "'")
+
+        # An interface has to implement RMW operation.
+        raise Exception("not yet implemented")
+
 class StatusSingleSingle:
     def __init__(self, interface, addr, mask):
         self.interface = interface
@@ -73,18 +117,5 @@ class StatusArrayMultiple:
             values.append((reg_values[i // self.items_per_access] >> shift) & mask)
 
         return values
-
-class ConfigSingleSingle:
-    def __init__(self, interface, addr, mask):
-        self.interface = interface
-        self.addr = addr
-        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
-        self.shift = mask[1]
-
-    def read(self):
-        return (self.interface.read(self.addr) & self.mask) >> self.shift
-
-    def write(self, val):
-        self.interface.write(self.addr, val << self.shift)
 
 {{.Code}}
