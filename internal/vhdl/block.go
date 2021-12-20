@@ -12,9 +12,26 @@ import (
 )
 
 type BlockEntity struct {
-	Name  string
-	Path  []string
-	Block *fbdl.Block
+	Name      string
+	NameLevel int
+	Path      []string
+	Block     *fbdl.Block
+}
+
+// Rename renames BlockEntity based on the NameLevel and Path.
+// NameLevel indicates how many Path elements should be included in the Name.
+// NameLevel field is incremented internally. Path elements are taken from the end.
+func (be *BlockEntity) Rename() {
+	if be.NameLevel < len(be.Path) {
+		be.NameLevel += 1
+	}
+
+	name := be.Path[len(be.Path)-1]
+	for i := 1; i < be.NameLevel; i++ {
+		name = be.Path[len(be.Path)-i-1] + "_" + name
+	}
+
+	be.Name = name
 }
 
 //go:embed templates/blockEntity.vhd
@@ -142,8 +159,6 @@ func generateSubblock(
 		s = fmt.Sprintf(",\n   master_o(%d downto %d) => %s_master_o", lowerBound, upperBound, sb.Name)
 		fmts.CrossbarSubblockPortsOut += s
 	}
-
-	fmt.Printf("%s: %s\n", fmts.EntityName, sb.Name)
 
 	subblockAddr := sb.AddrSpace.Start() - superBlockAddrStart
 	for i := int64(0); i < sb.Count; i++ {
