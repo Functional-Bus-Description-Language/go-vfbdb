@@ -4,7 +4,7 @@ CONTEXT=$1
 ENTITY=$2
 HDL=$3
 DIR="/tmp/go-wbfbd/$CONTEXT/$ENTITY/python"
-PYTHON_FILE="../../../tests/co-simulations/$CONTEXT/$ENTITY/python/tb_cosim.py"
+PYTHON_FILE="../../../tests/co-simulations/$CONTEXT/$ENTITY/python/tb.py"
 
 export PYTHONPATH="$PYTHONPATH:$PWD/../../../tests/co-simulations/common/python/"
 export PYTHONPATH="$PYTHONPATH:$PWD/../../wbfbd/$CONTEXT/$ENTITY/python/$HDL"
