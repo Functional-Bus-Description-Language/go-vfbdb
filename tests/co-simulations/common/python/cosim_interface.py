@@ -35,6 +35,7 @@ class CosimInterface:
         # Attributes related with statistics collection.
         self.write_count = 0
         self.read_count = 0
+        self.rmw_count = 0
 
     def _make_fifos(self):
         """Create named pipes needed for inter-process communication."""
@@ -106,6 +107,27 @@ class CosimInterface:
 
         return val
 
+    def rmw(self, addr, val, mask):
+        """Perform read-modify-write operation.
+        New value is determined by following formula: X := (X & ~mask) | (val & mask).
+
+        Parameters:
+        addr
+            Register address.
+        val
+            Value.
+        mask
+            Mask.
+        """
+        log.info(
+            "Performing RMW address 0x%.8x, value %d (0x%.8x) (%s), mask %d (%s)"
+            % (addr, val, val, bin(val), mask, bin(mask))
+        )
+        X = self.read(addr)
+        self.write(addr, (X & abs(mask - 0xFFFFFFFF)) | (val & mask))
+
+        self.rmw_count += 1
+
     def wait(self, time_ns):
         """Wait in the simulator for a given amount of time.
         Parameters
@@ -151,5 +173,6 @@ class CosimInterface:
         log.info(
             f"Transactions statistics:\n"
             + f"  Write Count: {self.write_count}\n"
-            + f"  Read Count:  {self.read_count}"
+            + f"  Read Count:  {self.read_count}\n"
+            + f"  RMW Count:   {self.rmw_count}"
         )

@@ -46,9 +46,20 @@ class MaskSingleSingle:
     def update(self, bits, mode="set"):
         if mode not in ["set", "clear"]:
             raise Exception("invalid mode '" + mode + "'")
+        if bits == None:
+            raise Exception("bits to update cannot have None value")
+        if type(bits).__name__ in ["list", "tuple", "range", "set"] and len(bits) == 0:
+            raise Exception("empty " + type(bits) + " of bits to update")
 
-        # An interface has to implement RMW operation.
-        raise Exception("not yet implemented")
+        mask = 0
+        reg_mask = 0
+        for b in bits:
+            assert 0 <= b < self.width, "mask overrange"
+            if mode == "set":
+                mask |= 1 << b
+            reg_mask |= 1 << b
+
+        self.interface.rmw(self.addr, mask << self.shift, reg_mask << self.shift)
 
 class StatusSingleSingle:
     def __init__(self, interface, addr, mask):

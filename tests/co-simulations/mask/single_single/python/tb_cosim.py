@@ -65,9 +65,25 @@ try:
     main.mask.set([0,3])
 
     read = main.mask.read()
-    assert read == 9, f"read {read}, expecting 4"
+    assert read == 9, f"read {read}, expecting 9"
     read = main.st.read()
-    assert read == 9, f"read {read}, expecting 4"
+    assert read == 9, f"read {read}, expecting 9"
+
+    log.info("Testing mask update")
+
+    main.mask.set([])
+
+    main.mask.update([0, 2])
+    read = main.mask.read()
+    assert read == 5, f"read {read}, expecting 5"
+    read = main.st.read()
+    assert read == 5, f"read {read}, expecting 5"
+
+    main.mask.update([2], mode="clear")
+    read = main.mask.read()
+    assert read == 1, f"read {read}, expecting 1"
+    read = main.st.read()
+    assert read == 1, f"read {read}, expecting 1"
 
     cosim_interface.wait(5 * CLK_PERIOD)
     log.info("Ending cosimulation")
