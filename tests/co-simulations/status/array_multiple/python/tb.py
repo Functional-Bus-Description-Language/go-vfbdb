@@ -1,34 +1,20 @@
 import sys
 
-import logging as log
-log.basicConfig(
-    level=log.DEBUG,
-    format="%(module)s:%(levelname)s:%(message)s",
-    datefmt="%H:%M:%S",
-)
-import random
-
 from cosim_interface import CosimInterface
 import wbfbd
 
 WRITE_FIFO_PATH = sys.argv[1]
-READ_FIFO_PATH  = sys.argv[2]
-
-CLOCK_PERIOD = 10
-
-
-def delay_function():
-    return CLOCK_PERIOD * random.randrange(5, 10)
+READ_FIFO_PATH = sys.argv[2]
 
 
 try:
-    log.info("Starting cosimulation")
+    print("\nstarting cosimulation")
 
-    cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH, delay_function, True)
+    cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
     main = wbfbd.main(cosim_interface)
 
-    log.info("Testing count % iterm per access = 0 scenerio.")
+    print("Testing count % iterm per access = 0 scenerio.")
 
     values = main.status_array0.read()
     assert len(values) == 8
@@ -43,7 +29,7 @@ try:
     value = main.status_array0.read(5)
     assert value == 5
 
-    log.info("Testing count < items per access scenario.")
+    print("Testing count < items per access scenario.")
 
     values = main.status_array1.read()
     assert len(values) == 4
@@ -58,7 +44,9 @@ try:
     value = main.status_array1.read(2)
     assert value == 2
 
-    log.info("Testing scenerio when the number of items in the last register is different.")
+    print(
+        "Testing scenerio when the number of items in the last register is different."
+    )
 
     values = main.status_array2.read()
     assert len(values) == 6
@@ -73,9 +61,7 @@ try:
     value = main.status_array2.read(0)
     assert value == 0
 
-    cosim_interface.wait(5 * CLOCK_PERIOD)
-
-    log.info("Ending cosimulation")
+    print("\nending cosimulation")
     cosim_interface.end(0)
 
 except Exception as E:

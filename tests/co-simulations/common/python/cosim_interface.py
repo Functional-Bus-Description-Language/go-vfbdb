@@ -1,5 +1,6 @@
 import os
 
+
 class CosimInterface:
     def __init__(
         self, write_fifo_path, read_fifo_path, delay_function=None, delay=False

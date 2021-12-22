@@ -1,24 +1,20 @@
 import sys
 
-import random
-
 from cosim_interface import CosimInterface
 import wbfbd
 
 
 WRITE_FIFO_PATH = sys.argv[1]
-READ_FIFO_PATH  = sys.argv[2]
-
-CLK_PERIOD = 10
+READ_FIFO_PATH = sys.argv[2]
 
 cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nStarting cosimulation")
+    print("\nstarting cosimulation")
 
     main = wbfbd.main(cosim_interface)
 
-    max_val = 2**wbfbd.main.WIDTH - 1
+    max_val = 2 ** wbfbd.main.WIDTH - 1
 
     print("\nTesting mask setting")
 
@@ -43,16 +39,16 @@ try:
     main.mask.set(4)
 
     read = main.mask.read()
-    assert read == 1<<4, f"read {read}, expecting 4"
+    assert read == 1 << 4, f"read {read}, expecting 4"
     read = main.st.read()
-    assert read == 1<<4, f"read {read}, expecting 4"
+    assert read == 1 << 4, f"read {read}, expecting 4"
 
     # Clear before next test.
     main.mask.set([])
 
     print("\nTesting mask setting multiple bits")
 
-    main.mask.set([0,3])
+    main.mask.set([0, 3])
 
     read = main.mask.read()
     assert read == 9, f"read {read}, expecting 9"
@@ -75,8 +71,7 @@ try:
     read = main.st.read()
     assert read == 1, f"read {read}, expecting 1"
 
-    cosim_interface.wait(5 * CLK_PERIOD)
-    print("\nEnding cosimulation")
+    print("\nending cosimulation")
     cosim_interface.end(0)
 
 except Exception as E:
