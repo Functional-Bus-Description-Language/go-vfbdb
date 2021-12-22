@@ -1,11 +1,11 @@
 CAPI=2:
 
-name: wbfbd:vhdl:config_single_single
+name: wbfbd:vhdl:mask_single_single
 
 filesets:
   tb_cosim:
     files:
-      - tb_cosim.vhd
+      - tb.vhd
     file_type: vhdlSource-2008
     depend:
       - vhdl::cosim
@@ -26,14 +26,14 @@ targets:
     hooks:
       pre_run: [tb_cosim_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/config/single_single/python_vhdl
-      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/config/single_single/vhdl_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/mask/single_single/python_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/mask/single_single/vhdl_python
 
 generate:
   wbfbd_regs:
     generator: wbfbd
     parameters:
-      python: [--path, ../../../../../build/wbfbd/config/single_single/python/vhdl]
+      python: [--path, ../../../../../build/wbfbd/mask/single_single/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 
@@ -49,6 +49,6 @@ scripts:
   tb_cosim_python:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
-      - config
+      - mask
       - single_single
       - vhdl

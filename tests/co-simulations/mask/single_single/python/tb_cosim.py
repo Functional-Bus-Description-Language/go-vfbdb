@@ -1,11 +1,5 @@
 import sys
 
-import logging as log
-log.basicConfig(
-    level=log.DEBUG,
-    format="%(module)s: %(levelname)s: %(message)s",
-    datefmt="%H:%M:%S",
-)
 import random
 
 from cosim_interface import CosimInterface
@@ -17,20 +11,16 @@ READ_FIFO_PATH  = sys.argv[2]
 
 CLK_PERIOD = 10
 
-def delay_function():
-    return CLK_PERIOD * random.randrange(5, 10)
-
-
-cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH, delay_function, True)
+cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    log.info("Starting cosimulation")
+    print("\nStarting cosimulation")
 
     main = wbfbd.main(cosim_interface)
 
     max_val = 2**wbfbd.main.WIDTH - 1
 
-    log.info("Testing mask setting")
+    print("\nTesting mask setting")
 
     main.mask.set()
 
@@ -39,7 +29,7 @@ try:
     read = main.st.read()
     assert read == max_val, f"read {read}, expecting {max_val}"
 
-    log.info("Testing mask clear")
+    print("\nTesting mask clear")
 
     main.mask.set([])
 
@@ -48,7 +38,7 @@ try:
     read = main.st.read()
     assert read == 0, f"read {read}, expecting 0"
 
-    log.info("Testing mask setting single bit")
+    print("\nTesting mask setting single bit")
 
     main.mask.set(4)
 
@@ -60,7 +50,7 @@ try:
     # Clear before next test.
     main.mask.set([])
 
-    log.info("Testing mask setting multiple bits")
+    print("\nTesting mask setting multiple bits")
 
     main.mask.set([0,3])
 
@@ -69,7 +59,7 @@ try:
     read = main.st.read()
     assert read == 9, f"read {read}, expecting 9"
 
-    log.info("Testing mask update")
+    print("\nTesting mask update")
 
     main.mask.set([])
 
@@ -86,7 +76,7 @@ try:
     assert read == 1, f"read {read}, expecting 1"
 
     cosim_interface.wait(5 * CLK_PERIOD)
-    log.info("Ending cosimulation")
+    print("\nEnding cosimulation")
     cosim_interface.end(0)
 
 except Exception as E:

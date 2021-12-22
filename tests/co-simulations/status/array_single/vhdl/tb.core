@@ -1,11 +1,11 @@
 CAPI=2:
 
-name: wbfbd:vhdl:const_main_bus
+name: wbfbd:vhdl:status_array_single
 
 filesets:
   tb_cosim:
     files:
-      - tb_cosim.vhd
+      - tb.vhd
     file_type: vhdlSource-2008
     depend:
       - vhdl::cosim
@@ -26,14 +26,14 @@ targets:
     hooks:
       pre_run: [tb_cosim_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/const/main_bus/python_vhdl
-      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/const/main_bus/vhdl_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/status/array_single/python_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/status/array_single/vhdl_python
 
 generate:
   wbfbd_regs:
     generator: wbfbd
     parameters:
-      python: [--path, ../../../../../build/wbfbd/const/main_bus/python/vhdl]
+      python: [--path, ../../../../../build/wbfbd/status/array_single/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 
@@ -49,6 +49,6 @@ scripts:
   tb_cosim_python:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
-      - const
-      - main_bus
+      - status
+      - array_single
       - vhdl

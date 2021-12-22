@@ -1,6 +1,4 @@
 import os
-import logging as log
-
 
 class CosimInterface:
     def __init__(
@@ -40,14 +38,14 @@ class CosimInterface:
     def _make_fifos(self):
         """Create named pipes needed for inter-process communication."""
         self._remove_fifos()
-        log.info("Making FIFOs")
+        print("CosimInterface: making FIFOs")
         os.mkfifo(self.write_fifo_path)
         os.mkfifo(self.read_fifo_path)
 
     def _remove_fifos(self):
         """Remove named pipes."""
         try:
-            log.info("Removing FIFOs")
+            print("CosimInterface: removing FIFOs")
             os.remove(self.write_fifo_path)
             os.remove(self.read_fifo_path)
         except:
@@ -65,8 +63,8 @@ class CosimInterface:
         if self.delay:
             self.wait(self.delay_function())
 
-        log.info(
-            "Writng address 0x%.8x, value %d (0x%.8x) (%s)" % (addr, val, val, bin(val))
+        print(
+            "write: address 0x%.8x, value %d (0x%.8x) (%s)" % (addr, val, val, bin(val))
         )
 
         cmd = "W" + ("%.8x" % addr) + "," + ("%.8x" % val) + "\n"
@@ -91,7 +89,7 @@ class CosimInterface:
         if self.delay:
             self.wait(self.delay_function())
 
-        log.info("Reading address 0x%.8x" % addr)
+        print("read: address 0x%.8x" % addr)
 
         cmd = "R" + ("%.8x" % addr) + "\n"
         self.write_fifo.write(cmd)
@@ -103,7 +101,7 @@ class CosimInterface:
 
         self.read_count += 1
         val = int(s, 2)
-        log.info("Read value %d (0x%.8x) (%s)" % (val, val, bin(val)))
+        print("read: value %d (0x%.8x) (%s)" % (val, val, bin(val)))
 
         return val
 
@@ -119,8 +117,8 @@ class CosimInterface:
         mask
             Mask.
         """
-        log.info(
-            "Performing RMW address 0x%.8x, value %d (0x%.8x) (%s), mask %d (%s)"
+        print(
+            "rmw: address 0x%.8x, value %d (0x%.8x) (%s), mask %d (%s)"
             % (addr, val, val, bin(val), mask, bin(mask))
         )
         X = self.read(addr)
@@ -137,7 +135,7 @@ class CosimInterface:
         """
         assert time_ns > 0, "Wait time must be greater than 0"
 
-        log.info("Waiting for %d ns" % time_ns)
+        print("wait for %d ns" % time_ns)
 
         cmd = "T" + ("%.8x" % time_ns) + "\n"
         self.write_fifo.write(cmd)
@@ -156,7 +154,7 @@ class CosimInterface:
         status
             Status to be returned by the simulation process.
         """
-        log.info("Ending with status %d" % status)
+        print("CosimInterface: ending with status %d" % status)
 
         cmd = "E" + ("%.8x" % status) + "\n"
         self.write_fifo.write(cmd)
@@ -170,8 +168,8 @@ class CosimInterface:
         self.print_stats()
 
     def print_stats(self):
-        log.info(
-            f"Transactions statistics:\n"
+        print(
+            f"\nCosimInterface: transactions statistics:\n"
             + f"  Write Count: {self.write_count}\n"
             + f"  Read Count:  {self.read_count}\n"
             + f"  RMW Count:   {self.rmw_count}"

@@ -1,11 +1,4 @@
 import sys
-
-import logging as log
-log.basicConfig(
-    level=log.DEBUG,
-    format="%(module)s: %(levelname)s: %(message)s",
-    datefmt="%H:%M:%S",
-)
 import random
 
 from cosim_interface import CosimInterface
@@ -17,22 +10,17 @@ READ_FIFO_PATH  = sys.argv[2]
 
 CLK_PERIOD = 10
 
-def delay_function():
-    return CLK_PERIOD * random.randrange(5, 10)
-
-
-cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH, delay_function, True)
+cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    log.info("Starting cosimulation")
+    print("\nStarting cosimulation\n")
 
     main = wbfbd.main(cosim_interface)
 
-    log.info(f"UUID: {main.x_uuid_x.read()}")
-    log.info(f"Timestamp: {main.x_timestamp_x.read()}")
+    print(f"UUID: {main.x_uuid_x.read()}\n")
+    print(f"Timestamp: {main.x_timestamp_x.read()}\n")
 
-    cosim_interface.wait(5 * CLK_PERIOD)
-    log.info("Ending cosimulation")
+    print("ending cosimulation")
     cosim_interface.end(0)
 
 except Exception as E:
