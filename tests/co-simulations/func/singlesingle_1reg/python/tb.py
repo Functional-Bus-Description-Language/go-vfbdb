@@ -25,7 +25,7 @@ try:
     result = main.result.read()
 
     if a + b != result:
-        log.error(f"Wrong result, got {result}, expecting {a+b}")
+        print(f"Wrong result, got {result}, expecting {a+b}")
         cosim_interface.end(1)
 
     print("\nending cosimulation")
@@ -33,4 +33,4 @@ try:
 
 except Exception as E:
     cosim_interface.end(1)
-    log.exception(E)
+    print(E)
