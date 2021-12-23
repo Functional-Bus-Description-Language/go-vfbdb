@@ -2,6 +2,7 @@ package python
 
 import (
 	"fmt"
+
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 

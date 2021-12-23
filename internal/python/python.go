@@ -2,10 +2,11 @@ package python
 
 import (
 	_ "embed"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"log"
 	"os"
 	"text/template"
+
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
 var busWidth int64

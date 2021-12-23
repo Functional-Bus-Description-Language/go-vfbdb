@@ -1,10 +1,11 @@
 package vhdl
 
 import (
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"log"
 	"os"
 	"sync"
+
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
 var busWidth int64

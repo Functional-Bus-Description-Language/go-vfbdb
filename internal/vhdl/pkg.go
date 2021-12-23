@@ -3,10 +3,11 @@ package vhdl
 import (
 	_ "embed"
 	"fmt"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"log"
 	"os"
 	"text/template"
+
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
 //go:embed templates/wbfbd.vhd

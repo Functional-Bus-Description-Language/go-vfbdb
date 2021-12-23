@@ -3,12 +3,13 @@ package vhdl
 import (
 	_ "embed"
 	"fmt"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"log"
 	"math"
 	"os"
 	"sync"
 	"text/template"
+
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
 type BlockEntity struct {
