@@ -51,7 +51,7 @@ func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 		}
 	}
 	if len(fun.Params) == 0 {
-		fmts.RegistersAccess.add([2]int64{fun.CallAddr, fun.CallAddr}, "")
+		fmts.RegistersAccess.add([2]int64{fun.EndAddr(), fun.EndAddr()}, "")
 	}
 }
 
