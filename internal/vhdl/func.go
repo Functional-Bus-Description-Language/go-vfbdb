@@ -50,6 +50,9 @@ func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 			panic("not yet implemented")
 		}
 	}
+	if len(fun.Params) == 0 {
+		fmts.RegistersAccess.add([2]int64{fun.CallAddr, fun.CallAddr}, "")
+	}
 }
 
 func generateFuncStrobe(fun *fbdl.Func, fmts *BlockEntityFormatters) {

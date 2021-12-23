@@ -46,8 +46,11 @@ func generateFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
 		}
 	}
 
+	if len(fun.Params) == 0 {
+		code += indent + fmt.Sprintf("self.interface.write(%d, 0)\n", blk.AddrSpace.Start()+fun.CallAddr)
+	}
+
 	decreaseIndent(1)
-	//code += indent + fmt.Sprintf("self.%s = func_%[1]s\n", fun.Name)
 
 	return code
 }
