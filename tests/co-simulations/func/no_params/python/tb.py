@@ -12,14 +12,14 @@ try:
 
     cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
     for i in range(10):
         print(f"calling foo function")
-        main.foo()
+        Main.Foo()
 
         print(f"Reading count")
-        count = main.count.read()
+        count = Main.Count.read()
 
         if count != i + 1:
             log.error(f"Wrong count, got {count}, expecting {i+1}")

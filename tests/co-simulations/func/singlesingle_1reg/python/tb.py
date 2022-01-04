@@ -13,16 +13,16 @@ try:
 
     cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
     a = random.randint(0, 2 ** 16 - 1)
     b = random.randint(0, 2 ** 16 - 1)
 
     print(f"Calling add function, a = {a}, b = {b}")
-    main.add(a, b)
+    Main.Add(a, b)
 
     print(f"Reading result")
-    result = main.result.read()
+    result = Main.Result.read()
 
     if a + b != result:
         print(f"Wrong result, got {result}, expecting {a+b}")

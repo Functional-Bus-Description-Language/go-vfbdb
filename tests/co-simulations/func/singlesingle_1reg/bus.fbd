@@ -1,8 +1,8 @@
-main bus
-	add func
+Main bus
+	Add func
 		a param
 			width = 16
 		b param
 			width = 16
-	result status
+	Result status
 		width = 17

@@ -14,10 +14,10 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation\n")
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
-    print(f"UUID: {main.x_uuid_x.read()}\n")
-    print(f"Timestamp: {main.x_timestamp_x.read()}\n")
+    print(f"UUID: {Main.X_UUID_X.read()}\n")
+    print(f"Timestamp: {Main.X_TIMESTAMP_X.read()}\n")
 
     print("\nending cosimulation")
     cosim_interface.end(0)

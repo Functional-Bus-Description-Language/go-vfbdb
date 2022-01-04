@@ -13,24 +13,24 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
     val = random.randint(0, 2 ** 7 - 1)
 
     print(f"Generated random value: {val}")
 
-    print("Writing cfg")
-    main.cfg.write(val)
+    print("Writing Cfg")
+    Main.Cfg.write(val)
 
-    print("Reading cfg")
-    read_val = main.cfg.read()
+    print("Reading Cfg")
+    read_val = Main.Cfg.read()
     if read_val != val:
-        raise Exception(f"Read wrong value form cfg {read_val}")
+        raise Exception(f"Read wrong value form Cfg {read_val}")
 
-    print("Reading st")
-    read_val = main.st.read()
+    print("Reading St")
+    read_val = Main.St.read()
     if read_val != val:
-        raise Exception(f"Read wrong value form st {read_val}")
+        raise Exception(f"Read wrong value form St {read_val}")
 
     print("\nending cosimulation")
     cosim_interface.end(0)

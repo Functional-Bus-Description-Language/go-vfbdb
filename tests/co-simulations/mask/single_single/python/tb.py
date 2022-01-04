@@ -12,63 +12,63 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
-    max_val = 2 ** wbfbd.main.WIDTH - 1
+    max_val = 2 ** wbfbd.Main.WIDTH - 1
 
-    print("\nTesting mask setting")
+    print("\nTesting Mask setting")
 
-    main.mask.set()
+    Main.Mask.set()
 
-    read = main.mask.read()
+    read = Main.Mask.read()
     assert read == max_val, f"read {read}, expecting {max_val}"
-    read = main.st.read()
+    read = Main.St.read()
     assert read == max_val, f"read {read}, expecting {max_val}"
 
-    print("\nTesting mask clear")
+    print("\nTesting Mask clear")
 
-    main.mask.set([])
+    Main.Mask.set([])
 
-    read = main.mask.read()
+    read = Main.Mask.read()
     assert read == 0, f"read {read}, expecting 0"
-    read = main.st.read()
+    read = Main.St.read()
     assert read == 0, f"read {read}, expecting 0"
 
-    print("\nTesting mask setting single bit")
+    print("\nTesting Mask setting single bit")
 
-    main.mask.set(4)
+    Main.Mask.set(4)
 
-    read = main.mask.read()
+    read = Main.Mask.read()
     assert read == 1 << 4, f"read {read}, expecting 4"
-    read = main.st.read()
+    read = Main.St.read()
     assert read == 1 << 4, f"read {read}, expecting 4"
 
     # Clear before next test.
-    main.mask.set([])
+    Main.Mask.set([])
 
-    print("\nTesting mask setting multiple bits")
+    print("\nTesting Mask setting multiple bits")
 
-    main.mask.set([0, 3])
+    Main.Mask.set([0, 3])
 
-    read = main.mask.read()
+    read = Main.Mask.read()
     assert read == 9, f"read {read}, expecting 9"
-    read = main.st.read()
+    read = Main.St.read()
     assert read == 9, f"read {read}, expecting 9"
 
-    print("\nTesting mask update")
+    print("\nTesting Mask update")
 
-    main.mask.set([])
+    Main.Mask.set([])
 
-    main.mask.update([0, 2])
-    read = main.mask.read()
+    Main.Mask.update([0, 2])
+    read = Main.Mask.read()
     assert read == 5, f"read {read}, expecting 5"
-    read = main.st.read()
+    read = Main.St.read()
     assert read == 5, f"read {read}, expecting 5"
 
-    main.mask.update([2], mode="clear")
-    read = main.mask.read()
+    Main.Mask.update([2], mode="clear")
+    read = Main.Mask.read()
     assert read == 1, f"read {read}, expecting 1"
-    read = main.st.read()
+    read = Main.St.read()
     assert read == 1, f"read {read}, expecting 1"
 
     print("\nending cosimulation")

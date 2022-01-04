@@ -12,13 +12,13 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
     print("Reading st register")
-    read = main.st.read()
+    read = Main.St.read()
     assert (
         read == wbfbd.mainPkg.C
-    ), f"read value {read} differs from constant value {wbfbd.main_pkg.C}"
+    ), f"read value {read} differs from constant value {wbfbd.mainPkg.C}"
 
     print("\nending cosimulation")
     cosim_interface.end(0)

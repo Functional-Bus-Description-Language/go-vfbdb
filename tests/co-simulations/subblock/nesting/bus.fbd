@@ -1,8 +1,8 @@
-type my_block block
-	cfg config
-	st status
+type blk block
+	Cfg config
+	St status
 
-main bus
-	blk0 my_block
-	blk1 my_block
-		blk2 my_block
+Main bus
+	Blk0 blk
+	Blk1 blk
+		Blk2 blk

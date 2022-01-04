@@ -38,9 +38,9 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 func collectBlockEntities(blk *fbdl.Block, entities []BlockEntity, path []string) []BlockEntity {
 	if entities == nil {
 		entities = []BlockEntity{BlockEntity{
-			Name: "main", NameLevel: 1, Path: []string{"main"}, Block: blk},
+			Name: "Main", NameLevel: 1, Path: []string{"Main"}, Block: blk},
 		}
-		path = append(path, "main")
+		path = append(path, "Main")
 	} else {
 		p := make([]string, len(path))
 		n := copy(p, path)

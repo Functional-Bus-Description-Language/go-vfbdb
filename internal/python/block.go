@@ -7,8 +7,8 @@ import (
 )
 
 func generateBlock(blk *fbdl.Block) string {
-	className := "main"
-	if blk.Name != "main" {
+	className := "Main"
+	if blk.Name != "Main" {
 		className = blk.Name + "Class"
 	}
 

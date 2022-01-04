@@ -12,34 +12,34 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    main = wbfbd.main(cosim_interface)
+    Main = wbfbd.Main(cosim_interface)
 
     expected0 = 0b010101
     expected1 = 0b11
 
-    print(f"Expecting cfg0 value: {expected0}")
+    print(f"Expecting Cfg0 value: {expected0}")
 
-    print("Reading cfg0")
-    read_val = main.cfg0.read()
+    print("Reading Cfg0")
+    read_val = Main.Cfg0.read()
     if read_val != expected0:
-        raise Exception(f"Read wrong value form cfg0 {read_val}")
+        raise Exception(f"Read wrong value form Cfg0 {read_val}")
 
-    print("Reading st0")
-    read_val = main.st0.read()
+    print("Reading St0")
+    read_val = Main.St0.read()
     if read_val != expected0:
-        raise Exception(f"Read wrong value form st0 {read_val}")
+        raise Exception(f"Read wrong value form St0 {read_val}")
 
-    print(f"Expecting cfg1 value: {expected1}")
+    print(f"Expecting Cfg1 value: {expected1}")
 
-    print("Reading cfg1")
-    read_val = main.cfg1.read()
+    print("Reading Cfg1")
+    read_val = Main.Cfg1.read()
     if read_val != expected1:
-        raise Exception(f"Read wrong value form cfg1 {read_val}")
+        raise Exception(f"Read wrong value form Cfg1 {read_val}")
 
-    print("Reading st1")
-    read_val = main.st1.read()
+    print("Reading St1")
+    read_val = Main.St1.read()
     if read_val != expected1:
-        raise Exception(f"Read wrong value form st1 {read_val}")
+        raise Exception(f"Read wrong value form St1 {read_val}")
 
     print("\nending cosimulation")
     cosim_interface.end(0)

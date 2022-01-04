@@ -1,5 +1,5 @@
 const C = 11
 
-main bus
-	st status
+Main bus
+	St status
 		width = C
