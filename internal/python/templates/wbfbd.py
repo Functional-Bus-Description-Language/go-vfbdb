@@ -6,11 +6,14 @@ import math
 
 BUS_WIDTH = {{.BusWidth}}
 
+def make_mask(m):
+    return ((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)
+
 class ConfigSingleSingle:
     def __init__(self, interface, addr, mask):
         self.interface = interface
         self.addr = addr
-        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.mask = make_mask(mask)
         self.shift = mask[1]
 
     def read(self):
@@ -18,6 +21,48 @@ class ConfigSingleSingle:
 
     def write(self, val):
         self.interface.write(self.addr, val << self.shift)
+
+class ConfigSingleContinuous:
+    def __init__(self, interface, start_addr, reg_count, start_mask, end_mask, increasing_order):
+        self.interface = interface
+        self.addrs = range(start_addr, start_addr + reg_count)
+        self.masks = []
+        self.start_shift = start_mask[1]
+        for i in range(reg_count):
+            if i == 0:
+                self.masks.append(make_mask(start_mask))
+            elif i == reg_count - 1:
+                self.masks.append(make_mask(end_mask))
+            else:
+                self.masks.append(make_mask((BUS_WIDTH-1, 0)))
+        if increasing_order == False:
+            self.addrs.reverse()
+            self.masks.reverse()
+
+    def read(self):
+        val = 0
+        shift = 0
+        for i, a in enumerate(self.addrs):
+            mask = self.masks[i]
+            if i == 0:
+                v = (self.interface.read(a) & mask) >> self.start_shift
+                val = v
+                shift = BUS_WIDTH - self.start_shift
+            else:
+                v = self.interface.read(a) & mask
+                val |= v << shift
+                shift += BUS_WIDTH
+        return val
+
+    def write(self, val):
+        for i, a in enumerate(self.addrs):
+            mask = self.masks[i]
+            if i == 0:
+                self.interface.write(a, (val << self.start_shift) & mask)
+                val = val >> BUS_WIDTH - self.start_shift
+            else:
+                self.interface.write(a, val & mask)
+                val = val >> BUS_WIDTH
 
 class MaskSingleSingle:
     def __init__(self, interface, addr, mask):

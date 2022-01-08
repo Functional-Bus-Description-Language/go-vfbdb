@@ -19,10 +19,25 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 
 	switch cfg.Access.(type) {
 	case fbdl.AccessSingleSingle:
-		access := cfg.Access.(fbdl.AccessSingleSingle)
+		a := cfg.Access.(fbdl.AccessSingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(interface, %d, (%d, %d))\n",
-			cfg.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
+			cfg.Name, blk.AddrSpace.Start()+a.Addr, a.Mask.Upper, a.Mask.Lower,
+		)
+	case fbdl.AccessSingleContinuous:
+		a := cfg.Access.(fbdl.AccessSingleContinuous)
+		increasigOrder := "True"
+		if a.IncreasingOrder() == false {
+			increasigOrder = "False"
+		}
+		code += indent + fmt.Sprintf(
+			"self.%s = ConfigSingleContinuous(interface, %d, %d, (%d, %d), (%d, %d), %s)\n",
+			cfg.Name,
+			blk.AddrSpace.Start()+a.StartAddr(),
+			a.RegCount(),
+			a.StartMask.Upper, a.StartMask.Lower,
+			a.EndMask.Upper, a.EndMask.Lower,
+			increasigOrder,
 		)
 	default:
 		panic("not yet implemented")

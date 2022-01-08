@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: wbfbd:vhdl:func_singlesingle_1reg
+name: wbfbd:vhdl:func_single_single_1reg
 
 filesets:
   tb_cosim:
@@ -26,14 +26,14 @@ targets:
     hooks:
       pre_run: [tb_cosim]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/func/singlesingle_1reg/python_vhdl
-      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/func/singlesingle_1reg/vhdl_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/func/single_single_1reg/python_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/func/single_single_1reg/vhdl_python
 
 generate:
   wbfbd_regs:
     generator: wbfbd
     parameters:
-      python: [--path, ../../../../../build/wbfbd/func/singlesingle_1reg/python/vhdl]
+      python: [--path, ../../../../../build/wbfbd/func/single_single_1reg/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 
@@ -50,5 +50,5 @@ scripts:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - func
-      - singlesingle_1reg
+      - single_single_1reg
       - vhdl

@@ -30,6 +30,8 @@ func generateConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	switch cfg.Access.(type) {
 	case fbdl.AccessSingleSingle:
 		generateConfigSingleSingle(cfg, fmts)
+	case fbdl.AccessSingleContinuous:
+		generateConfigSingleContinuous(cfg, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
@@ -48,4 +50,32 @@ func generateConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	)
 
 	fmts.RegistersAccess.add([2]int64{access.Addr, access.Addr}, code)
+}
+
+func generateConfigSingleContinuous(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+	if cfg.Atomic == true {
+		generateConfigSingleContinuousAtomic(cfg, fmts)
+	} else {
+		generateConfigSingleContinuousNonAtomic(cfg, fmts)
+	}
+}
+
+func generateConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+	panic("not yet implemented")
+}
+
+func generateConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+	chunks := makeAccessChunks(cfg.Access)
+
+	for _, c := range chunks {
+		code := fmt.Sprintf(
+			"      if master_out.we = '1' then\n"+
+				"         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
+				"      end if;\n"+
+				"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
+			cfg.Name, c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
+		)
+
+		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+	}
 }
