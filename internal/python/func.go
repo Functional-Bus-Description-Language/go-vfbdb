@@ -42,13 +42,13 @@ func generateFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
 		val += fmt.Sprintf("%s << %d | ", p.Name, access.Mask.Lower)
 		if i == len(fun.Params)-1 || fun.Params[i+1].Access.StartAddr() != access.Addr {
 			val = val[:len(val)-3]
-			code += indent + fmt.Sprintf("self.interface.write(%d, %s)\n", blk.AddrSpace.Start()+access.Addr, val)
+			code += indent + fmt.Sprintf("self.iface.write(%d, %s)\n", blk.AddrSpace.Start()+access.Addr, val)
 			val = ""
 		}
 	}
 
 	if len(fun.Params) == 0 {
-		code += indent + fmt.Sprintf("self.interface.write(%d, 0)\n", blk.AddrSpace.Start()+fun.EndAddr())
+		code += indent + fmt.Sprintf("self.iface.write(%d, 0)\n", blk.AddrSpace.Start()+fun.EndAddr())
 	}
 
 	decreaseIndent(1)

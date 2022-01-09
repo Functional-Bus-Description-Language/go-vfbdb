@@ -21,7 +21,7 @@ func generateStatusSingle(st *fbdl.Status, blk *fbdl.Block) string {
 	case fbdl.AccessSingleSingle:
 		access := st.Access.(fbdl.AccessSingleSingle)
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusSingleSingle(interface, %d, (%d, %d))\n",
+			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
 			st.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 		)
 	default:
@@ -38,7 +38,7 @@ func generateStatusArray(st *fbdl.Status, blk *fbdl.Block) string {
 	case fbdl.AccessArraySingle:
 		access := st.Access.(fbdl.AccessArraySingle)
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusArraySingle(interface, %d, (%d, %d), %d)\n",
+			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name,
 			blk.AddrSpace.Start()+access.StartAddr(),
 			access.Mask.Upper,
@@ -48,7 +48,7 @@ func generateStatusArray(st *fbdl.Status, blk *fbdl.Block) string {
 	case fbdl.AccessArrayMultiple:
 		access := st.Access.(fbdl.AccessArrayMultiple)
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusArrayMultiple(interface, %d, %d, %d, %d, %d)\n",
+			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
 			blk.AddrSpace.Start()+access.StartAddr(),
 			access.StartBit,

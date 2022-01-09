@@ -17,9 +17,9 @@ func generateBlock(blk *fbdl.Block) string {
 
 	code += generateConsts(blk)
 
-	code += indent + "def __init__(self, interface):\n"
+	code += indent + "def __init__(self, iface):\n"
 	increaseIndent(1)
-	code += indent + "self.interface = interface\n"
+	code += indent + "self.iface = iface\n"
 
 	for _, st := range blk.Statuses {
 		code += generateStatus(st, blk)
@@ -65,7 +65,7 @@ func generateSublockArray(sb *fbdl.Block, blk *fbdl.Block) string {
 }
 
 func generateSublockSingle(sb *fbdl.Block, blk *fbdl.Block) string {
-	code := indent + fmt.Sprintf("self.%[1]s = self.%[1]sClass(self.interface)\n", sb.Name)
+	code := indent + fmt.Sprintf("self.%[1]s = self.%[1]sClass(self.iface)\n", sb.Name)
 
 	return code
 }

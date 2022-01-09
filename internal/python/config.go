@@ -21,7 +21,7 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 	case fbdl.AccessSingleSingle:
 		a := cfg.Access.(fbdl.AccessSingleSingle)
 		code += indent + fmt.Sprintf(
-			"self.%s = ConfigSingleSingle(interface, %d, (%d, %d))\n",
+			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
 			cfg.Name, blk.AddrSpace.Start()+a.Addr, a.Mask.Upper, a.Mask.Lower,
 		)
 	case fbdl.AccessSingleContinuous:
@@ -31,7 +31,7 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 			increasigOrder = "False"
 		}
 		code += indent + fmt.Sprintf(
-			"self.%s = ConfigSingleContinuous(interface, %d, %d, (%d, %d), (%d, %d), %s)\n",
+			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), %s)\n",
 			cfg.Name,
 			blk.AddrSpace.Start()+a.StartAddr(),
 			a.RegCount(),

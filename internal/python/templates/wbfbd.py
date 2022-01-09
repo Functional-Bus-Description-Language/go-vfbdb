@@ -6,35 +6,35 @@ import math
 
 BUS_WIDTH = {{.BusWidth}}
 
-def make_mask(m):
+def calc_mask(m):
     return ((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)
 
 class ConfigSingleSingle:
-    def __init__(self, interface, addr, mask):
-        self.interface = interface
+    def __init__(self, iface, addr, mask):
+        self.iface = iface
         self.addr = addr
-        self.mask = make_mask(mask)
+        self.mask = calc_mask(mask)
         self.shift = mask[1]
 
     def read(self):
-        return (self.interface.read(self.addr) & self.mask) >> self.shift
+        return (self.iface.read(self.addr) & self.mask) >> self.shift
 
     def write(self, val):
-        self.interface.write(self.addr, val << self.shift)
+        self.iface.write(self.addr, val << self.shift)
 
 class ConfigSingleContinuous:
-    def __init__(self, interface, start_addr, reg_count, start_mask, end_mask, increasing_order):
-        self.interface = interface
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, increasing_order):
+        self.iface = iface
         self.addrs = range(start_addr, start_addr + reg_count)
         self.masks = []
         self.start_shift = start_mask[1]
         for i in range(reg_count):
             if i == 0:
-                self.masks.append(make_mask(start_mask))
+                self.masks.append(calc_mask(start_mask))
             elif i == reg_count - 1:
-                self.masks.append(make_mask(end_mask))
+                self.masks.append(calc_mask(end_mask))
             else:
-                self.masks.append(make_mask((BUS_WIDTH-1, 0)))
+                self.masks.append(calc_mask((BUS_WIDTH-1, 0)))
         if increasing_order == False:
             self.addrs.reverse()
             self.masks.reverse()
@@ -45,11 +45,11 @@ class ConfigSingleContinuous:
         for i, a in enumerate(self.addrs):
             mask = self.masks[i]
             if i == 0:
-                v = (self.interface.read(a) & mask) >> self.start_shift
+                v = (self.iface.read(a) & mask) >> self.start_shift
                 val = v
                 shift = BUS_WIDTH - self.start_shift
             else:
-                v = self.interface.read(a) & mask
+                v = self.iface.read(a) & mask
                 val |= v << shift
                 shift += BUS_WIDTH
         return val
@@ -58,22 +58,22 @@ class ConfigSingleContinuous:
         for i, a in enumerate(self.addrs):
             mask = self.masks[i]
             if i == 0:
-                self.interface.write(a, (val << self.start_shift) & mask)
+                self.iface.write(a, (val << self.start_shift) & mask)
                 val = val >> BUS_WIDTH - self.start_shift
             else:
-                self.interface.write(a, val & mask)
+                self.iface.write(a, val & mask)
                 val = val >> BUS_WIDTH
 
 class MaskSingleSingle:
-    def __init__(self, interface, addr, mask):
-        self.interface = interface
+    def __init__(self, iface, addr, mask):
+        self.iface = iface
         self.addr = addr
-        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.mask = calc_mask(mask)
         self.shift = mask[1]
         self.width = mask[0] - mask[1] + 1
 
     def read(self):
-        return (self.interface.read(self.addr) & self.mask) >> self.shift
+        return (self.iface.read(self.addr) & self.mask) >> self.shift
 
     def set(self, bits=None):
         if bits == None:
@@ -86,7 +86,7 @@ class MaskSingleSingle:
             assert 0 <= b < self.width, "mask overrange"
             mask |= 1 << b
 
-        self.interface.write(self.addr, mask << self.shift)
+        self.iface.write(self.addr, mask << self.shift)
 
     def update(self, bits, mode="set"):
         if mode not in ["set", "clear"]:
@@ -104,24 +104,24 @@ class MaskSingleSingle:
                 mask |= 1 << b
             reg_mask |= 1 << b
 
-        self.interface.rmw(self.addr, mask << self.shift, reg_mask << self.shift)
+        self.iface.rmw(self.addr, mask << self.shift, reg_mask << self.shift)
 
 class StatusSingleSingle:
-    def __init__(self, interface, addr, mask):
-        self.interface = interface
+    def __init__(self, iface, addr, mask):
+        self.iface = iface
         self.addr = addr
-        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.mask = calc_mask(mask)
         self.shift = mask[1]
 
     def read(self):
-        return (self.interface.read(self.addr) & self.mask) >> self.shift
+        return (self.iface.read(self.addr) & self.mask) >> self.shift
 
 
 class StatusArraySingle:
-    def __init__(self, interface, addr, mask, item_count):
-        self.interface = interface
+    def __init__(self, iface, addr, mask, item_count):
+        self.iface = iface
         self.addr = addr
-        self.mask = ((1 << (mask[0] + 1)) - 1) ^ ((1 << mask[1]) - 1)
+        self.mask = calc_mask(mask)
         self.shift = mask[1]
         self.item_count = item_count
 
@@ -130,17 +130,17 @@ class StatusArraySingle:
             idx = tuple(range(0, self.item_count))
         elif type(idx) == int:
             assert 0 <= idx < self.item_count
-            return (self.interface.read(self.addr + idx) & self.mask) >> self.shift
+            return (self.iface.read(self.addr + idx) & self.mask) >> self.shift
         else:
             for i in idx:
                 assert 0 <= i < self.item_count
 
-        return [(self.interface.read(self.addr + i) & self.mask) >> self.shift for i in idx]
+        return [(self.iface.read(self.addr + i) & self.mask) >> self.shift for i in idx]
 
 
 class StatusArrayMultiple:
-    def __init__(self, interface, addr, start_bit, width, item_count, items_per_access):
-        self.interface = interface
+    def __init__(self, iface, addr, start_bit, width, item_count, items_per_access):
+        self.iface = iface
         self.addr = addr
         self.start_bit = start_bit
         self.width = width
@@ -157,14 +157,14 @@ class StatusArrayMultiple:
             reg_idx = idx // self.items_per_access
             shift = self.start_bit + self.width * (idx % self.items_per_access)
             mask = (1 << self.width) - 1
-            return (self.interface.read(self.addr + reg_idx) >> shift) & mask
+            return (self.iface.read(self.addr + reg_idx) >> shift) & mask
         else:
             reg_idx = set()
             for i in idx:
                 assert 0 <= i < self.item_count
                 reg_idx.add(i // self.items_per_access)
 
-        reg_values = {reg_i : self.interface.read(self.addr + reg_i) for reg_i in reg_idx}
+        reg_values = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
 
         values = []
         for i in idx:

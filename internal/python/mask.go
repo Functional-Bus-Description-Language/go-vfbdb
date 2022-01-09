@@ -21,7 +21,7 @@ func generateMaskSingle(mask *fbdl.Mask, blk *fbdl.Block) string {
 	case fbdl.AccessSingleSingle:
 		access := mask.Access.(fbdl.AccessSingleSingle)
 		code += indent + fmt.Sprintf(
-			"self.%s = MaskSingleSingle(interface, %d, (%d, %d))\n",
+			"self.%s = MaskSingleSingle(iface, %d, (%d, %d))\n",
 			mask.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 		)
 	default:
