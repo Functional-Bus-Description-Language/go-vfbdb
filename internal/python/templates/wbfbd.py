@@ -23,7 +23,7 @@ class ConfigSingleSingle:
         self.iface.write(self.addr, val << self.shift)
 
 class ConfigSingleContinuous:
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, increasing_order):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
         self.iface = iface
         self.addrs = range(start_addr, start_addr + reg_count)
         self.masks = []
@@ -35,7 +35,7 @@ class ConfigSingleContinuous:
                 self.masks.append(calc_mask(end_mask))
             else:
                 self.masks.append(calc_mask((BUS_WIDTH-1, 0)))
-        if increasing_order == False:
+        if decreasing_order:
             self.addrs.reverse()
             self.masks.reverse()
 

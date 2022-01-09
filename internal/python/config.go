@@ -26,9 +26,9 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 		)
 	case fbdl.AccessSingleContinuous:
 		a := cfg.Access.(fbdl.AccessSingleContinuous)
-		increasigOrder := "True"
-		if a.IncreasingOrder() == false {
-			increasigOrder = "False"
+		decreasigOrder := "False"
+		if a.DecreasingOrder() == true {
+			decreasigOrder = "True"
 		}
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), %s)\n",
@@ -37,7 +37,7 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 			a.RegCount(),
 			a.StartMask.Upper, a.StartMask.Lower,
 			a.EndMask.Upper, a.EndMask.Lower,
-			increasigOrder,
+			decreasigOrder,
 		)
 	default:
 		panic("not yet implemented")
