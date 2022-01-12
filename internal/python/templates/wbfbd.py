@@ -9,17 +9,25 @@ BUS_WIDTH = {{.BusWidth}}
 def calc_mask(m):
     return ((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)
 
-class ConfigSingleSingle:
+class SingleSingle:
     def __init__(self, iface, addr, mask):
         self.iface = iface
         self.addr = addr
         self.mask = calc_mask(mask)
+        self.width = mask[0] - mask[1] + 1
         self.shift = mask[1]
+        #self.lower_range = range[0]
+        #self.upper_range = range[1]
 
     def read(self):
         return (self.iface.read(self.addr) & self.mask) >> self.shift
 
+class ConfigSingleSingle(SingleSingle):
+    def __init__(self, iface, addr, mask):
+        super().__init__(iface, addr, mask)
+
     def write(self, val):
+        assert 0 <= val < 2 ** self.width, "error: value overrange ({})".format(val)
         self.iface.write(self.addr, val << self.shift)
 
 class ConfigSingleContinuous:
@@ -64,16 +72,9 @@ class ConfigSingleContinuous:
                 self.iface.write(a, val & mask)
                 val = val >> BUS_WIDTH
 
-class MaskSingleSingle:
+class MaskSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):
-        self.iface = iface
-        self.addr = addr
-        self.mask = calc_mask(mask)
-        self.shift = mask[1]
-        self.width = mask[0] - mask[1] + 1
-
-    def read(self):
-        return (self.iface.read(self.addr) & self.mask) >> self.shift
+        super().__init__(iface, addr, mask)
 
     def set(self, bits=None):
         if bits == None:
@@ -106,16 +107,9 @@ class MaskSingleSingle:
 
         self.iface.rmw(self.addr, mask << self.shift, reg_mask << self.shift)
 
-class StatusSingleSingle:
+class StatusSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):
-        self.iface = iface
-        self.addr = addr
-        self.mask = calc_mask(mask)
-        self.shift = mask[1]
-
-    def read(self):
-        return (self.iface.read(self.addr) & self.mask) >> self.shift
-
+        super().__init__(iface, addr, mask)
 
 class StatusArraySingle:
     def __init__(self, iface, addr, mask, item_count):

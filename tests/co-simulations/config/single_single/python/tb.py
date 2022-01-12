@@ -37,4 +37,4 @@ try:
 
 except Exception as E:
     cosim_interface.end(1)
-    log.exception(E)
+    print(E)
