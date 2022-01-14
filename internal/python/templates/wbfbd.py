@@ -33,44 +33,48 @@ class ConfigSingleSingle(SingleSingle):
 class ConfigSingleContinuous:
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
         self.iface = iface
-        self.addrs = range(start_addr, start_addr + reg_count)
-        self.masks = []
-        self.start_shift = start_mask[1]
+        self.addrs = list(range(start_addr, start_addr + reg_count))
+        self.width = 0
+        self.reg_masks = []
+        self.reg_shifts = []
+        self.val_masks = []
+        self.val_shifts = []
+
         for i in range(reg_count):
             if i == 0:
-                self.masks.append(calc_mask(start_mask))
-            elif i == reg_count - 1:
-                self.masks.append(calc_mask(end_mask))
+                self.reg_masks.append(calc_mask(start_mask))
+                self.reg_shifts.append(start_mask[1])
+                self.val_shifts.append(0)
+                self.val_masks.append(self.reg_masks[0] >> self.reg_shifts[0])
+                self.width += start_mask[0] - start_mask[1] + 1
             else:
-                self.masks.append(calc_mask((BUS_WIDTH-1, 0)))
+                self.reg_shifts.append(0)
+                self.val_shifts.append(self.width)
+                if i == reg_count - 1:
+                    self.reg_masks.append(calc_mask(end_mask))
+                    self.width += end_mask[0] - end_mask[1] + 1
+                else:
+                    self.reg_masks.append(calc_mask((BUS_WIDTH-1, 0)))
+                    self.width += BUS_WIDTH
+                self.val_masks.append(self.reg_masks[i] << self.val_shifts[i])
+
         if decreasing_order:
             self.addrs.reverse()
-            self.masks.reverse()
+            self.reg_masks.reverse()
+            self.reg_shifts.reverse()
+            self.val_masks.reverse()
+            self.val_shifts.reverse()
 
     def read(self):
         val = 0
-        shift = 0
         for i, a in enumerate(self.addrs):
-            mask = self.masks[i]
-            if i == 0:
-                v = (self.iface.read(a) & mask) >> self.start_shift
-                val = v
-                shift = BUS_WIDTH - self.start_shift
-            else:
-                v = self.iface.read(a) & mask
-                val |= v << shift
-                shift += BUS_WIDTH
+            val |= ((self.iface.read(a) & self.reg_masks[i]) >> self.reg_shifts[i]) << self.val_shifts[i]
         return val
 
     def write(self, val):
+        assert 0 <= val < 2 ** self.width, "error: value overrange ({})".format(val)
         for i, a in enumerate(self.addrs):
-            mask = self.masks[i]
-            if i == 0:
-                self.iface.write(a, (val << self.start_shift) & mask)
-                val = val >> BUS_WIDTH - self.start_shift
-            else:
-                self.iface.write(a, val & mask)
-                val = val >> BUS_WIDTH
+            self.iface.write(a, ((val & self.val_masks[i]) >> self.val_shifts[i]) << self.reg_shifts[i])
 
 class MaskSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):

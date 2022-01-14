@@ -27,7 +27,7 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 	case fbdl.AccessSingleContinuous:
 		a := cfg.Access.(fbdl.AccessSingleContinuous)
 		decreasigOrder := "False"
-		if a.DecreasingOrder() == true {
+		if cfg.HasDecreasingAccessOrder() {
 			decreasigOrder = "True"
 		}
 		code += indent + fmt.Sprintf(
