@@ -2,8 +2,6 @@ library work;
    context work.cosim_context;
    use work.cosim.all;
 
-library lwbfbd;
-   use lwbfbd.main_pkg;
 
 entity tb_cosim is
    generic(
@@ -17,7 +15,8 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal mask : std_logic_vector(int(main_pkg.WIDTH)-1 downto 0);
+   signal cfg : std_logic_vector(47 downto 0);
+   constant ZERO : std_logic_vector(47 downto 0) := (others => '0');
 
    -- Wishbone interfaces.
    signal uvvm_wb_if : t_wishbone_if (
@@ -53,8 +52,17 @@ begin
       rst_i => '0',
       slave_i(0) => wb_ms,
       slave_o(0) => wb_sm,
-      mask_o => mask,
-      st_i => mask
+      cfg_o => cfg
    );
+
+
+   atomicity_guardian : process (clk) is
+   begin
+      if rising_edge(clk) then
+         assert cfg = ZERO or cfg = std_logic_vector(resize(wbfbd.main_pkg.VALID_VALUE, 48))
+            report "invalid value: " & to_hstring(cfg) & ", expecting: " & to_hstring(std_logic_vector(wbfbd.main_pkg.VALID_VALUE))
+            severity failure;
+      end if;
+   end process;
 
 end architecture;

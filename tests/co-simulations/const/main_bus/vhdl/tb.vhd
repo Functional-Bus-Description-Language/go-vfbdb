@@ -18,7 +18,7 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal st : std_logic_vector(main_pkg.C - 1 downto 0) := std_logic_vector(to_unsigned(main_pkg.C, main_pkg.C));
+   signal st : std_logic_vector(int(main_pkg.C) - 1 downto 0) := std_logic_vector(to_unsigned(int(main_pkg.C), int(main_pkg.C)));
 
    -- Wishbone interfaces.
    signal uvvm_wb_if : t_wishbone_if (

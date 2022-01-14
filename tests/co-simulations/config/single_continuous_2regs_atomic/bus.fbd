@@ -1,0 +1,4 @@
+const VALID_VALUE = 2 ** 40 - 3
+
+Main bus
+	Cfg config; width = 48; default = 0

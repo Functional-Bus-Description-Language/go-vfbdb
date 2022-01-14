@@ -48,7 +48,7 @@ func generatePkgsConsts(pkgsConsts map[string]fbdl.Package) string {
 		// Package type definition
 		s += fmt.Sprintf("type t_%s_pkg is record\n", pkgName)
 		for name, _ := range pkg.IntConsts {
-			s += fmt.Sprintf("   %s : integer;\n", name)
+			s += fmt.Sprintf("   %s : int64;\n", name)
 		}
 		for name, _ := range pkg.StrConsts {
 			s += fmt.Sprintf("   %s : string;\n", name)
@@ -58,7 +58,7 @@ func generatePkgsConsts(pkgsConsts map[string]fbdl.Package) string {
 		// Package constant definition
 		s += fmt.Sprintf("constant %[1]s_pkg : t_%[1]s_pkg := (\n", pkgName)
 		for name, i := range pkg.IntConsts {
-			s += fmt.Sprintf("   %s => %d,\n", name, i)
+			s += fmt.Sprintf("   %s => signed'(x\"%016x\"),\n", name, i)
 		}
 		for name, str := range pkg.StrConsts {
 			s += fmt.Sprintf("   %s => %q,\n", name, str)

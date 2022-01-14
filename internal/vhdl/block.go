@@ -180,7 +180,7 @@ func generateConsts(blk *fbdl.Block, fmts *BlockEntityFormatters) {
 	s := ""
 
 	for name, i := range blk.IntConsts {
-		s += fmt.Sprintf("constant %s : integer := %d;\n", name, i)
+		s += fmt.Sprintf("constant %s : int64 := signed'(x\"%016x\");\n", name, i)
 	}
 	for name, str := range blk.StrConsts {
 		s += fmt.Sprintf("constant %s : string := %q;\n", name, str)
