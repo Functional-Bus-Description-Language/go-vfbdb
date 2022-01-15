@@ -76,6 +76,14 @@ func generateConsts(blk *fbdl.Block) string {
 	for name, i := range blk.IntConsts {
 		code += indent + fmt.Sprintf("%s = %d\n", name, i)
 	}
+	for name, list := range blk.IntListConsts {
+		code += indent + fmt.Sprintf("%s = [", name)
+		for _, i := range list {
+			code += fmt.Sprintf("%d, ", i)
+		}
+		code = code[:len(code)-2]
+		code += "]\n"
+	}
 	for name, str := range blk.StrConsts {
 		code += indent + fmt.Sprintf("%s = %q\n", name, str)
 	}
