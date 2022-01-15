@@ -16,22 +16,7 @@ func generatePkgConsts(pkgsConsts map[string]fbdl.Package) string {
 
 		s += fmt.Sprintf("class %sPkg:\n", pkgName)
 		increaseIndent(1)
-
-		for name, i := range pkg.IntConsts {
-			s += indent + fmt.Sprintf("%s = %d\n", name, i)
-		}
-		for name, list := range pkg.IntListConsts {
-			s += indent + fmt.Sprintf("%s = [", name)
-			for _, i := range list {
-				s += fmt.Sprintf("%d, ", i)
-			}
-			s = s[:len(s)-2]
-			s += "]\n"
-		}
-		for name, str := range pkg.StrConsts {
-			s += indent + fmt.Sprintf("%s = %q\n", name, str)
-		}
-
+		s += generateConsts(pkg.ConstContainer)
 		decreaseIndent(1)
 	}
 

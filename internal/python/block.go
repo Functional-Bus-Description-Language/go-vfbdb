@@ -15,7 +15,7 @@ func generateBlock(blk *fbdl.Block) string {
 	code := indent + fmt.Sprintf("class %s:\n", className)
 	increaseIndent(1)
 
-	code += generateConsts(blk)
+	code += generateConsts(blk.ConstContainer)
 
 	code += indent + "def __init__(self, iface):\n"
 	increaseIndent(1)
@@ -66,27 +66,6 @@ func generateSublockArray(sb *fbdl.Block, blk *fbdl.Block) string {
 
 func generateSublockSingle(sb *fbdl.Block, blk *fbdl.Block) string {
 	code := indent + fmt.Sprintf("self.%[1]s = self.%[1]sClass(self.iface)\n", sb.Name)
-
-	return code
-}
-
-func generateConsts(blk *fbdl.Block) string {
-	code := ""
-
-	for name, i := range blk.IntConsts {
-		code += indent + fmt.Sprintf("%s = %d\n", name, i)
-	}
-	for name, list := range blk.IntListConsts {
-		code += indent + fmt.Sprintf("%s = [", name)
-		for _, i := range list {
-			code += fmt.Sprintf("%d, ", i)
-		}
-		code = code[:len(code)-2]
-		code += "]\n"
-	}
-	for name, str := range blk.StrConsts {
-		code += indent + fmt.Sprintf("%s = %q\n", name, str)
-	}
 
 	return code
 }
