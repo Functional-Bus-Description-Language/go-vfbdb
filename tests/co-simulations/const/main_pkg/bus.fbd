@@ -1,5 +1,0 @@
-const C = 11
-
-Main bus
-	St status
-		width = C
