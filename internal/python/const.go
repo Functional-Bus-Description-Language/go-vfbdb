@@ -8,6 +8,25 @@ import (
 func generateConsts(cc fbdl.ConstContainer) string {
 	s := ""
 
+	for name, b := range cc.BoolConsts {
+		v := "False"
+		if b {
+			v = "True"
+		}
+		s += indent + fmt.Sprintf("%s = %s\n", name, v)
+	}
+	for name, list := range cc.BoolListConsts {
+		s += indent + fmt.Sprintf("%s = [", name)
+		for _, b := range list {
+			v := "False"
+			if b {
+				v = "True"
+			}
+			s += fmt.Sprintf("%s, ", v)
+		}
+		s = s[:len(s)-2]
+		s += "]\n"
+	}
 	for name, i := range cc.IntConsts {
 		s += indent + fmt.Sprintf("%s = %d\n", name, i)
 	}
