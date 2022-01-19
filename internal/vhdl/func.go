@@ -52,7 +52,7 @@ func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 		}
 	}
 	if len(fun.Params) == 0 {
-		fmts.RegistersAccess.add([2]int64{fun.EndAddr(), fun.EndAddr()}, "")
+		fmts.RegistersAccess.add([2]int64{fun.StbAddr, fun.StbAddr}, "")
 	}
 }
 
@@ -68,7 +68,7 @@ func generateFuncStrobe(fun *fbdl.Func, fmts *BlockEntityFormatters) {
       end if;
    end if;
 `
-	set := fmt.Sprintf(stb_set, fun.Name, fun.EndAddr())
+	set := fmt.Sprintf(stb_set, fun.Name, fun.StbAddr)
 
 	fmts.FuncsStrobesSet += set
 }

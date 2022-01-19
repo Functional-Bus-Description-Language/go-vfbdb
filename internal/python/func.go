@@ -48,7 +48,7 @@ func generateFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
 	}
 
 	if len(fun.Params) == 0 {
-		code += indent + fmt.Sprintf("self.iface.write(%d, 0)\n", blk.AddrSpace.Start()+fun.EndAddr())
+		code += indent + fmt.Sprintf("self.iface.write(%d, 0)\n", blk.AddrSpace.Start()+fun.StbAddr)
 	}
 
 	decreaseIndent(1)
