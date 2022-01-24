@@ -16,7 +16,7 @@ try:
 
     Main = wbfbd.Main(cosim_interface)
 
-    print(f"UUID: {Main.X_UUID_X.read()}\n")
+    print(f"ID: {Main.X_ID_X.read()}\n")
     print(f"Timestamp: {Main.X_TIMESTAMP_X.read()}\n")
 
     print("\nending cosimulation")
