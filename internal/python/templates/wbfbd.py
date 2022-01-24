@@ -9,6 +9,42 @@ BUS_WIDTH = {{.BusWidth}}
 def calc_mask(m):
     return (((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)) >> m[1]
 
+class Func():
+    def __init__(self, iface, params_start_addr, param_accesses, return_accesses):
+        self.iface = iface
+        self.params_start_addr = params_start_addr
+        self.param_accesses = param_accesses
+        self.return_accesses = return_accesses
+    def __call__(self, *params):
+        if self.param_accesses is not None:
+            assert len(params) == len(self.param_accesses), \
+                "{}() takes {} arguments but {} were given".format(self.__name__, len(self.param_accesses), len(params))
+        val = 0
+        val_width = 0
+        current_addr = None
+        write_vals = []
+        for i, p in enumerate(params):
+            a = self.param_accesses[i]
+            if a['Type'] == 'SingleSingle':
+                assert 0 <= p < 2 ** a['Width'], "value overrange ({})".format(p)
+                if current_addr is None:
+                    current_addr = a['Addr']
+                elif a['Addr'] > current_addr:
+                    current_addr = a['Addr']
+                    write_vals.append(val)
+                    val = 0
+                val |= p << a['Shift']
+            elif a['Type'] == 'SingleContinuous':
+                assert 0 <= p < 2 ** a['Width'], "value overrange ({})".format(p)
+            else:
+                for v in p:
+                    assert 0 <= v < 2 ** a['Width'], "value overrange ({})".format(v)
+
+        write_vals.append(val)
+        for i, val in enumerate(write_vals):
+            self.iface.write(self.params_start_addr + i, val)
+
+
 class SingleSingle:
     def __init__(self, iface, addr, mask):
         self.iface = iface
@@ -25,7 +61,7 @@ class ConfigSingleSingle(SingleSingle):
         super().__init__(iface, addr, mask)
 
     def write(self, val):
-        assert 0 <= val < 2 ** self.width, "error: value overrange ({})".format(val)
+        assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
         self.iface.write(self.addr, val << self.shift)
 
 class ConfigSingleContinuous:
@@ -66,7 +102,7 @@ class ConfigSingleContinuous:
         return val
 
     def write(self, val):
-        assert 0 <= val < 2 ** self.width, "error: value overrange ({})".format(val)
+        assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
         for i, a in enumerate(self.addrs):
             self.iface.write(a, ((val >> self.val_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
 

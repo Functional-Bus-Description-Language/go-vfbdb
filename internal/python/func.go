@@ -7,13 +7,25 @@ import (
 )
 
 func generateFunc(fun *fbdl.Func, blk *fbdl.Block) string {
-	var code string
+	/*
+		code := generateFuncFunctionSignature(fun)
+	*/
 
-	if fun.AreAllParamsSingleSingle() {
-		code = generateFuncSingleSingle(fun, blk)
-	} else {
-		panic("not yet implemented")
-	}
+	increaseIndent(1)
+	code := indent + fmt.Sprintf("self.%s = Func(iface, %d, ",
+		fun.Name, blk.AddrSpace.Start()+fun.ParamsStartAddr(),
+	)
+	code += generateFuncParamAccessList(fun)
+	code += generateFuncReturnAccessList(fun)
+	code += ")\n"
+
+	/*
+		if fun.AreAllParamsSingleSingle() {
+			code = generateFuncSingleSingle(fun, blk)
+		} else {
+			panic("not yet implemented")
+		}
+	*/
 
 	return code
 }
@@ -29,6 +41,45 @@ func generateFuncFunctionSignature(fun *fbdl.Func) string {
 	increaseIndent(1)
 
 	return code
+}
+
+func generateFuncParamAccessList(fun *fbdl.Func) string {
+	if len(fun.Params) == 0 {
+		return "None,"
+	}
+
+	code := "[\n"
+	increaseIndent(2)
+
+	for _, p := range fun.Params {
+		switch p.Access.(type) {
+		case fbdl.AccessSingleSingle:
+			ass := p.Access.(fbdl.AccessSingleSingle)
+			code += indent + fmt.Sprintf(
+				"{'Type': 'SingleSingle', 'Width': %d, 'Addr': %d, 'Shift': %d},\n",
+				p.Width, ass.Addr, ass.Mask.Lower,
+			)
+		case fbdl.AccessSingleContinuous:
+			asc := p.Access.(fbdl.AccessSingleContinuous)
+			code += indent + fmt.Sprintf(
+				"{'Type': 'SingleContinuous', 'Width': %d, 'StartShift': %d},\n",
+				p.Width, asc.StartMask.Lower,
+			)
+		default:
+			//panic("should never happen")
+		}
+	}
+
+	decreaseIndent(1)
+	code = code[:len(code)]
+	code += indent + "],"
+	decreaseIndent(1)
+
+	return code
+}
+
+func generateFuncReturnAccessList(fun *fbdl.Func) string {
+	return "None"
 }
 
 // generateFuncSingleSingle generates function body for func which all parameters are of type AccessSingleSingle.

@@ -42,11 +42,28 @@ func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 
 			addr := [2]int64{access.StartAddr(), access.StartAddr()}
 			code := fmt.Sprintf(
-				"      %s_o.%s <= master_out.dat(%d downto %d);\n",
+				"      if master_out.we = '1' then\n"+
+					"         %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);\n"+
+					"      end if;\n"+
+					"      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;\n",
 				fun.Name, p.Name, access.Mask.Upper, access.Mask.Lower,
 			)
 
 			fmts.RegistersAccess.add(addr, code)
+		case fbdl.AccessSingleContinuous:
+			chunks := makeAccessChunks(p.Access)
+
+			for _, c := range chunks {
+				code := fmt.Sprintf(
+					"      if master_out.we = '1' then\n"+
+						"         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);\n"+
+						"      end if;\n"+
+						"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);\n",
+					fun.Name, p.Name, c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
+				)
+
+				fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+			}
 		default:
 			panic("not yet implemented")
 		}

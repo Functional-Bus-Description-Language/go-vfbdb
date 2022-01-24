@@ -1,5 +1,5 @@
 import sys
-import random
+import traceback
 
 from cosim_interface import CosimInterface
 import wbfbd
@@ -15,22 +15,20 @@ try:
 
     Main = wbfbd.Main(cosim_interface)
 
-    a = random.randint(0, 2 ** 16 - 1)
-    b = random.randint(0, 2 ** 16 - 1)
+    for i in range(10):
+        print(f"calling foo function")
+        Main.Foo()
 
-    print(f"Calling add function, a = {a}, b = {b}")
-    Main.Add(a, b)
+        print(f"Reading count")
+        count = Main.Count.read()
 
-    print(f"Reading result")
-    result = Main.Result.read()
-
-    if a + b != result:
-        print(f"Wrong result, got {result}, expecting {a+b}")
-        cosim_interface.end(1)
+        if count != i + 1:
+            log.error(f"Wrong count, got {count}, expecting {i+1}")
+            cosim_interface.end(1)
 
     print("\nending cosimulation")
     cosim_interface.end(0)
 
 except Exception as E:
     cosim_interface.end(1)
-    print(E)
+    print(traceback.format_exc())
