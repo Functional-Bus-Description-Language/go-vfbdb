@@ -24,6 +24,21 @@ func generateStatusSingle(st *fbdl.Status, blk *fbdl.Block) string {
 			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
 			st.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 		)
+	case fbdl.AccessSingleContinuous:
+		a := st.Access.(fbdl.AccessSingleContinuous)
+		decreasigOrder := "False"
+		if st.HasDecreasingAccessOrder() {
+			decreasigOrder = "True"
+		}
+		code += indent + fmt.Sprintf(
+			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), %s)\n",
+			st.Name,
+			blk.AddrSpace.Start()+a.StartAddr(),
+			a.RegCount(),
+			a.StartMask.Upper, a.StartMask.Lower,
+			a.EndMask.Upper, a.EndMask.Lower,
+			decreasigOrder,
+		)
 	default:
 		panic("not yet implemented")
 	}

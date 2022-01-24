@@ -65,7 +65,7 @@ class CosimInterface:
             self.wait(self.delay_function())
 
         print(
-            "write: address 0x%.8x, value %d (0x%.8x) (%s)" % (addr, val, val, bin(val))
+            "write: address 0x{:08x}, value {} (0x{:08x}) (0b{:032b})".format(addr, val, val, val)
         )
 
         cmd = "W" + ("%.8x" % addr) + "," + ("%.8x" % val) + "\n"
@@ -90,7 +90,7 @@ class CosimInterface:
         if self.delay:
             self.wait(self.delay_function())
 
-        print("read: address 0x%.8x" % addr)
+        print("read: address 0x{:08x}".format(addr))
 
         cmd = "R" + ("%.8x" % addr) + "\n"
         self.write_fifo.write(cmd)
@@ -102,7 +102,7 @@ class CosimInterface:
 
         self.read_count += 1
         val = int(s, 2)
-        print("read: value %d (0x%.8x) (%s)" % (val, val, bin(val)))
+        print("read: value {} (0x{:08x}) (0b{:032b})".format(val, val, val))
 
         return val
 

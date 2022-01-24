@@ -34,6 +34,8 @@ func generateStatusSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case fbdl.AccessSingleSingle:
 		generateStatusSingleSingle(st, fmts)
+	case fbdl.AccessSingleContinuous:
+		generateStatusSingleContinuous(st, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
@@ -58,6 +60,27 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	}
 
 	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
+}
+
+func generateStatusSingleContinuous(st *fbdl.Status, fmts *BlockEntityFormatters) {
+	if st.Atomic == true {
+		panic("not yet implemented")
+	} else {
+		generateStatusSingleContinuousNonAtomic(st, fmts)
+	}
+}
+
+func generateStatusSingleContinuousNonAtomic(st *fbdl.Status, fmts *BlockEntityFormatters) {
+	chunks := makeAccessChunks(st.Access)
+
+	for _, c := range chunks {
+		code := fmt.Sprintf(
+			"      master_in.dat(%d downto %d) <= %s_i(%s downto %s);",
+			c.mask.Upper, c.mask.Lower, st.Name, c.range_[0], c.range_[1],
+		)
+
+		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+	}
 }
 
 func generateStatusArraySingle(st *fbdl.Status, fmts *BlockEntityFormatters) {

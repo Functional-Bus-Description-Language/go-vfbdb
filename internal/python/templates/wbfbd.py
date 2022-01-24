@@ -56,15 +56,7 @@ class SingleSingle:
     def read(self):
         return (self.iface.read(self.addr) >> self.shift) & self.mask
 
-class ConfigSingleSingle(SingleSingle):
-    def __init__(self, iface, addr, mask):
-        super().__init__(iface, addr, mask)
-
-    def write(self, val):
-        assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
-        self.iface.write(self.addr, val << self.shift)
-
-class ConfigSingleContinuous:
+class SingleContinuous:
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
         self.iface = iface
         self.addrs = list(range(start_addr, start_addr + reg_count))
@@ -100,6 +92,18 @@ class ConfigSingleContinuous:
         for i, a in enumerate(self.addrs):
             val |= ((self.iface.read(a) >> self.reg_shifts[i]) & self.masks[i]) << self.val_shifts[i]
         return val
+
+class ConfigSingleSingle(SingleSingle):
+    def __init__(self, iface, addr, mask):
+        super().__init__(iface, addr, mask)
+
+    def write(self, val):
+        assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
+        self.iface.write(self.addr, val << self.shift)
+
+class ConfigSingleContinuous(SingleContinuous):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
+        super().__init__(iface, start_addr, reg_count, start_mask, end_mask, decreasing_order)
 
     def write(self, val):
         assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
@@ -144,6 +148,10 @@ class MaskSingleSingle(SingleSingle):
 class StatusSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
+
+class StatusSingleContinuous(SingleContinuous):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
+        super().__init__(iface, start_addr, reg_count, start_mask, end_mask, decreasing_order)
 
 class StatusArraySingle:
     def __init__(self, iface, addr, mask, item_count):
