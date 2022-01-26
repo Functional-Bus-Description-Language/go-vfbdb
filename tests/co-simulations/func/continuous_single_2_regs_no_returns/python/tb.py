@@ -1,5 +1,6 @@
-import sys
 import random
+import sys
+import traceback
 
 from cosim_interface import CosimInterface
 import wbfbd
@@ -15,7 +16,7 @@ try:
 
     Main = wbfbd.Main(cosim_interface)
 
-    c = random.randint(0, 2 ** 16 - 1)
+    c = random.randint(2**33, 2 ** 40 - 1)
     s = random.randint(0, 2 ** 16 - 1)
 
     print(f"Calling add function, c = {c}, s = {s}")
@@ -33,4 +34,4 @@ try:
 
 except Exception as E:
     cosim_interface.end(1)
-    print(E)
+    print(traceback.format_exc())

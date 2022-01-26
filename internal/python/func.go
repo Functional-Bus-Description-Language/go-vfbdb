@@ -62,8 +62,8 @@ func generateFuncParamAccessList(fun *fbdl.Func) string {
 		case fbdl.AccessSingleContinuous:
 			asc := p.Access.(fbdl.AccessSingleContinuous)
 			code += indent + fmt.Sprintf(
-				"{'Type': 'SingleContinuous', 'Width': %d, 'StartShift': %d},\n",
-				p.Width, asc.StartMask.Lower,
+				"{'Type': 'SingleContinuous', 'Width': %d, 'StartAddr': %d, 'RegCount': %d, 'StartShift': %d},\n",
+				p.Width, asc.RegCount(), asc.StartAddr(), asc.StartMask.Lower,
 			)
 		default:
 			//panic("should never happen")

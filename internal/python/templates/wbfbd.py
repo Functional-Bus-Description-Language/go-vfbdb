@@ -20,7 +20,6 @@ class Func():
             assert len(params) == len(self.param_accesses), \
                 "{}() takes {} arguments but {} were given".format(self.__name__, len(self.param_accesses), len(params))
         val = 0
-        val_width = 0
         current_addr = None
         write_vals = []
         for i, p in enumerate(params):
@@ -30,12 +29,29 @@ class Func():
                 if current_addr is None:
                     current_addr = a['Addr']
                 elif a['Addr'] > current_addr:
-                    current_addr = a['Addr']
                     write_vals.append(val)
                     val = 0
+                    current_addr = a['Addr']
                 val |= p << a['Shift']
             elif a['Type'] == 'SingleContinuous':
                 assert 0 <= p < 2 ** a['Width'], "value overrange ({})".format(p)
+                for r in range(a['RegCount']):
+                    if r == 0:
+                        if current_addr is None:
+                            current_addr = a['StartAddr']
+                        elif a['StartAddr'] > current_addr:
+                            write_vals.append(val)
+                            val = 0
+                            current_addr = a['StartAddr']
+                        val |= (p & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
+                        write_vals.append(val)
+                        p = p >> (BUS_WIDTH - a['StartShift'])
+                    else:
+                        current_addr += 1
+                        val = p & calc_mask((BUS_WIDTH, 0))
+                        p = p >> BUS_WIDTH
+                        if r < a['RegCount'] - 1:
+                            write_vals.append(val)
             else:
                 for v in p:
                     assert 0 <= v < 2 ** a['Width'], "value overrange ({})".format(v)
@@ -78,7 +94,7 @@ class SingleContinuous:
                     self.masks.append(calc_mask(end_mask))
                     self.width += end_mask[0] - end_mask[1] + 1
                 else:
-                    self.masks.append(calc_mask((BUS_WIDTH-1, 0)))
+                    self.masks.append(calc_mask((BUS_WIDTH - 1, 0)))
                     self.width += BUS_WIDTH
 
         if decreasing_order:
