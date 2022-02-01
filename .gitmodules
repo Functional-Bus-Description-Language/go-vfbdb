@@ -1,0 +1,3 @@
+[submodule "tests/co-simulations/common/vhdl/vhdl-types"]
+	path = tests/co-simulations/common/vhdl/vhdl-types
+	url = git@github.com:m-kru/vhdl-types.git

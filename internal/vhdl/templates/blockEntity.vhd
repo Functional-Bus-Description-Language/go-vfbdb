@@ -6,6 +6,9 @@ library ieee;
    use ieee.std_logic_1164.all;
    use ieee.numeric_std.all;
 
+library types;
+   use types.types.all;
+
 library work;
    use work.wbfbd.all;
 
@@ -25,6 +28,9 @@ library ieee;
 
 library general_cores;
    use general_cores.wishbone_pkg.all;
+
+library types;
+   use types.types.all;
 
 library work;
    use work.wbfbd.all;

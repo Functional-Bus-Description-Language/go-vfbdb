@@ -17,7 +17,7 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal mask : std_logic_vector(int(main_pkg.WIDTH)-1 downto 0);
+   signal mask : std_logic_vector(to_integer(main_pkg.WIDTH)-1 downto 0);
 
    -- Wishbone interfaces.
    signal uvvm_wb_if : t_wishbone_if (

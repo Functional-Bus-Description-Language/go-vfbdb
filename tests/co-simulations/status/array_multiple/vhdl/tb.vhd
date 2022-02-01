@@ -15,7 +15,7 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal status_array0 : t_slv_vector(7 downto 0)(7 downto 0) := (
+   signal status_array0 : slv_vector(7 downto 0)(7 downto 0) := (
       0 => "00000000",
       1 => "00000001",
       2 => "00000010",
@@ -26,14 +26,14 @@ architecture test of tb_cosim is
       7 => "00000111"
    );
 
-   signal status_array1 : t_slv_vector(3 downto 0)(4 downto 0) := (
+   signal status_array1 : slv_vector(3 downto 0)(4 downto 0) := (
       0 => "00000",
       1 => "00001",
       2 => "00010",
       3 => "00011"
    );
 
-   signal status_array2 : t_slv_vector(5 downto 0)(6 downto 0) := (
+   signal status_array2 : slv_vector(5 downto 0)(6 downto 0) := (
       0 => "0000000",
       1 => "0000001",
       2 => "0000010",

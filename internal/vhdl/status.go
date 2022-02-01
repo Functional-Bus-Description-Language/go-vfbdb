@@ -86,7 +86,7 @@ func generateStatusSingleContinuousNonAtomic(st *fbdl.Status, fmts *BlockEntityF
 func generateStatusArraySingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	access := st.Access.(fbdl.AccessArraySingle)
 
-	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
+	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
 	fmts.EntityFunctionalPorts += port
 
 	code := fmt.Sprintf(
@@ -103,7 +103,7 @@ func generateStatusArraySingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 func generateStatusArrayMultiple(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	access := st.Access.(fbdl.AccessArrayMultiple)
 
-	port := fmt.Sprintf(";\n   %s_i : in t_slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
+	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
 	fmts.EntityFunctionalPorts += port
 
 	itemsPerAccess := access.ItemsPerAccess

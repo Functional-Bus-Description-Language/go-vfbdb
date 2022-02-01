@@ -4,6 +4,8 @@ name: vhdl::cosim
 
 filesets:
   src:
+    depend:
+      - mkru:vhdl:types
     files:
       - src/cosim.vhd
       - src/cosim_context.vhd

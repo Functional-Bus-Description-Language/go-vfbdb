@@ -18,7 +18,7 @@ func generateFuncType(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 
 	for _, p := range fun.Params {
 		if p.IsArray {
-			s += fmt.Sprintf("   %s : t_slv_vector(%d downto 0)(%d downto 0);\n", p.Name, p.Count-1, p.Width-1)
+			s += fmt.Sprintf("   %s : slv_vector(%d downto 0)(%d downto 0);\n", p.Name, p.Count-1, p.Width-1)
 		} else {
 			s += fmt.Sprintf("   %s : std_logic_vector(%d downto 0);\n", p.Name, p.Width-1)
 		}
