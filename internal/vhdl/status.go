@@ -64,14 +64,50 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 
 func generateStatusSingleContinuous(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	if st.Atomic == true {
-		panic("not yet implemented")
+		generateStatusSingleContinuousAtomic(st, fmts)
 	} else {
 		generateStatusSingleContinuousNonAtomic(st, fmts)
 	}
 }
 
+func generateStatusSingleContinuousAtomic(st *fbdl.Status, fmts *BlockEntityFormatters) {
+	a := st.Access.(fbdl.AccessSingleContinuous)
+	strategy := SeparateFirst
+	atomicShadowRange := [2]int64{st.Width - 1, a.StartMask.Width()}
+	if st.HasDecreasingAccessOrder() {
+		strategy = SeparateLast
+		atomicShadowRange[0] = st.Width - 1 - a.EndMask.Width()
+		atomicShadowRange[1] = 0
+	}
+	chunks := makeAccessChunksContinuous(a, strategy)
+
+	fmts.SignalDeclarations += fmt.Sprintf(
+		"signal %s_atomic : std_logic_vector(%d downto %d);\n",
+		st.Name, atomicShadowRange[0], atomicShadowRange[1],
+	)
+
+	for i, c := range chunks {
+		var code string
+		if (strategy == SeparateFirst && i == 0) || (strategy == SeparateLast && i == len(chunks)-1) {
+			code = fmt.Sprintf(
+				"      %[1]s_atomic(%[2]d downto %[3]d) <= %[1]s_i(%[2]d downto %[3]d);\n"+
+					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_i(%[6]s downto %[7]s);",
+				st.Name, atomicShadowRange[0], atomicShadowRange[1],
+				c.mask.Upper, c.mask.Lower, c.range_[0], c.range_[1],
+			)
+		} else {
+			code = fmt.Sprintf(
+				"      master_in.dat(%d downto %d) <= %s_atomic(%s downto %s);",
+				c.mask.Upper, c.mask.Lower, st.Name, c.range_[0], c.range_[1],
+			)
+		}
+
+		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+	}
+}
+
 func generateStatusSingleContinuousNonAtomic(st *fbdl.Status, fmts *BlockEntityFormatters) {
-	chunks := makeAccessChunks(st.Access)
+	chunks := makeAccessChunksContinuous(st.Access.(fbdl.AccessSingleContinuous), Compact)
 
 	for _, c := range chunks {
 		code := fmt.Sprintf(
