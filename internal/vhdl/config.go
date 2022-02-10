@@ -62,17 +62,14 @@ func generateConfigSingleContinuous(cfg *fbdl.Config, fmts *BlockEntityFormatter
 
 func generateConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(fbdl.AccessSingleContinuous)
-	chunks := makeAccessChunks(cfg.Access)
-
+	strategy := SeparateLast
 	atomicShadowRange := [2]int64{cfg.Width - 1 - a.EndMask.Width(), 0}
 	if cfg.HasDecreasingAccessOrder() {
+		strategy = SeparateFirst
 		atomicShadowRange[0] = cfg.Width - 1
 		atomicShadowRange[1] = a.StartMask.Width()
-
-		for i, j := 0, len(chunks)-1; i < j; i, j = i+1, j-1 {
-			chunks[i], chunks[j] = chunks[j], chunks[i]
-		}
 	}
+	chunks := makeAccessChunksContinuous(a, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_atomic : std_logic_vector(%d downto %d);\n",
@@ -81,7 +78,7 @@ func generateConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFor
 
 	for i, c := range chunks {
 		var code string
-		if i == len(chunks)-1 {
+		if (strategy == SeparateFirst && i == 0) || (strategy == SeparateLast && i == len(chunks)-1) {
 			code = fmt.Sprintf(
 				"      if master_out.we = '1' then\n"+
 					"         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
@@ -106,7 +103,8 @@ func generateConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFor
 }
 
 func generateConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	chunks := makeAccessChunks(cfg.Access)
+	a := cfg.Access.(fbdl.AccessSingleContinuous)
+	chunks := makeAccessChunksContinuous(a, Compact)
 
 	for _, c := range chunks {
 		code := fmt.Sprintf(

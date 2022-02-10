@@ -51,7 +51,7 @@ func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 
 			fmts.RegistersAccess.add(addr, code)
 		case fbdl.AccessSingleContinuous:
-			chunks := makeAccessChunks(p.Access)
+			chunks := makeAccessChunksContinuous(p.Access.(fbdl.AccessSingleContinuous), Compact)
 
 			for _, c := range chunks {
 				code := fmt.Sprintf(
