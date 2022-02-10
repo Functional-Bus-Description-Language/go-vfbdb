@@ -5,7 +5,7 @@ import (
 	"os"
 )
 
-var helpMsg string = `Functional Bus Description Language compiler back-end written in Go.
+var helpMsg string = `Functional Bus Description Language compiler back-end for Wishbone written in Go.
 Version: %s
 
 Supported targets: python, vhdl.
