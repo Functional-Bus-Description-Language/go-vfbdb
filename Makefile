@@ -4,11 +4,6 @@ PROJECT_NAME=wbfbd
 
 default: build
 
-all: fmt vet build
-
-build:
-	go build -v -o $(PROJECT_NAME) .
-
 help:
 	@echo "Build targets:"
 	@echo "  all      Run fmt vet build."
@@ -21,6 +16,11 @@ help:
 	@echo "  test  Run go test."
 	@echo "Other targets:"
 	@echo "  help  Print help message."
+
+all: fmt vet build
+
+build:
+	go build -v -o $(PROJECT_NAME) ./cmd/wbfbd
 
 fmt:
 	go fmt ./...
