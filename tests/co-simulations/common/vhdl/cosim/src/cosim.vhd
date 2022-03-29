@@ -27,6 +27,7 @@ package cosim is
       clock_margin_severity    => TB_ERROR,
       setup_time               => 2.5 ns,
       hold_time                => 2.5 ns,
+      match_strictness         => MATCH_STD,
       id_for_bfm               => ID_BFM,
       id_for_bfm_wait          => ID_BFM_WAIT,
       id_for_bfm_poll          => ID_BFM_POLL
