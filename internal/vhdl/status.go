@@ -54,7 +54,7 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 		)
 	} else {
 		code = fmt.Sprintf(
-			"      master_in.dat(%d downto %d) <= %s_i;",
+			"      master_in.dat(%d downto %d) <= %s_i;\n",
 			mask.Upper, mask.Lower, st.Name,
 		)
 	}
