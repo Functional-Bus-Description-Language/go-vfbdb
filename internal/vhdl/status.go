@@ -26,7 +26,7 @@ func generateStatusArray(st *fbdl.Status, fmts *BlockEntityFormatters) {
 }
 
 func generateStatusSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
-	if st.Name != "X_ID_X" && st.Name != "X_TIMESTAMP_X" {
+	if fmts.EntityName != "Main" || (st.Name != "ID" && st.Name != "TIMESTAMP") {
 		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d downto 0)", st.Name, st.Width-1)
 		fmts.EntityFunctionalPorts += s
 	}
@@ -47,7 +47,7 @@ func generateStatusSingleSingle(st *fbdl.Status, fmts *BlockEntityFormatters) {
 	mask := fbdlAccess.Mask
 
 	var code string
-	if st.Name == "X_ID_X" || st.Name == "X_TIMESTAMP_X" {
+	if fmts.EntityName == "Main" && (st.Name == "ID" || st.Name == "TIMESTAMP") {
 		code = fmt.Sprintf(
 			"      master_in.dat(%d downto %d) <= %s; -- %s",
 			mask.Upper, mask.Lower, string(st.Default), st.Name,

@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 from cosim_interface import CosimInterface
 import wbfbd
@@ -16,12 +17,16 @@ try:
 
     Main = wbfbd.Main(cosim_interface)
 
-    print(f"ID: {Main.X_ID_X.read()}\n")
-    print(f"Timestamp: {Main.X_TIMESTAMP_X.read()}\n")
+    id = Main.ID.read()
+
+    assert id == wbfbd.ID, f"Read wrong ID {id}, expecting {wbfbd.ID}"
+
+    print(f"ID: {id}\n")
+    print(f"Timestamp: {Main.TIMESTAMP.read()}\n")
 
     print("\nending cosimulation")
     cosim_interface.end(0)
 
 except Exception as E:
     cosim_interface.end(1)
-    log.exception(E)
+    print(traceback.format_exc())

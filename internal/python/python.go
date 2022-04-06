@@ -47,8 +47,8 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 
 	fmts := pythonFormatters{
 		BusWidth:  busWidth,
-		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("X_ID_X").Default.Uint64(), 16)),
-		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("X_TIMESTAMP_X").Default.Uint64(), 16)),
+		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
+		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
 		Code:      code,
 	}
 
