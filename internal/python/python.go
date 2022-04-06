@@ -2,11 +2,13 @@ package python
 
 import (
 	_ "embed"
+	"fmt"
 	"log"
 	"os"
 	"text/template"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"strconv"
 )
 
 var busWidth int64
@@ -18,8 +20,10 @@ var pythonTmplStr string
 var pythonTmpl = template.Must(template.New("Python module").Parse(pythonTmplStr))
 
 type pythonFormatters struct {
-	BusWidth int64
-	Code     string
+	BusWidth  int64
+	ID        string
+	TIMESTAMP string
+	Code      string
 }
 
 func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
@@ -42,8 +46,10 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	defer f.Close()
 
 	fmts := pythonFormatters{
-		BusWidth: busWidth,
-		Code:     code,
+		BusWidth:  busWidth,
+		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("X_ID_X").Default.Uint64(), 16)),
+		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("X_TIMESTAMP_X").Default.Uint64(), 16)),
+		Code:      code,
 	}
 
 	err = pythonTmpl.Execute(f, fmts)

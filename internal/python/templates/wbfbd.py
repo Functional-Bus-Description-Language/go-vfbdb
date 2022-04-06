@@ -5,6 +5,8 @@
 import math
 
 BUS_WIDTH = {{.BusWidth}}
+ID = {{.ID}}
+TIMESTAMP = {{.TIMESTAMP}}
 
 def calc_mask(m):
     return (((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)) >> m[1]
