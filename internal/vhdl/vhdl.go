@@ -13,7 +13,7 @@ var outputPath string
 
 func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
 	busWidth = bus.Width
-	outputPath = cmdLineArgs["--path"] + "/"
+	outputPath = cmdLineArgs["-path"] + "/"
 
 	err := os.MkdirAll(outputPath, os.FileMode(int(0775)))
 	if err != nil {

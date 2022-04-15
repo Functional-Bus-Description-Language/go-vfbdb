@@ -26,9 +26,8 @@ func isValidFlag(flag string, target string) bool {
 
 func isValidFlagPython(flag string) bool {
 	validFlags := map[string]bool{
-		"-h":           true,
-		"--help":       true,
-		"--no-asserts": true,
+		"-help":       true,
+		"-no-asserts": true,
 	}
 
 	if _, ok := validFlags[flag]; ok {
@@ -40,9 +39,8 @@ func isValidFlagPython(flag string) bool {
 
 func isValidFlagVHDL(flag string) bool {
 	validFlags := map[string]bool{
-		"-h":       true,
-		"--help":   true,
-		"--no-psl": true,
+		"-help":   true,
+		"-no-psl": true,
 	}
 
 	if _, ok := validFlags[flag]; ok {
@@ -52,39 +50,39 @@ func isValidFlagVHDL(flag string) bool {
 	return false
 }
 
-func isValidOption(option string, target string) bool {
+func isValidParam(param string, target string) bool {
 	if !isValidTarget(target) {
 		panic("should never happen")
 	}
 
 	switch target {
 	case "python":
-		return isValidOptionPython(option)
+		return isValidParamPython(param)
 	case "vhdl":
-		return isValidOptionVHDL(option)
+		return isValidParamVHDL(param)
 	}
 
 	return false
 }
 
-func isValidOptionPython(option string) bool {
-	validOptions := map[string]bool{
-		"--path": true,
+func isValidParamPython(param string) bool {
+	validParams := map[string]bool{
+		"-path": true,
 	}
 
-	if _, ok := validOptions[option]; ok {
+	if _, ok := validParams[param]; ok {
 		return true
 	}
 
 	return false
 }
 
-func isValidOptionVHDL(option string) bool {
-	validOptions := map[string]bool{
-		"--path": true,
+func isValidParamVHDL(param string) bool {
+	validParams := map[string]bool{
+		"-path": true,
 	}
 
-	if _, ok := validOptions[option]; ok {
+	if _, ok := validParams[param]; ok {
 		return true
 	}
 

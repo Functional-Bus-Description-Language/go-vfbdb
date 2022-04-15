@@ -33,7 +33,7 @@ generate:
   wbfbd_regs:
     generator: wbfbd
     parameters:
-      python: [--path, ../../../../../build/wbfbd/func/no_params_no_returns/python/vhdl]
+      python: [-path, ../../../../../build/wbfbd/func/no_params_no_returns/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 

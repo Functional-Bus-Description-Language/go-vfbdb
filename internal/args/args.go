@@ -23,22 +23,22 @@ func Parse() map[string]map[string]string {
 	if len(os.Args) == 2 {
 		arg := os.Args[1]
 		switch arg {
-		case "-h", "--help":
+		case "-help":
 			printHelp()
-		case "-v", "--version":
+		case "-version":
 			printVersion()
 		default:
 			if isValidTarget(arg) {
-				log.Fatalf("missing main file, check 'wbfbd --help'")
+				log.Fatalf("missing main file, check 'wbfbd -help'")
 			} else {
-				log.Fatalf("'%s' is not valid target, check 'wbfbd --help'", arg)
+				log.Fatalf("'%s' is not valid target, check 'wbfbd -help'", arg)
 			}
 		}
 	}
 
 	args := map[string]map[string]string{"global": map[string]string{}}
 	currentTarget := ""
-	currentOption := ""
+	currentParam := ""
 	expectArg := false
 	inGlobalArgs := true
 
@@ -50,19 +50,19 @@ func Parse() map[string]map[string]string {
 		}
 
 		if inGlobalArgs {
-			if arg == "-h" || arg == "--help" {
+			if arg == "-help" {
 				printHelp()
-			} else if arg == "-v" || arg == "--version" {
+			} else if arg == "-version" {
 				printVersion()
 			} else if expectArg {
-				args["global"][currentOption] = arg
+				args["global"][currentParam] = arg
 				expectArg = false
-			} else if arg == "--fusesoc" || arg == "--times" {
+			} else if arg == "-fusesoc" || arg == "-times" {
 				args["global"][arg] = ""
-			} else if arg == "-d" || arg == "--debug" {
-				args["global"]["--debug"] = ""
-			} else if arg == "--fusesoc-vlnv" || arg == "--path" {
-				currentOption = arg
+			} else if arg == "-debug" {
+				args["global"]["-debug"] = ""
+			} else if arg == "-fusesoc-vlnv" || arg == "-path" {
+				currentParam = arg
 				expectArg = true
 			} else if !strings.HasPrefix(arg, "-") {
 				inGlobalArgs = false
@@ -77,42 +77,42 @@ func Parse() map[string]map[string]string {
 		}
 
 		if expectArg {
-			args[currentTarget][currentOption] = arg
+			args[currentTarget][currentParam] = arg
 			expectArg = false
 		} else if isValidTarget(arg) {
 			currentTarget = arg
 			args[arg] = map[string]string{}
-		} else if !isValidOption(arg, currentTarget) &&
+		} else if !isValidParam(arg, currentTarget) &&
 			!isValidFlag(arg, currentTarget) &&
 			expectArg == false {
 			log.Fatalf(
-				"'%s' is not valid flag or option for '%s' target, "+
-					"run 'wbfbd %[2]s --help' to see valid flags and options",
+				"'%s' is not valid flag or parameter for '%s' target, "+
+					"run 'wbfbd %[2]s -help' to see valid flags and parameters",
 				arg, currentTarget,
 			)
-		} else if arg == "-h" || arg == "--help" {
+		} else if arg == "-help" {
 			printTargetHelp(currentTarget)
 		} else if isValidFlag(arg, currentTarget) {
 			args[currentTarget][arg] = ""
-		} else if isValidOption(arg, currentTarget) {
-			currentOption = arg
+		} else if isValidParam(arg, currentTarget) {
+			currentParam = arg
 			expectArg = true
 		}
 	}
 
 	if expectArg {
-		log.Fatalf("missing argument for '%s' option, target '%s'", currentOption, currentTarget)
+		log.Fatalf("missing argument for '%s' parameter, target '%s'", currentParam, currentTarget)
 	}
 
 	args["global"]["main"] = os.Args[len(os.Args)-1]
 
 	// Default values handling.
-	if _, exists := args["global"]["--path"]; !exists {
-		args["global"]["--path"] = "wbfbd"
+	if _, exists := args["global"]["-path"]; !exists {
+		args["global"]["-path"] = "wbfbd"
 	}
 
 	if len(args) == 1 {
-		fmt.Println("No target specified, run 'wbfbd --help' to check valid targets.")
+		fmt.Println("No target specified, run 'wbfbd -help' to check valid targets.")
 		os.Exit(1)
 	}
 
@@ -125,10 +125,10 @@ func SetOutputPaths(args map[string]map[string]string) {
 			continue
 		}
 
-		if _, exists := v["--path"]; exists {
+		if _, exists := v["-path"]; exists {
 			continue
 		}
 
-		args[target]["--path"] = args["global"]["--path"]
+		args[target]["-path"] = args["global"]["-path"]
 	}
 }

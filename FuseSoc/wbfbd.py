@@ -21,7 +21,7 @@ if __name__ == "__main__":
         print("ERROR: Input .fbd main file ('main' parameter) musts be specified!")
         sys.exit(1)
 
-    args = ['wbfbd', '--fusesoc', '--fusesoc-vlnv', config['vlnv']]
+    args = ['wbfbd', '-fusesoc', '-fusesoc-vlnv', config['vlnv']]
 
     for param, val in config['parameters'].items():
         if param in ['global', 'main']:
@@ -30,7 +30,7 @@ if __name__ == "__main__":
         args.append(param)
         prev_v = None
         for v in val:
-            if prev_v == '--path':
+            if prev_v == '-path':
                 args.append(files_root + v)
             else:
                 args.append(v)
