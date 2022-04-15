@@ -6,15 +6,15 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateConfig(cfg *fbdl.Config, blk *fbdl.Block) string {
+func genConfig(cfg *fbdl.Config, blk *fbdl.Block) string {
 	if cfg.IsArray {
-		return generateConfigArray(cfg, blk)
+		return genConfigArray(cfg, blk)
 	} else {
-		return generateConfigSingle(cfg, blk)
+		return genConfigSingle(cfg, blk)
 	}
 }
 
-func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
+func genConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 	var code string
 
 	switch cfg.Access.(type) {
@@ -46,6 +46,6 @@ func generateConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 	return code
 }
 
-func generateConfigArray(cfg *fbdl.Config, blk *fbdl.Block) string {
+func genConfigArray(cfg *fbdl.Config, blk *fbdl.Block) string {
 	panic("not yet implemented")
 }

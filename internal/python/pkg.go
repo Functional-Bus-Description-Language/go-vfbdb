@@ -6,7 +6,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generatePkgConsts(pkgsConsts map[string]fbdl.Package) string {
+func genPkgConsts(pkgsConsts map[string]fbdl.Package) string {
 	s := ""
 
 	for pkgName, pkg := range pkgsConsts {
@@ -16,7 +16,7 @@ func generatePkgConsts(pkgsConsts map[string]fbdl.Package) string {
 
 		s += fmt.Sprintf("class %sPkg:\n", pkgName)
 		increaseIndent(1)
-		s += generateConsts(pkg.ConstContainer)
+		s += genConsts(pkg.ConstContainer)
 		decreaseIndent(1)
 	}
 

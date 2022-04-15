@@ -6,7 +6,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateBlock(blk *fbdl.Block) string {
+func genBlock(blk *fbdl.Block) string {
 	className := "Main"
 	if blk.Name != "Main" {
 		className = blk.Name + "Class"
@@ -15,36 +15,36 @@ func generateBlock(blk *fbdl.Block) string {
 	code := indent + fmt.Sprintf("class %s:\n", className)
 	increaseIndent(1)
 
-	code += generateConsts(blk.ConstContainer)
+	code += genConsts(blk.ConstContainer)
 
 	code += indent + "def __init__(self, iface):\n"
 	increaseIndent(1)
 	code += indent + "self.iface = iface\n"
 
 	for _, st := range blk.Statuses {
-		code += generateStatus(st, blk)
+		code += genStatus(st, blk)
 	}
 
 	for _, cfg := range blk.Configs {
-		code += generateConfig(cfg, blk)
+		code += genConfig(cfg, blk)
 	}
 
 	for _, mask := range blk.Masks {
-		code += generateMask(mask, blk)
+		code += genMask(mask, blk)
 	}
 
 	for _, sb := range blk.Subblocks {
-		code += generateSubblock(sb, blk)
+		code += genSubblock(sb, blk)
 	}
 
 	decreaseIndent(1)
 
 	for _, fun := range blk.Funcs {
-		code += generateFunc(fun, blk)
+		code += genFunc(fun, blk)
 	}
 
 	for _, sb := range blk.Subblocks {
-		code += generateBlock(sb)
+		code += genBlock(sb)
 	}
 
 	decreaseIndent(1)
@@ -52,19 +52,19 @@ func generateBlock(blk *fbdl.Block) string {
 	return code
 }
 
-func generateSubblock(sb *fbdl.Block, blk *fbdl.Block) string {
+func genSubblock(sb *fbdl.Block, blk *fbdl.Block) string {
 	if sb.IsArray {
-		return generateSublockArray(sb, blk)
+		return genSublockArray(sb, blk)
 	} else {
-		return generateSublockSingle(sb, blk)
+		return genSublockSingle(sb, blk)
 	}
 }
 
-func generateSublockArray(sb *fbdl.Block, blk *fbdl.Block) string {
+func genSublockArray(sb *fbdl.Block, blk *fbdl.Block) string {
 	panic("not yet implemented")
 }
 
-func generateSublockSingle(sb *fbdl.Block, blk *fbdl.Block) string {
+func genSublockSingle(sb *fbdl.Block, blk *fbdl.Block) string {
 	code := indent + fmt.Sprintf("self.%[1]s = self.%[1]sClass(self.iface)\n", sb.Name)
 
 	return code

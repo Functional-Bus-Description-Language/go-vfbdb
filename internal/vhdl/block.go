@@ -71,7 +71,7 @@ type BlockEntityFormatters struct {
 	DefaultValues string
 }
 
-func generateBlock(be BlockEntity, wg *sync.WaitGroup) {
+func genBlock(be BlockEntity, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	fmts := BlockEntityFormatters{
@@ -92,26 +92,26 @@ func generateBlock(be BlockEntity, wg *sync.WaitGroup) {
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
 
-	generateConsts(be.Block, &fmts)
+	genConsts(be.Block, &fmts)
 
 	for _, sb := range be.Block.Subblocks {
-		generateSubblock(sb, be.Block.AddrSpace.Start(), addrBitsCount, &fmts)
+		genSubblock(sb, be.Block.AddrSpace.Start(), addrBitsCount, &fmts)
 	}
 
 	for _, fun := range be.Block.Funcs {
-		generateFunc(fun, &fmts)
+		genFunc(fun, &fmts)
 	}
 
 	for _, st := range be.Block.Statuses {
-		generateStatus(st, &fmts)
+		genStatus(st, &fmts)
 	}
 
 	for _, cfg := range be.Block.Configs {
-		generateConfig(cfg, &fmts)
+		genConfig(cfg, &fmts)
 	}
 
 	for _, mask := range be.Block.Masks {
-		generateMask(mask, &fmts)
+		genMask(mask, &fmts)
 	}
 
 	filePath := outputPath + be.Name + ".vhd"
@@ -129,7 +129,7 @@ func generateBlock(be BlockEntity, wg *sync.WaitGroup) {
 	addGeneratedFile(filePath)
 }
 
-func generateSubblock(
+func genSubblock(
 	sb *fbdl.Block,
 	superBlockAddrStart int64,
 	superBlockAddrBitsCount int,
@@ -176,7 +176,7 @@ func generateSubblock(
 	}
 }
 
-func generateConsts(blk *fbdl.Block, fmts *BlockEntityFormatters) {
+func genConsts(blk *fbdl.Block, fmts *BlockEntityFormatters) {
 	s := ""
 
 	for name, b := range blk.BoolConsts {

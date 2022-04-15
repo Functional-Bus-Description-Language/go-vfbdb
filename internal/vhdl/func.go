@@ -6,14 +6,14 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateFunc(fun *fbdl.Func, fmts *BlockEntityFormatters) {
-	generateFuncType(fun, fmts)
-	generateFuncPort(fun, fmts)
-	generateFuncAccess(fun, fmts)
-	generateFuncStrobe(fun, fmts)
+func genFunc(fun *fbdl.Func, fmts *BlockEntityFormatters) {
+	genFuncType(fun, fmts)
+	genFuncPort(fun, fmts)
+	genFuncAccess(fun, fmts)
+	genFuncStrobe(fun, fmts)
 }
 
-func generateFuncType(fun *fbdl.Func, fmts *BlockEntityFormatters) {
+func genFuncType(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf("\ntype t_%s is record\n", fun.Name)
 
 	for _, p := range fun.Params {
@@ -29,12 +29,12 @@ func generateFuncType(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	fmts.FuncTypes += s
 }
 
-func generateFuncPort(fun *fbdl.Func, fmts *BlockEntityFormatters) {
+func genFuncPort(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf(";\n   %s_o : out t_%[1]s", fun.Name)
 	fmts.EntityFunctionalPorts += s
 }
 
-func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
+func genFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	for _, p := range fun.Params {
 		switch p.Access.(type) {
 		case fbdl.AccessSingleSingle:
@@ -73,7 +73,7 @@ func generateFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	}
 }
 
-func generateFuncStrobe(fun *fbdl.Func, fmts *BlockEntityFormatters) {
+func genFuncStrobe(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	clear := fmt.Sprintf("\n%s_o.stb <= '0';", fun.Name)
 
 	fmts.FuncsStrobesClear += clear

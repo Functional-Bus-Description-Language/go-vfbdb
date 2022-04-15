@@ -18,7 +18,7 @@ type wbfbdPackageFormatters struct {
 	PkgsConsts string
 }
 
-func generateWbfbdPackage(pkgsConsts map[string]fbdl.Package) {
+func genWbfbdPackage(pkgsConsts map[string]fbdl.Package) {
 	filePath := outputPath + "wbfbd.vhd"
 
 	f, err := os.Create(filePath)
@@ -27,7 +27,7 @@ func generateWbfbdPackage(pkgsConsts map[string]fbdl.Package) {
 	}
 	defer f.Close()
 
-	fmts := wbfbdPackageFormatters{PkgsConsts: generatePkgsConsts(pkgsConsts)}
+	fmts := wbfbdPackageFormatters{PkgsConsts: genPkgsConsts(pkgsConsts)}
 
 	err = wbfbdPkgTmpl.Execute(f, fmts)
 	if err != nil {
@@ -37,7 +37,7 @@ func generateWbfbdPackage(pkgsConsts map[string]fbdl.Package) {
 	addGeneratedFile(filePath)
 }
 
-func generatePkgsConsts(pkgsConsts map[string]fbdl.Package) string {
+func genPkgsConsts(pkgsConsts map[string]fbdl.Package) string {
 	s := ""
 
 	for pkgName, pkg := range pkgsConsts {

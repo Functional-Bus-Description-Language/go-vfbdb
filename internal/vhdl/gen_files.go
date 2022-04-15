@@ -5,12 +5,12 @@ import (
 )
 
 var GeneratedFiles []string
-var generatedFilesMutex sync.Mutex
+var genFilesMutex sync.Mutex
 
 func addGeneratedFile(file string) {
-	generatedFilesMutex.Lock()
+	genFilesMutex.Lock()
 
 	GeneratedFiles = append(GeneratedFiles, file)
 
-	generatedFilesMutex.Unlock()
+	genFilesMutex.Unlock()
 }

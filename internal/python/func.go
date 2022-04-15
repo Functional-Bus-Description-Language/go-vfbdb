@@ -6,22 +6,22 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateFunc(fun *fbdl.Func, blk *fbdl.Block) string {
+func genFunc(fun *fbdl.Func, blk *fbdl.Block) string {
 	/*
-		code := generateFuncFunctionSignature(fun)
+		code := genFuncFunctionSignature(fun)
 	*/
 
 	increaseIndent(1)
 	code := indent + fmt.Sprintf("self.%s = Func(iface, %d, ",
 		fun.Name, blk.AddrSpace.Start()+fun.ParamsStartAddr(),
 	)
-	code += generateFuncParamAccessList(fun)
-	code += generateFuncReturnAccessList(fun)
+	code += genFuncParamAccessList(fun)
+	code += genFuncReturnAccessList(fun)
 	code += ")\n"
 
 	/*
 		if fun.AreAllParamsSingleSingle() {
-			code = generateFuncSingleSingle(fun, blk)
+			code = genFuncSingleSingle(fun, blk)
 		} else {
 			panic("not yet implemented")
 		}
@@ -30,7 +30,7 @@ func generateFunc(fun *fbdl.Func, blk *fbdl.Block) string {
 	return code
 }
 
-func generateFuncFunctionSignature(fun *fbdl.Func) string {
+func genFuncFunctionSignature(fun *fbdl.Func) string {
 	code := indent + fmt.Sprintf("def %s(self, ", fun.Name)
 	for _, p := range fun.Params {
 		code += p.Name + ", "
@@ -43,7 +43,7 @@ func generateFuncFunctionSignature(fun *fbdl.Func) string {
 	return code
 }
 
-func generateFuncParamAccessList(fun *fbdl.Func) string {
+func genFuncParamAccessList(fun *fbdl.Func) string {
 	if len(fun.Params) == 0 {
 		return "None,"
 	}
@@ -78,14 +78,14 @@ func generateFuncParamAccessList(fun *fbdl.Func) string {
 	return code
 }
 
-func generateFuncReturnAccessList(fun *fbdl.Func) string {
+func genFuncReturnAccessList(fun *fbdl.Func) string {
 	return "None"
 }
 
-// generateFuncSingleSingle generates function body for func which all parameters are of type AccessSingleSingle.
+// genFuncSingleSingle generates function body for func which all parameters are of type AccessSingleSingle.
 // In such case there is no Python for loop as it is relatiely easy to unroll during code generation.
-func generateFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
-	code := generateFuncFunctionSignature(fun)
+func genFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
+	code := genFuncFunctionSignature(fun)
 
 	val := ""
 	for i, p := range fun.Params {

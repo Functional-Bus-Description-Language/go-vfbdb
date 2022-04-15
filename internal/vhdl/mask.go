@@ -6,19 +6,19 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateMask(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
+func genMask(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 	if mask.IsArray {
-		generateMaskArray(mask, fmts)
+		genMaskArray(mask, fmts)
 	} else {
-		generateMaskSingle(mask, fmts)
+		genMaskSingle(mask, fmts)
 	}
 }
 
-func generateMaskArray(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
+func genMaskArray(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func generateMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
+func genMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 	dflt := ""
 	if mask.Default != "" {
 		dflt = fmt.Sprintf(" := %s", mask.Default.Extend(mask.Width))
@@ -29,13 +29,13 @@ func generateMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 
 	switch mask.Access.(type) {
 	case fbdl.AccessSingleSingle:
-		generateMaskSingleSingle(mask, fmts)
+		genMaskSingleSingle(mask, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
 }
 
-func generateMaskSingleSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
+func genMaskSingleSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 	access := mask.Access.(fbdl.AccessSingleSingle)
 	accessMask := access.Mask
 

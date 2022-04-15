@@ -27,11 +27,11 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	var wg sync.WaitGroup
 	defer wg.Wait()
 
-	generateWbfbdPackage(pkgsConsts)
+	genWbfbdPackage(pkgsConsts)
 
 	for _, be := range blockEntities {
 		wg.Add(1)
-		go generateBlock(be, &wg)
+		go genBlock(be, &wg)
 	}
 }
 

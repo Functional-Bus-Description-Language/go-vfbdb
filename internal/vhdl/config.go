@@ -6,19 +6,19 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateConfig(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfig(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	if cfg.IsArray {
-		generateConfigArray(cfg, fmts)
+		genConfigArray(cfg, fmts)
 	} else {
-		generateConfigSingle(cfg, fmts)
+		genConfigSingle(cfg, fmts)
 	}
 }
 
-func generateConfigArray(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigArray(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func generateConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	dflt := ""
 	if cfg.Default != "" {
 		dflt = fmt.Sprintf(" := %s", cfg.Default.Extend(cfg.Width))
@@ -29,15 +29,15 @@ func generateConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 
 	switch cfg.Access.(type) {
 	case fbdl.AccessSingleSingle:
-		generateConfigSingleSingle(cfg, fmts)
+		genConfigSingleSingle(cfg, fmts)
 	case fbdl.AccessSingleContinuous:
-		generateConfigSingleContinuous(cfg, fmts)
+		genConfigSingleContinuous(cfg, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
 }
 
-func generateConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	access := cfg.Access.(fbdl.AccessSingleSingle)
 	mask := access.Mask
 
@@ -52,15 +52,15 @@ func generateConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add([2]int64{access.Addr, access.Addr}, code)
 }
 
-func generateConfigSingleContinuous(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleContinuous(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	if cfg.Atomic == true {
-		generateConfigSingleContinuousAtomic(cfg, fmts)
+		genConfigSingleContinuousAtomic(cfg, fmts)
 	} else {
-		generateConfigSingleContinuousNonAtomic(cfg, fmts)
+		genConfigSingleContinuousNonAtomic(cfg, fmts)
 	}
 }
 
-func generateConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(fbdl.AccessSingleContinuous)
 	strategy := SeparateLast
 	atomicShadowRange := [2]int64{cfg.Width - 1 - a.EndMask.Width(), 0}
@@ -102,7 +102,7 @@ func generateConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFor
 	}
 }
 
-func generateConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(fbdl.AccessSingleContinuous)
 	chunks := makeAccessChunksContinuous(a, Compact)
 

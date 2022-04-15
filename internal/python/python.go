@@ -35,9 +35,9 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 		log.Fatalf("generate Python: %v", err)
 	}
 
-	code := generateBlock(bus)
+	code := genBlock(bus)
 
-	code += generatePkgConsts(pkgsConsts)
+	code += genPkgConsts(pkgsConsts)
 
 	f, err := os.Create(outputPath + "wbfbd.py")
 	if err != nil {

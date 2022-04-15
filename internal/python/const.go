@@ -5,7 +5,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-func generateConsts(cc fbdl.ConstContainer) string {
+func genConsts(cc fbdl.ConstContainer) string {
 	s := ""
 
 	for name, b := range cc.BoolConsts {
