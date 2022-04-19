@@ -57,8 +57,8 @@ func main() {
 		vhdl.Generate(bus, pkgsConsts, cmdLineArgs["vhdl"])
 	}
 
-	if _, ok := cmdLineArgs["global"]["--fusesoc"]; ok {
-		generateFuseSocCoreFile(cmdLineArgs["global"]["--fusesoc-vlnv"])
+	if _, ok := cmdLineArgs["global"]["-fusesoc"]; ok {
+		generateFuseSocCoreFile(cmdLineArgs["global"]["-fusesoc-vlnv"])
 	}
 }
 
