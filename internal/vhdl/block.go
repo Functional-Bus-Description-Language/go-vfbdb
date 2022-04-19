@@ -15,7 +15,6 @@ import (
 
 //go:embed templates/blockEntity.vhd
 var blockEntityTmplStr string
-
 var blockEntityTmpl = template.Must(template.New("VHDL entity").Parse(blockEntityTmplStr))
 
 type BlockEntityFormatters struct {

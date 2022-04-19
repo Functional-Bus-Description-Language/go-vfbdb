@@ -22,7 +22,6 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	}
 
 	blocks := utils.CollectBlocks(bus, nil, []string{})
-
 	utils.ResolveBlockNameConflicts(blocks)
 
 	var wg sync.WaitGroup
@@ -30,8 +29,8 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 
 	genWbfbdPackage(pkgsConsts)
 
-	for _, be := range blocks {
+	for _, b := range blocks {
 		wg.Add(1)
-		go genBlock(be, &wg)
+		go genBlock(b, &wg)
 	}
 }

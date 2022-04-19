@@ -4,22 +4,23 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
+	"math"
 	"os"
 	"text/template"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/c"
 	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/utils"
 	"strconv"
+	"sync"
 )
 
 var busWidth int64
 var outputPath string
 
-// addrSize and dataSize are used only when address or data are too wide
-// to be represented as basic type, and they must be represented as array.
-// NOTE: Handling such cases is not yet implemented.
-var addrSize int // Size of address array
-var dataSize int // Size of data array
+var addrType c.Type
+var readDataType c.Type
+var writeDataType c.Type
 
 //go:embed templates/wbfbd.h
 var wbfbdHeaderTmplStr string
@@ -48,10 +49,16 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	}
 	defer f.Close()
 
+	addrType = c.WidthToWriteType(
+		int64(math.Log2(float64(bus.Sizes.BlockAligned))),
+	)
+	readDataType = c.WidthToReadType(bus.Width)
+	writeDataType = c.WidthToWriteType(bus.Width)
+
 	fmts := wbfbdHeaderFormatters{
-		AddrType:      utils.WidthToCTypeWrite(busWidth),
-		ReadDataType:  utils.WidthToCTypeRead(bus.Width),
-		WriteDataType: utils.WidthToCTypeWrite(bus.Width),
+		AddrType:      addrType.String(),
+		ReadDataType:  readDataType.String(),
+		WriteDataType: writeDataType.String(),
 		ID:            fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
 		TIMESTAMP:     fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
 	}
@@ -59,5 +66,16 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	err = wbfbdHeaderTmpl.Execute(f, fmts)
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
+	}
+
+	blocks := utils.CollectBlocks(bus, nil, []string{})
+	utils.ResolveBlockNameConflicts(blocks)
+
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
+	for _, b := range blocks {
+		wg.Add(1)
+		go genBlock(b, &wg)
 	}
 }

@@ -8,7 +8,7 @@ const uint32_t WBFBD_TIMESTAMP = {{.TIMESTAMP}};
 
 struct wbfbd_iface_t {
 	int (*read)(const {{.AddrType}} addr, {{.ReadDataType}} const data);
-	int (*write)(const {{.AddrType}} addr}, const {{.WriteDataType}} data);
+	int (*write)(const {{.AddrType}} addr, const {{.WriteDataType}} data);
 };
 
 #define wbfbd_read(elem, data) (wbfbd_ ## elem ## _read(WBFBD_IFACE, data))
