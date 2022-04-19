@@ -10,30 +10,8 @@ import (
 	"text/template"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/utils"
 )
-
-type BlockEntity struct {
-	Name      string
-	NameLevel int
-	Path      []string
-	Block     *fbdl.Block
-}
-
-// Rename renames BlockEntity based on the NameLevel and Path.
-// NameLevel indicates how many Path elements should be included in the Name.
-// NameLevel field is incremented internally. Path elements are taken from the end.
-func (be *BlockEntity) Rename() {
-	if be.NameLevel < len(be.Path) {
-		be.NameLevel += 1
-	}
-
-	name := be.Path[len(be.Path)-1]
-	for i := 1; i < be.NameLevel; i++ {
-		name = be.Path[len(be.Path)-i-1] + "_" + name
-	}
-
-	be.Name = name
-}
 
 //go:embed templates/blockEntity.vhd
 var blockEntityTmplStr string
@@ -71,50 +49,50 @@ type BlockEntityFormatters struct {
 	DefaultValues string
 }
 
-func genBlock(be BlockEntity, wg *sync.WaitGroup) {
+func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	fmts := BlockEntityFormatters{
 		BusWidth:              busWidth,
-		EntityName:            be.Name,
-		MastersCount:          be.Block.Masters,
-		RegistersCount:        be.Block.Sizes.Own,
-		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(be.Block.Sizes.Own)))),
+		EntityName:            b.Name,
+		MastersCount:          b.Block.Masters,
+		RegistersCount:        b.Block.Sizes.Own,
+		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(b.Block.Sizes.Own)))),
 		AddressValues:         fmt.Sprintf("0 => \"%032b\"", 0),
 		RegistersAccess:       make(RegisterMap),
 	}
 
-	addrBitsCount := int(math.Log2(float64(be.Block.Sizes.BlockAligned)))
+	addrBitsCount := int(math.Log2(float64(b.Block.Sizes.BlockAligned)))
 
 	mask := 0
-	if len(be.Block.Subblocks) > 0 {
+	if len(b.Block.Subblocks) > 0 {
 		mask = ((1 << addrBitsCount) - 1) ^ ((1 << fmts.InternalAddrBitsCount) - 1)
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
 
-	genConsts(be.Block, &fmts)
+	genConsts(b.Block, &fmts)
 
-	for _, sb := range be.Block.Subblocks {
-		genSubblock(sb, be.Block.AddrSpace.Start(), addrBitsCount, &fmts)
+	for _, sb := range b.Block.Subblocks {
+		genSubblock(sb, b.Block.AddrSpace.Start(), addrBitsCount, &fmts)
 	}
 
-	for _, fun := range be.Block.Funcs {
+	for _, fun := range b.Block.Funcs {
 		genFunc(fun, &fmts)
 	}
 
-	for _, st := range be.Block.Statuses {
+	for _, st := range b.Block.Statuses {
 		genStatus(st, &fmts)
 	}
 
-	for _, cfg := range be.Block.Configs {
+	for _, cfg := range b.Block.Configs {
 		genConfig(cfg, &fmts)
 	}
 
-	for _, mask := range be.Block.Masks {
+	for _, mask := range b.Block.Masks {
 		genMask(mask, &fmts)
 	}
 
-	filePath := outputPath + be.Name + ".vhd"
+	filePath := outputPath + b.Name + ".vhd"
 	f, err := os.Create(filePath)
 	if err != nil {
 		log.Fatalf("generate VHDL: %v", err)
