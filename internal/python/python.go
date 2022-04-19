@@ -16,7 +16,6 @@ var outputPath string
 
 //go:embed templates/wbfbd.py
 var pythonTmplStr string
-
 var pythonTmpl = template.Must(template.New("Python module").Parse(pythonTmplStr))
 
 type pythonFormatters struct {

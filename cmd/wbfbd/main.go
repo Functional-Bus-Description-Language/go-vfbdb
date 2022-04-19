@@ -4,6 +4,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 
 	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/args"
+	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/csync"
 	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/python"
 	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/vhdl"
 
@@ -44,12 +45,16 @@ func main() {
 
 	bus, pkgsConsts := fbdl.Compile(cmdLineArgs["global"]["main"])
 
-	if _, ok := cmdLineArgs["vhdl"]; ok {
-		vhdl.Generate(bus, pkgsConsts, cmdLineArgs["vhdl"])
+	if _, ok := cmdLineArgs["c-sync"]; ok {
+		csync.Generate(bus, pkgsConsts, cmdLineArgs["c-sync"])
 	}
 
 	if _, ok := cmdLineArgs["python"]; ok {
 		python.Generate(bus, pkgsConsts, cmdLineArgs["python"])
+	}
+
+	if _, ok := cmdLineArgs["vhdl"]; ok {
+		vhdl.Generate(bus, pkgsConsts, cmdLineArgs["vhdl"])
 	}
 
 	if _, ok := cmdLineArgs["global"]["--fusesoc"]; ok {

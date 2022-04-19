@@ -8,7 +8,7 @@ import (
 var helpMsg string = `Functional Bus Description Language compiler back-end for Wishbone written in Go.
 Version: %s
 
-Supported targets: python, vhdl.
+Supported targets: c-sync, python, vhdl.
 To check valid flags and Parameters for a given target type: 'wbfbd {target} -help'.
 
 Usage:
@@ -41,14 +41,30 @@ func printHelp() {
 
 func printTargetHelp(target string) {
 	switch target {
+	case "c-sync":
+		fmt.Printf(csyncHelpMsg)
 	case "python":
-		printPythonHelp()
+		fmt.Printf(pythonHelpMsg)
 	case "vhdl":
-		printVHDLHelp()
+		fmt.Printf(vhdlHelpMsg)
 	default:
 		panic("should never happen")
 	}
+
+	os.Exit(0)
 }
+
+var csyncHelpMsg string = `Wbfbd help for C-Sync target.
+C-Sync target is a C language target with synchronous (blocking) interface
+functions.
+
+Flags:
+  -help        Display help.
+  -no-asserts  Do not include asserts. Not yet implemented.
+
+Parameters:
+  -path  Path for output files.
+`
 
 var pythonHelpMsg string = `Wbfbd help for Python target.
 
@@ -60,11 +76,6 @@ Parameters:
   -path  Path for output files.
 `
 
-func printPythonHelp() {
-	fmt.Printf(pythonHelpMsg)
-	os.Exit(0)
-}
-
 var vhdlHelpMsg string = `Wbfbd help for VHDL target.
 
 Flags:
@@ -74,8 +85,3 @@ Flags:
 Parameters:
   -path  Path for output files.
 `
-
-func printVHDLHelp() {
-	fmt.Printf(vhdlHelpMsg)
-	os.Exit(0)
-}

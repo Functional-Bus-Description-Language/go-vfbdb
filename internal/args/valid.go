@@ -2,6 +2,7 @@ package args
 
 func isValidTarget(target string) bool {
 	validTargets := map[string]bool{
+		"c-sync": true,
 		"python": true,
 		"vhdl":   true,
 	}
@@ -15,6 +16,8 @@ func isValidTarget(target string) bool {
 
 func isValidFlag(flag string, target string) bool {
 	switch target {
+	case "c-sync":
+		return isValidFlagCSync(flag)
 	case "python":
 		return isValidFlagPython(flag)
 	case "vhdl":
@@ -22,6 +25,19 @@ func isValidFlag(flag string, target string) bool {
 	default:
 		panic("should never happen")
 	}
+}
+
+func isValidFlagCSync(flag string) bool {
+	validFlags := map[string]bool{
+		"-help":       true,
+		"-no-asserts": true,
+	}
+
+	if _, ok := validFlags[flag]; ok {
+		return true
+	}
+
+	return false
 }
 
 func isValidFlagPython(flag string) bool {
@@ -56,10 +72,24 @@ func isValidParam(param string, target string) bool {
 	}
 
 	switch target {
+	case "c-sync":
+		return isValidParamCSync(param)
 	case "python":
 		return isValidParamPython(param)
 	case "vhdl":
 		return isValidParamVHDL(param)
+	}
+
+	return false
+}
+
+func isValidParamCSync(param string) bool {
+	validParams := map[string]bool{
+		"-path": true,
+	}
+
+	if _, ok := validParams[param]; ok {
+		return true
 	}
 
 	return false
