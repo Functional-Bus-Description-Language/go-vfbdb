@@ -14,11 +14,11 @@ import (
 
 //go:embed templates/block.h
 var blockHeaderTmplStr string
-var blockHeaderTmpl = template.Must(template.New("VHDL entity").Parse(blockHeaderTmplStr))
+var blockHeaderTmpl = template.Must(template.New("C-Sync header").Parse(blockHeaderTmplStr))
 
 //go:embed templates/block.c
 var blockSourceTmplStr string
-var blockSourceTmpl = template.Must(template.New("VHDL entity").Parse(blockSourceTmplStr))
+var blockSourceTmpl = template.Must(template.New("C-Sync source").Parse(blockSourceTmplStr))
 
 type BlockHeaderFormatters struct {
 	BlockName string
@@ -60,7 +60,7 @@ func genBlockHeader(b utils.Block, hFmts BlockHeaderFormatters) {
 }
 
 func genBlockSource(b utils.Block, srcFmts BlockSourceFormatters) {
-	f, err := os.Create(outputPath + fmt.Sprintf("%s.h", b.Name))
+	f, err := os.Create(outputPath + fmt.Sprintf("%s.c", b.Name))
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}

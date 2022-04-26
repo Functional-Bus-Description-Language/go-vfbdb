@@ -29,23 +29,23 @@ func genStatusSingle(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *Blo
 func genStatusSingleSingle(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
 	typ := c.WidthToReadType(st.Width)
 	signature := fmt.Sprintf(
-		"\n\nint wbfbd_%s_%s_read(const struct wbfbd_iface_t * const iface, %s const data)",
+		"\n\nint wbfbd_%s_%s_read(const wbfbd_iface_t * const iface, %s const data)",
 		hFmts.BlockName, st.Name, typ.String(),
 	)
 
-	hFmts.Code += fmt.Sprintf("%s;\n", signature)
+	hFmts.Code += fmt.Sprintf("%s;", signature)
 
 	access := st.Access.(fbdl.AccessSingleSingle)
 	srcFmts.Code += fmt.Sprintf("%s {\n", signature)
 	if readDataType.Typ() != "ByteArray" && typ.Typ() != "ByteArray" {
 		if busWidth == st.Width {
 			srcFmts.Code += fmt.Sprintf(
-				"\treturn iface.read(%d, data);\n};", access.Addr,
+				"\treturn iface->read(%d, data);\n};", access.Addr,
 			)
 		} else {
 			srcFmts.Code += fmt.Sprintf(`	int err;
 	%s aux;
-	err = iface.read(%d, &aux);
+	err = iface->read(%d, &aux);
 	if (err) {
 		return err;
 	}

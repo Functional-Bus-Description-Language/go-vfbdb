@@ -3,13 +3,15 @@
 
 #include <stdint.h>
 
-const uint32_t WBFBD_ID = {{.ID}};
-const uint32_t WBFBD_TIMESTAMP = {{.TIMESTAMP}};
+typedef {{.AddrType}} wbfbd_addr_t;
 
-struct wbfbd_iface_t {
-	int (*read)(const {{.AddrType}} addr, {{.ReadDataType}} const data);
-	int (*write)(const {{.AddrType}} addr, const {{.WriteDataType}} data);
-};
+extern const uint32_t WBFBD_ID;
+extern const uint32_t WBFBD_TIMESTAMP;
+
+typedef struct {
+	int (*read)(const wbfbd_addr_t addr, {{.ReadDataType}} const data);
+	int (*write)(const wbfbd_addr_t addr, const {{.WriteDataType}} data);
+} wbfbd_iface_t;
 
 #define wbfbd_read(elem, data) (wbfbd_ ## elem ## _read(WBFBD_IFACE, data))
 #define wbfbd_write(elem, data) (wbfbd_ ## elem ## _write(WBFBD_IFACE, data))

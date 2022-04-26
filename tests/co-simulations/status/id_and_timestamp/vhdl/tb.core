@@ -19,7 +19,7 @@ targets:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
-      - wbfbd_regs
+      - python
     filesets:
       - wbfbd_dep
       - tb_cosim
@@ -28,12 +28,31 @@ targets:
     parameters:
       - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/status/id_and_timestamp/python_vhdl
       - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/status/id_and_timestamp/vhdl_python
+  tb_cosim_c-sync:
+    default_tool: ghdl
+    toplevel: tb_cosim
+    generate:
+      - c-sync
+    filesets:
+      - wbfbd_dep
+      - tb_cosim
+    hooks:
+      pre_run: [tb_cosim_c-sync]
+    parameters:
+      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/status/id_and_timestamp/c-sync_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/status/id_and_timestamp/vhdl_c-sync
 
 generate:
-  wbfbd_regs:
+  python:
     generator: wbfbd
     parameters:
       python: [-path, ../../../../../build/wbfbd/status/id_and_timestamp/python/vhdl]
+      vhdl: []
+      main: ../bus.fbd
+  c-sync:
+    generator: wbfbd
+    parameters:
+      c-sync: [-path, ../../../../../build/wbfbd/status/id_and_timestamp/c-sync/vhdl/wbfbd]
       vhdl: []
       main: ../bus.fbd
 
@@ -49,6 +68,12 @@ scripts:
   tb_cosim_python:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
+      - status
+      - id_and_timestamp
+      - vhdl
+  tb_cosim_c-sync:
+    cmd:
+      - ../../../tests/co-simulations/common/c-sync/tb_cosim.sh
       - status
       - id_and_timestamp
       - vhdl

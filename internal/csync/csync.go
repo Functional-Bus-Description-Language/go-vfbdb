@@ -26,12 +26,19 @@ var writeDataType c.Type
 var wbfbdHeaderTmplStr string
 var wbfbdHeaderTmpl = template.Must(template.New("C-Sync wbfbd.h").Parse(wbfbdHeaderTmplStr))
 
+//go:embed templates/wbfbd.c
+var wbfbdSourceTmplStr string
+var wbfbdSourceTmpl = template.Must(template.New("C-Sync wbfbd.c").Parse(wbfbdSourceTmplStr))
+
 type wbfbdHeaderFormatters struct {
 	AddrType      string
 	ReadDataType  string
 	WriteDataType string
-	ID            string
-	TIMESTAMP     string
+}
+
+type wbfbdSourceFormatters struct {
+	ID        string
+	TIMESTAMP string
 }
 
 func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
@@ -43,11 +50,11 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 		log.Fatalf("generate C-Sync: %v", err)
 	}
 
-	f, err := os.Create(outputPath + "wbfbd.h")
+	hFile, err := os.Create(outputPath + "wbfbd.h")
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}
-	defer f.Close()
+	defer hFile.Close()
 
 	addrType = c.WidthToWriteType(
 		int64(math.Log2(float64(bus.Sizes.BlockAligned))),
@@ -55,15 +62,29 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	readDataType = c.WidthToReadType(bus.Width)
 	writeDataType = c.WidthToWriteType(bus.Width)
 
-	fmts := wbfbdHeaderFormatters{
+	hFmts := wbfbdHeaderFormatters{
 		AddrType:      addrType.String(),
 		ReadDataType:  readDataType.String(),
 		WriteDataType: writeDataType.String(),
-		ID:            fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
-		TIMESTAMP:     fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
 	}
 
-	err = wbfbdHeaderTmpl.Execute(f, fmts)
+	err = wbfbdHeaderTmpl.Execute(hFile, hFmts)
+	if err != nil {
+		log.Fatalf("generate C-Sync: %v", err)
+	}
+
+	srcFile, err := os.Create(outputPath + "wbfbd.c")
+	if err != nil {
+		log.Fatalf("generate C-Sync: %v", err)
+	}
+	defer srcFile.Close()
+
+	srcFmts := wbfbdSourceFormatters{
+		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
+		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
+	}
+
+	err = wbfbdSourceTmpl.Execute(srcFile, srcFmts)
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}

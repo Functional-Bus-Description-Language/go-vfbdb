@@ -138,7 +138,7 @@ package body cosim is
                flush(wr_pipe);
 
                if end_status /= 0 then
-                  failure("End status " & integer'image(end_status) & ", check Python log: /tmp/go-wbfbd/...");
+                  failure("End status " & integer'image(end_status) & ", check proper log in /tmp/go-wbfbd/...");
                end if;
 
                file_close(rd_pipe);
