@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 	uint32_t timestamp;
 	wbfbd_read(Main_TIMESTAMP, &timestamp);
 	if (timestamp != WBFBD_TIMESTAMP) {
-		fprintf(stderr, "read wrong TIMESTAMP %x, expecting %x\n", id, WBFBD_ID);
+		fprintf(stderr, "read wrong TIMESTAMP %x, expecting %x\n", id, WBFBD_TIMESTAMP);
 		cosim_iface_end(1);
 	}
 
