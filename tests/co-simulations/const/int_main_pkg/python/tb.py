@@ -2,7 +2,7 @@ import sys
 import traceback
 
 from cosim_interface import CosimInterface
-import wbfbd
+import vfbdb
 
 
 WRITE_FIFO_PATH = sys.argv[1]
@@ -13,21 +13,21 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    Main = wbfbd.Main(cosim_interface)
+    Main = vfbdb.Main(cosim_interface)
 
 
     print("\n\nTesting int constant")
     print("Reading St register")
     read = Main.St.read()
     assert (
-        read == wbfbd.mainPkg.C
-    ), f"read value {read} differs from constant value {wbfbd.mainPkg.C}"
+        read == vfbdb.mainPkg.C
+    ), f"read value {read} differs from constant value {vfbdb.mainPkg.C}"
 
 
     print("\n\nTesting int list constants")
     print("Reading Stl register")
     read = Main.Stl.read()
-    for i, v in enumerate(wbfbd.mainPkg.CL):
+    for i, v in enumerate(vfbdb.mainPkg.CL):
         assert (
             read[i] == v
         ), f"read value {read[i]} differs from constant value {v}"

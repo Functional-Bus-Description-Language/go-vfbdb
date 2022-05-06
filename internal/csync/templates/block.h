@@ -1,5 +1,5 @@
-#ifndef _WBFBD_{{.BlockName}}_H_
+#ifndef _VFBDB_{{.BlockName}}_H_
 
-#include "wbfbd.h"{{.Code}}
+#include "vfbdb.h"{{.Code}}
 
-#endif // _WBFBD_{{.BlockName}}_H_
+#endif // _VFBDB_{{.BlockName}}_H_

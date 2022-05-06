@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """
-FuseSoc wrapper for wbfbd.
+FuseSoc wrapper for vfbdb.
 """
 
 import os
@@ -21,7 +21,7 @@ if __name__ == "__main__":
         print("ERROR: Input .fbd main file ('main' parameter) musts be specified!")
         sys.exit(1)
 
-    args = ['wbfbd', '-fusesoc', '-fusesoc-vlnv', config['vlnv']]
+    args = ['vfbdb', '-fusesoc', '-fusesoc-vlnv', config['vlnv']]
 
     for param, val in config['parameters'].items():
         if param in ['global', 'main']:

@@ -69,7 +69,7 @@ static void cosim_iface_wait(uint32_t time_ns) {
 	}
 }
 
-static int cosim_iface_write(const wbfbd_addr_t addr, const uint32_t data) {
+static int cosim_iface_write(const vfbdb_addr_t addr, const uint32_t data) {
 	if (delay_function) {
 		cosim_iface_wait(delay_function());
 	}
@@ -114,7 +114,7 @@ static uint32_t bin_to_uint32(const char * const s) {
 	return u32;
 }
 
-static int cosim_iface_read(const wbfbd_addr_t addr, uint32_t * const data) {
+static int cosim_iface_read(const vfbdb_addr_t addr, uint32_t * const data) {
 	if (delay_function) {
 		cosim_iface_wait(delay_function());
 	}
@@ -185,8 +185,8 @@ void cosim_iface_init(char *wr_fifo_path, char *rd_fifo_path, delay_function_t d
 	}
 }
 
-wbfbd_iface_t cosim_iface_iface(void) {
-	wbfbd_iface_t iface = {
+vfbdb_iface_t cosim_iface_iface(void) {
+	vfbdb_iface_t iface = {
 		read: cosim_iface_read,
 		write: cosim_iface_write
 	};

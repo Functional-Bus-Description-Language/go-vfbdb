@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/c"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 )
 
 func genStatus(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
@@ -29,7 +29,7 @@ func genStatusSingle(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *Blo
 func genStatusSingleSingle(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
 	typ := c.WidthToReadType(st.Width)
 	signature := fmt.Sprintf(
-		"\n\nint wbfbd_%s_%s_read(const wbfbd_iface_t * const iface, %s const data)",
+		"\n\nint vfbdb_%s_%s_read(const vfbdb_iface_t * const iface, %s const data)",
 		hFmts.BlockName, st.Name, typ.String(),
 	)
 

@@ -1,4 +1,4 @@
-module github.com/Functional-Bus-Description-Language/go-wbfbd
+module github.com/Functional-Bus-Description-Language/go-vfbdb
 
 go 1.17
 

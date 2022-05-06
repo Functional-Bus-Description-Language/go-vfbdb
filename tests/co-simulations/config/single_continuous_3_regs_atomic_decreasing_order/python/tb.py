@@ -2,7 +2,7 @@ import sys
 import traceback
 
 from cosim_interface import CosimInterface
-import wbfbd
+import vfbdb
 
 
 WRITE_FIFO_PATH = sys.argv[1]
@@ -13,9 +13,9 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    Main = wbfbd.Main(cosim_interface)
+    Main = vfbdb.Main(cosim_interface)
 
-    value = 2 ** wbfbd.mainPkg.WIDTH - 1
+    value = 2 ** vfbdb.mainPkg.WIDTH - 1
 
     print(f"Writing VALID_VALUE ({value}) to Cfg register")
     Main.Cfg.write(value)

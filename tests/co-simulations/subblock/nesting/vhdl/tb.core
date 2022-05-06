@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: wbfbd:vhdl:subblock_nesting
+name: vfbdb:vhdl:subblock_nesting
 
 filesets:
   tb_cosim:
@@ -10,30 +10,30 @@ filesets:
     depend:
       - vhdl::cosim
 
-  wbfbd_dep:
+  vfbdb_dep:
     depend:
-      - fbdl::wbfbd
+      - fbdl::vfbdb
 
 targets:
   tb_cosim_python:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
-      - wbfbd_regs
+      - vfbdb_regs
     filesets:
-      - wbfbd_dep
+      - vfbdb_dep
       - tb_cosim
     hooks:
       pre_run: [tb_cosim_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/subblock/nesting/python_vhdl
-      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/subblock/nesting/vhdl_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/subblock/nesting/python_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/subblock/nesting/vhdl_python
 
 generate:
-  wbfbd_regs:
-    generator: wbfbd
+  vfbdb_regs:
+    generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/wbfbd/subblock/nesting/python/vhdl]
+      python: [-path, ../../../../../build/vfbdb/subblock/nesting/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 

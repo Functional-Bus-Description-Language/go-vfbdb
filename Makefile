@@ -1,4 +1,4 @@
-PROJECT_NAME=wbfbd
+PROJECT_NAME=vfbdb
 
 .PHONY: default all build help fmt vet install uninstall
 
@@ -20,7 +20,7 @@ help:
 all: fmt vet build
 
 build:
-	go build -v -o $(PROJECT_NAME) ./cmd/wbfbd
+	go build -v -o $(PROJECT_NAME) ./cmd/vfbdb
 
 fmt:
 	go fmt ./...

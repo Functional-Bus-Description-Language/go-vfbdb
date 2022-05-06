@@ -7,7 +7,7 @@ import (
 	"os"
 	"sync"
 
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/utils"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 
 	"text/template"
 )

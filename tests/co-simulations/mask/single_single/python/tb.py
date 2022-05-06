@@ -1,7 +1,7 @@
 import sys
 
 from cosim_interface import CosimInterface
-import wbfbd
+import vfbdb
 
 
 WRITE_FIFO_PATH = sys.argv[1]
@@ -12,9 +12,9 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    Main = wbfbd.Main(cosim_interface)
+    Main = vfbdb.Main(cosim_interface)
 
-    max_val = 2 ** wbfbd.Main.WIDTH - 1
+    max_val = 2 ** vfbdb.Main.WIDTH - 1
 
     print("\nTesting Mask setting")
 

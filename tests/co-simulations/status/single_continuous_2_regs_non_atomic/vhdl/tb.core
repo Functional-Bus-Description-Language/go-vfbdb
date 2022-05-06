@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: wbfbd:vhdl:status_single_continuous_2_regs_non_atomic
+name: vfbdb:vhdl:status_single_continuous_2_regs_non_atomic
 
 filesets:
   tb_cosim:
@@ -10,30 +10,30 @@ filesets:
     depend:
       - vhdl::cosim
 
-  wbfbd_dep:
+  vfbdb_dep:
     depend:
-      - fbdl::wbfbd
+      - fbdl::vfbdb
 
 targets:
   tb_cosim_python:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
-      - wbfbd_regs
+      - vfbdb_regs
     filesets:
-      - wbfbd_dep
+      - vfbdb_dep
       - tb_cosim
     hooks:
       pre_run: [tb_cosim_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-wbfbd/status/single_continuous_2_regs_non_atomic/python_vhdl
-      - G_GW_SW_FIFO_PATH=/tmp/go-wbfbd/status/single_continuous_2_regs_non_atomic/vhdl_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/single_continuous_2_regs_non_atomic/python_vhdl
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/single_continuous_2_regs_non_atomic/vhdl_python
 
 generate:
-  wbfbd_regs:
-    generator: wbfbd
+  vfbdb_regs:
+    generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/wbfbd/status/single_continuous_2_regs_non_atomic/python/vhdl]
+      python: [-path, ../../../../../build/vfbdb/status/single_continuous_2_regs_non_atomic/python/vhdl]
       vhdl: []
       main: ../bus.fbd
 

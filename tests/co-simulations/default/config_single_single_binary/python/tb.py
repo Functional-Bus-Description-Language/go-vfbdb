@@ -1,7 +1,7 @@
 import sys
 
 from cosim_interface import CosimInterface
-import wbfbd
+import vfbdb
 
 
 WRITE_FIFO_PATH = sys.argv[1]
@@ -12,7 +12,7 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    Main = wbfbd.Main(cosim_interface)
+    Main = vfbdb.Main(cosim_interface)
 
     expected0 = 0b010101
     expected1 = 0b11

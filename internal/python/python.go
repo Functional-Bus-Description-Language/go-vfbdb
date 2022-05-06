@@ -14,7 +14,7 @@ import (
 var busWidth int64
 var outputPath string
 
-//go:embed templates/wbfbd.py
+//go:embed templates/vfbdb.py
 var pythonTmplStr string
 var pythonTmpl = template.Must(template.New("Python module").Parse(pythonTmplStr))
 
@@ -38,7 +38,7 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 
 	code += genPkgConsts(pkgsConsts)
 
-	f, err := os.Create(outputPath + "wbfbd.py")
+	f, err := os.Create(outputPath + "vfbdb.py")
 	if err != nil {
 		log.Fatalf("generate Python: %v", err)
 	}

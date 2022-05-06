@@ -29,9 +29,9 @@ func Parse() map[string]map[string]string {
 			printVersion()
 		default:
 			if isValidTarget(arg) {
-				log.Fatalf("missing main file, check 'wbfbd -help'")
+				log.Fatalf("missing main file, check 'vfbdb -help'")
 			} else {
-				log.Fatalf("'%s' is not valid target, check 'wbfbd -help'", arg)
+				log.Fatalf("'%s' is not valid target, check 'vfbdb -help'", arg)
 			}
 		}
 	}
@@ -87,7 +87,7 @@ func Parse() map[string]map[string]string {
 			expectArg == false {
 			log.Fatalf(
 				"'%s' is not valid flag or parameter for '%s' target, "+
-					"run 'wbfbd %[2]s -help' to see valid flags and parameters",
+					"run 'vfbdb %[2]s -help' to see valid flags and parameters",
 				arg, currentTarget,
 			)
 		} else if arg == "-help" {
@@ -108,11 +108,11 @@ func Parse() map[string]map[string]string {
 
 	// Default values handling.
 	if _, exists := args["global"]["-path"]; !exists {
-		args["global"]["-path"] = "wbfbd"
+		args["global"]["-path"] = "vfbdb"
 	}
 
 	if len(args) == 1 {
-		fmt.Println("No target specified, run 'wbfbd -help' to check valid targets.")
+		fmt.Println("No target specified, run 'vfbdb -help' to check valid targets.")
 		os.Exit(1)
 	}
 

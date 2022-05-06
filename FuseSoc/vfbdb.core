@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: fbdl::wbfbd
+name: fbdl::vfbdb
 
 filesets:
   rtl:
@@ -9,10 +9,10 @@ filesets:
       - cern:general_cores:xwb_crossbar:0.0.0
 
 generators:
-  wbfbd:
+  vfbdb:
     interpreter: python3
-    command: wbfbd.py
-    description: Generator for Functional Bus Description Language compiler for Wishbone backend.
+    command: vfbdb.py
+    description: Generator for versatile Functional Bus Description Language compiler backend.
 
 targets:
   default:

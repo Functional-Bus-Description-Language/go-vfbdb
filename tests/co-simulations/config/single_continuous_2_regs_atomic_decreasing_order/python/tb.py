@@ -1,7 +1,7 @@
 import sys
 
 from cosim_interface import CosimInterface
-import wbfbd
+import vfbdb
 
 
 WRITE_FIFO_PATH = sys.argv[1]
@@ -12,14 +12,14 @@ cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 try:
     print("\nstarting cosimulation")
 
-    Main = wbfbd.Main(cosim_interface)
+    Main = vfbdb.Main(cosim_interface)
 
-    print(f"Writing VALID_VALUE ({wbfbd.mainPkg.VALID_VALUE}) to Cfg register")
-    Main.Cfg.write(wbfbd.mainPkg.VALID_VALUE)
+    print(f"Writing VALID_VALUE ({vfbdb.mainPkg.VALID_VALUE}) to Cfg register")
+    Main.Cfg.write(vfbdb.mainPkg.VALID_VALUE)
 
     print("Reading Cfg")
     read_val = Main.Cfg.read()
-    if read_val != wbfbd.mainPkg.VALID_VALUE:
+    if read_val != vfbdb.mainPkg.VALID_VALUE:
         raise Exception(f"Read wrong value form Cfg {read_val}")
 
     print("\nending cosimulation")

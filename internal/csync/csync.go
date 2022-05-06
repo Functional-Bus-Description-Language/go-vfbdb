@@ -9,8 +9,8 @@ import (
 	"text/template"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/c"
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/utils"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 	"strconv"
 	"sync"
 )
@@ -22,21 +22,21 @@ var addrType c.Type
 var readDataType c.Type
 var writeDataType c.Type
 
-//go:embed templates/wbfbd.h
-var wbfbdHeaderTmplStr string
-var wbfbdHeaderTmpl = template.Must(template.New("C-Sync wbfbd.h").Parse(wbfbdHeaderTmplStr))
+//go:embed templates/vfbdb.h
+var vfbdbHeaderTmplStr string
+var vfbdbHeaderTmpl = template.Must(template.New("C-Sync vfbdb.h").Parse(vfbdbHeaderTmplStr))
 
-//go:embed templates/wbfbd.c
-var wbfbdSourceTmplStr string
-var wbfbdSourceTmpl = template.Must(template.New("C-Sync wbfbd.c").Parse(wbfbdSourceTmplStr))
+//go:embed templates/vfbdb.c
+var vfbdbSourceTmplStr string
+var vfbdbSourceTmpl = template.Must(template.New("C-Sync vfbdb.c").Parse(vfbdbSourceTmplStr))
 
-type wbfbdHeaderFormatters struct {
+type vfbdbHeaderFormatters struct {
 	AddrType      string
 	ReadDataType  string
 	WriteDataType string
 }
 
-type wbfbdSourceFormatters struct {
+type vfbdbSourceFormatters struct {
 	ID        string
 	TIMESTAMP string
 }
@@ -50,7 +50,7 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 		log.Fatalf("generate C-Sync: %v", err)
 	}
 
-	hFile, err := os.Create(outputPath + "wbfbd.h")
+	hFile, err := os.Create(outputPath + "vfbdb.h")
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}
@@ -62,29 +62,29 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	readDataType = c.WidthToReadType(bus.Width)
 	writeDataType = c.WidthToWriteType(bus.Width)
 
-	hFmts := wbfbdHeaderFormatters{
+	hFmts := vfbdbHeaderFormatters{
 		AddrType:      addrType.String(),
 		ReadDataType:  readDataType.String(),
 		WriteDataType: writeDataType.String(),
 	}
 
-	err = wbfbdHeaderTmpl.Execute(hFile, hFmts)
+	err = vfbdbHeaderTmpl.Execute(hFile, hFmts)
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}
 
-	srcFile, err := os.Create(outputPath + "wbfbd.c")
+	srcFile, err := os.Create(outputPath + "vfbdb.c")
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}
 	defer srcFile.Close()
 
-	srcFmts := wbfbdSourceFormatters{
+	srcFmts := vfbdbSourceFormatters{
 		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
 		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
 	}
 
-	err = wbfbdSourceTmpl.Execute(srcFile, srcFmts)
+	err = vfbdbSourceTmpl.Execute(srcFile, srcFmts)
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}

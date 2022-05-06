@@ -3,10 +3,10 @@ package main
 import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/args"
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/csync"
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/python"
-	"github.com/Functional-Bus-Description-Language/go-wbfbd/internal/vhdl"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/args"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/csync"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/python"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/vhdl"
 
 	"fmt"
 	"log"

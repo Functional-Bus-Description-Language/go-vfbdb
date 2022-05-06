@@ -1,7 +1,7 @@
 import sys
 
 from cosim_interface import CosimInterface
-import wbfbd
+import vfbdb
 
 WRITE_FIFO_PATH = sys.argv[1]
 READ_FIFO_PATH = sys.argv[2]
@@ -12,7 +12,7 @@ try:
 
     cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
-    Main = wbfbd.Main(cosim_interface)
+    Main = vfbdb.Main(cosim_interface)
 
     print("Testing count % iterm per access = 0 scenerio.")
 
