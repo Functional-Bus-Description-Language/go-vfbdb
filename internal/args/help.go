@@ -5,11 +5,14 @@ import (
 	"os"
 )
 
-var helpMsg string = `Functional Bus Description Language compiler back-end for Wishbone written in Go.
+var helpMsg string = `Versatile Functional Bus Description Language compiler back-end written in Go.
 Version: %s
 
-Supported targets: c-sync, python, vhdl.
-To check valid flags and Parameters for a given target type: 'vfbdb {target} -help'.
+Supported targets:
+  - c-sync    C target with synchronous (blocking) interface functions,
+  - python    Python target,
+  - vhdl-wb3  VHDL target for Wishbone compilant with revision B.3.
+To check valid flags and parameters for a given target type: 'vfbdb {target} -help'.
 
 Usage:
   vfbdb [global flag or parameter] [{{target}} [target flag or parameter] ...] ... path/to/fbd/file/with/main/bus

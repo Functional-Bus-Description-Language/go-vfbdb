@@ -2,7 +2,12 @@
 
 # go-vfbdb
 
-Functional Bus Description Language compiler back-end for Wishbone written in Go.
+Versatile Functional Bus Description Language compiler backend written in Go.
+
+Supported targets:
+- c-sync - C target with synchronous (blocking) interface functions,
+- python - Python target,
+- vhdl-wb3 - VHDL target for Wishbone compilant with revision B.3.
 
 ## Installation
 
