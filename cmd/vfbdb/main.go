@@ -6,7 +6,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/args"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/csync"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/python"
-	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/vhdl"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/vhdlwb3"
 
 	"fmt"
 	"log"
@@ -53,8 +53,8 @@ func main() {
 		python.Generate(bus, pkgsConsts, cmdLineArgs["python"])
 	}
 
-	if _, ok := cmdLineArgs["vhdl"]; ok {
-		vhdl.Generate(bus, pkgsConsts, cmdLineArgs["vhdl"])
+	if _, ok := cmdLineArgs["vhdl-wb3"]; ok {
+		vhdlwb3.Generate(bus, pkgsConsts, cmdLineArgs["vhdl-wb3"])
 	}
 
 	if _, ok := cmdLineArgs["global"]["-fusesoc"]; ok {
@@ -73,7 +73,7 @@ func generateFuseSocCoreFile(fusesocVLNV string) {
 	s += fmt.Sprintf("name: %s\n\n", fusesocVLNV)
 	s += "filesets:\n  vhdl:\n    depend: [mkru:vhdl:types]\n    file_type: vhdlSource-2008\n    logical_name: lwbfbd\n    files:\n"
 
-	for _, f := range vhdl.GeneratedFiles {
+	for _, f := range vhdlwb3.GeneratedFiles {
 		s += fmt.Sprintf("      - %s\n", f)
 	}
 

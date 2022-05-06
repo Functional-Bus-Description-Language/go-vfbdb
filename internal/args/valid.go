@@ -2,9 +2,9 @@ package args
 
 func isValidTarget(target string) bool {
 	validTargets := map[string]bool{
-		"c-sync": true,
-		"python": true,
-		"vhdl":   true,
+		"c-sync":   true,
+		"python":   true,
+		"vhdl-wb3": true,
 	}
 
 	if _, ok := validTargets[target]; ok {
@@ -20,8 +20,8 @@ func isValidFlag(flag string, target string) bool {
 		return isValidFlagCSync(flag)
 	case "python":
 		return isValidFlagPython(flag)
-	case "vhdl":
-		return isValidFlagVHDL(flag)
+	case "vhdl-wb3":
+		return isValidFlagVHDLWb3(flag)
 	default:
 		panic("should never happen")
 	}
@@ -53,7 +53,7 @@ func isValidFlagPython(flag string) bool {
 	return false
 }
 
-func isValidFlagVHDL(flag string) bool {
+func isValidFlagVHDLWb3(flag string) bool {
 	validFlags := map[string]bool{
 		"-help":   true,
 		"-no-psl": true,
@@ -76,7 +76,7 @@ func isValidParam(param string, target string) bool {
 		return isValidParamCSync(param)
 	case "python":
 		return isValidParamPython(param)
-	case "vhdl":
+	case "vhdl-wb3":
 		return isValidParamVHDL(param)
 	}
 

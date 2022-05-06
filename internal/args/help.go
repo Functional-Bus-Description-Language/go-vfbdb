@@ -48,8 +48,8 @@ func printTargetHelp(target string) {
 		fmt.Printf(csyncHelpMsg)
 	case "python":
 		fmt.Printf(pythonHelpMsg)
-	case "vhdl":
-		fmt.Printf(vhdlHelpMsg)
+	case "vhdl-wb3":
+		fmt.Printf(vhdlWb3HelpMsg)
 	default:
 		panic("should never happen")
 	}
@@ -79,7 +79,7 @@ Parameters:
   -path  Path for output files.
 `
 
-var vhdlHelpMsg string = `Vfbdb help for VHDL target.
+var vhdlWb3HelpMsg string = `Vfbdb help for VHDL target.
 
 Flags:
   -help   Display help.
