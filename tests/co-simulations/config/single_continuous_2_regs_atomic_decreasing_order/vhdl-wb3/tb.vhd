@@ -46,7 +46,7 @@ begin
    cosim_interface(G_SW_GW_FIFO_PATH, G_GW_SW_FIFO_PATH, clk, uvvm_wb_if, C_WB_BFM_CONFIG);
 
 
-   wbfbd_main : entity lwbfbd.Main
+   vfbdb_main : entity vfbdb.Main
    port map (
       clk_i => clk,
       rst_i => '0',
@@ -59,8 +59,8 @@ begin
    atomicity_guardian : process (clk) is
    begin
       if rising_edge(clk) then
-         assert cfg = ZERO or cfg = std_logic_vector(resize(wbfbd.main_pkg.VALID_VALUE, 48))
-            report "invalid value: " & to_hstring(cfg) & ", expecting: " & to_hstring(std_logic_vector(wbfbd.main_pkg.VALID_VALUE))
+         assert cfg = ZERO or cfg = std_logic_vector(resize(wb3.main_pkg.VALID_VALUE, 48))
+            report "invalid value: " & to_hstring(cfg) & ", expecting: " & to_hstring(std_logic_vector(wb3.main_pkg.VALID_VALUE))
             severity failure;
       end if;
    end process;

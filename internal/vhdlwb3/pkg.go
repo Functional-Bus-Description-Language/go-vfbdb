@@ -10,11 +10,11 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 )
 
-//go:embed templates/wbfbd.vhd
-var wbfbdPkgStr string
-var wbfbdPkgTmpl = template.Must(template.New("VHDL wbfbd package").Parse(wbfbdPkgStr))
+//go:embed templates/wb3.vhd
+var wb3PkgStr string
+var wb3PkgTmpl = template.Must(template.New("VHDL wb3 package").Parse(wb3PkgStr))
 
-type wbfbdPackageFormatters struct {
+type wb3PackageFormatters struct {
 	PkgsConsts string
 }
 
@@ -27,9 +27,9 @@ func genWb3Package(pkgsConsts map[string]fbdl.Package) {
 	}
 	defer f.Close()
 
-	fmts := wbfbdPackageFormatters{PkgsConsts: genPkgsConsts(pkgsConsts)}
+	fmts := wb3PackageFormatters{PkgsConsts: genPkgsConsts(pkgsConsts)}
 
-	err = wbfbdPkgTmpl.Execute(f, fmts)
+	err = wb3PkgTmpl.Execute(f, fmts)
 	if err != nil {
 		log.Fatalf("generate vhdl-wb3: %v", err)
 	}

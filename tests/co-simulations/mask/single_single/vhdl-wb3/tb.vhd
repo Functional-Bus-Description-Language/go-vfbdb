@@ -2,8 +2,8 @@ library work;
    context work.cosim_context;
    use work.cosim.all;
 
-library lwbfbd;
-   use lwbfbd.main_pkg;
+library vfbdb;
+   use vfbdb.main_pkg;
 
 entity tb_cosim is
    generic(
@@ -47,7 +47,7 @@ begin
    cosim_interface(G_SW_GW_FIFO_PATH, G_GW_SW_FIFO_PATH, clk, uvvm_wb_if, C_WB_BFM_CONFIG);
 
 
-   wbfbd_main : entity lwbfbd.Main
+   vfbdb_main : entity vfbdb.Main
    port map (
       clk_i => clk,
       rst_i => '0',

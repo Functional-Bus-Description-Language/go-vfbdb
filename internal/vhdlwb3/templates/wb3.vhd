@@ -6,7 +6,7 @@ library types;
    use types.types.all;
 
 
-package wbfbd is
+package wb3 is
 
 -- Packages constants
 {{.PkgsConsts}}

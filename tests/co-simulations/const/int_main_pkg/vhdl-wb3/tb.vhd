@@ -15,10 +15,10 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal st : std_logic_vector(to_integer(wbfbd.main_pkg.C) - 1 downto 0) := std_logic_vector(to_unsigned(to_integer(wbfbd.main_pkg.C), to_integer(wbfbd.main_pkg.C)));
+   signal st : std_logic_vector(to_integer(wb3.main_pkg.C) - 1 downto 0) := std_logic_vector(to_unsigned(to_integer(wb3.main_pkg.C), to_integer(wb3.main_pkg.C)));
    signal stl : slv_vector(1 downto 0)(7 downto 0) := (
-      0 => std_logic_vector(to_unsigned(to_integer(wbfbd.main_pkg.CL(0)), 8)),
-      1 => std_logic_vector(to_unsigned(to_integer(wbfbd.main_pkg.CL(1)), 8))
+      0 => std_logic_vector(to_unsigned(to_integer(wb3.main_pkg.CL(0)), 8)),
+      1 => std_logic_vector(to_unsigned(to_integer(wb3.main_pkg.CL(1)), 8))
    );
 
    -- Wishbone interfaces.
@@ -49,7 +49,7 @@ begin
    cosim_interface(G_SW_GW_FIFO_PATH, G_GW_SW_FIFO_PATH, clk, uvvm_wb_if, C_WB_BFM_CONFIG);
 
 
-   wbfbd_main : entity lwbfbd.Main
+   vfbdb_main : entity vfbdb.Main
    port map (
       clk_i => clk,
       rst_i => '0',
