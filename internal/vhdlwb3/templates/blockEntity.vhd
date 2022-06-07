@@ -79,7 +79,7 @@ port map (
 );
 
 
-register_access : process (all) is
+register_access : process (clk_i) is
 
 variable addr : natural range 0 to {{.RegistersCount}} - 1;
 
