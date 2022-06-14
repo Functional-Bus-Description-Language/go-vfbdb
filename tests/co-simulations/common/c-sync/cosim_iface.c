@@ -69,7 +69,7 @@ static void cosim_iface_wait(uint32_t time_ns) {
 	}
 }
 
-static int cosim_iface_write(const vfbdb_addr_t addr, const uint32_t data) {
+static int cosim_iface_write(const uint8_t addr, const uint32_t data) {
 	if (delay_function) {
 		cosim_iface_wait(delay_function());
 	}
@@ -114,7 +114,7 @@ static uint32_t bin_to_uint32(const char * const s) {
 	return u32;
 }
 
-static int cosim_iface_read(const vfbdb_addr_t addr, uint32_t * const data) {
+static int cosim_iface_read(const uint8_t addr, uint32_t * const data) {
 	if (delay_function) {
 		cosim_iface_wait(delay_function());
 	}
