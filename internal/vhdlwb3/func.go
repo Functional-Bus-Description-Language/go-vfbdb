@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genFunc(fun *fbdl.Func, fmts *BlockEntityFormatters) {
@@ -37,8 +38,8 @@ func genFuncPort(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 func genFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 	for _, p := range fun.Params {
 		switch p.Access.(type) {
-		case fbdl.AccessSingleSingle:
-			access := p.Access.(fbdl.AccessSingleSingle)
+		case access.SingleSingle:
+			access := p.Access.(access.SingleSingle)
 
 			addr := [2]int64{access.StartAddr(), access.StartAddr()}
 			code := fmt.Sprintf(
@@ -50,8 +51,8 @@ func genFuncAccess(fun *fbdl.Func, fmts *BlockEntityFormatters) {
 			)
 
 			fmts.RegistersAccess.add(addr, code)
-		case fbdl.AccessSingleContinuous:
-			chunks := makeAccessChunksContinuous(p.Access.(fbdl.AccessSingleContinuous), Compact)
+		case access.SingleContinuous:
+			chunks := makeAccessChunksContinuous(p.Access.(access.SingleContinuous), Compact)
 
 			for _, c := range chunks {
 				code := fmt.Sprintf(

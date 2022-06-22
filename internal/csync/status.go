@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 )
 
@@ -17,9 +18,9 @@ func genStatus(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSour
 
 func genStatusSingle(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
 	switch st.Access.(type) {
-	case fbdl.AccessSingleSingle:
+	case access.SingleSingle:
 		genStatusSingleSingle(st, hFmts, srcFmts)
-	case fbdl.AccessSingleContinuous:
+	case access.SingleContinuous:
 		panic("not yet implemented")
 	default:
 		panic("unknown single access strategy")
@@ -35,7 +36,7 @@ func genStatusSingleSingle(st *fbdl.Status, hFmts *BlockHeaderFormatters, srcFmt
 
 	hFmts.Code += fmt.Sprintf("%s;", signature)
 
-	access := st.Access.(fbdl.AccessSingleSingle)
+	access := st.Access.(access.SingleSingle)
 	srcFmts.Code += fmt.Sprintf("%s {\n", signature)
 	if readDataType.Typ() != "ByteArray" && typ.Typ() != "ByteArray" {
 		if busWidth == st.Width {

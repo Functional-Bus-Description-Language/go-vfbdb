@@ -3,7 +3,7 @@ package vhdlwb3
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 type chunkStrategy uint8
@@ -17,10 +17,10 @@ const (
 type accessChunk struct {
 	addr   [2]int64
 	range_ [2]string
-	mask   fbdl.AccessMask
+	mask   access.Mask
 }
 
-func makeAccessChunksContinuous(a fbdl.AccessSingleContinuous, strategy chunkStrategy) []accessChunk {
+func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrategy) []accessChunk {
 	startMask := a.StartMask
 	endMask := a.EndMask
 

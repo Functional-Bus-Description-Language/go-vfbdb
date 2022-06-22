@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genConfig(cfg *fbdl.Config, blk *fbdl.Block) string {
@@ -18,14 +19,14 @@ func genConfigSingle(cfg *fbdl.Config, blk *fbdl.Block) string {
 	var code string
 
 	switch cfg.Access.(type) {
-	case fbdl.AccessSingleSingle:
-		a := cfg.Access.(fbdl.AccessSingleSingle)
+	case access.SingleSingle:
+		a := cfg.Access.(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
 			cfg.Name, blk.AddrSpace.Start()+a.Addr, a.Mask.Upper, a.Mask.Lower,
 		)
-	case fbdl.AccessSingleContinuous:
-		a := cfg.Access.(fbdl.AccessSingleContinuous)
+	case access.SingleContinuous:
+		a := cfg.Access.(access.SingleContinuous)
 		decreasigOrder := "False"
 		if cfg.HasDecreasingAccessOrder() {
 			decreasigOrder = "True"

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genStatus(st *fbdl.Status, blk *fbdl.Block) string {
@@ -18,14 +19,14 @@ func genStatusSingle(st *fbdl.Status, blk *fbdl.Block) string {
 	var code string
 
 	switch st.Access.(type) {
-	case fbdl.AccessSingleSingle:
-		access := st.Access.(fbdl.AccessSingleSingle)
+	case access.SingleSingle:
+		access := st.Access.(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
 			st.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 		)
-	case fbdl.AccessSingleContinuous:
-		a := st.Access.(fbdl.AccessSingleContinuous)
+	case access.SingleContinuous:
+		a := st.Access.(access.SingleContinuous)
 		decreasigOrder := "False"
 		if st.HasDecreasingAccessOrder() {
 			decreasigOrder = "True"
@@ -50,8 +51,8 @@ func genStatusArray(st *fbdl.Status, blk *fbdl.Block) string {
 	var code string
 
 	switch st.Access.(type) {
-	case fbdl.AccessArraySingle:
-		access := st.Access.(fbdl.AccessArraySingle)
+	case access.ArraySingle:
+		access := st.Access.(access.ArraySingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name,
@@ -60,8 +61,8 @@ func genStatusArray(st *fbdl.Status, blk *fbdl.Block) string {
 			access.Mask.Lower,
 			access.RegCount(),
 		)
-	case fbdl.AccessArrayMultiple:
-		access := st.Access.(fbdl.AccessArrayMultiple)
+	case access.ArrayMultiple:
+		access := st.Access.(access.ArrayMultiple)
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genMask(mask *fbdl.Mask, blk *fbdl.Block) string {
@@ -18,8 +19,8 @@ func genMaskSingle(mask *fbdl.Mask, blk *fbdl.Block) string {
 	var code string
 
 	switch mask.Access.(type) {
-	case fbdl.AccessSingleSingle:
-		access := mask.Access.(fbdl.AccessSingleSingle)
+	case access.SingleSingle:
+		access := mask.Access.(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleSingle(iface, %d, (%d, %d))\n",
 			mask.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,

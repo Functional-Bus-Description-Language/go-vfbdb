@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genFunc(fun *fbdl.Func, blk *fbdl.Block) string {
@@ -53,14 +54,14 @@ func genFuncParamAccessList(fun *fbdl.Func) string {
 
 	for _, p := range fun.Params {
 		switch p.Access.(type) {
-		case fbdl.AccessSingleSingle:
-			ass := p.Access.(fbdl.AccessSingleSingle)
+		case access.SingleSingle:
+			ass := p.Access.(access.SingleSingle)
 			code += indent + fmt.Sprintf(
 				"{'Type': 'SingleSingle', 'Width': %d, 'Addr': %d, 'Shift': %d},\n",
 				p.Width, ass.Addr, ass.Mask.Lower,
 			)
-		case fbdl.AccessSingleContinuous:
-			asc := p.Access.(fbdl.AccessSingleContinuous)
+		case access.SingleContinuous:
+			asc := p.Access.(access.SingleContinuous)
 			code += indent + fmt.Sprintf(
 				"{'Type': 'SingleContinuous', 'Width': %d, 'StartAddr': %d, 'RegCount': %d, 'StartShift': %d},\n",
 				p.Width, asc.RegCount(), asc.StartAddr(), asc.StartMask.Lower,
@@ -89,7 +90,7 @@ func genFuncSingleSingle(fun *fbdl.Func, blk *fbdl.Block) string {
 
 	val := ""
 	for i, p := range fun.Params {
-		access := p.Access.(fbdl.AccessSingleSingle)
+		access := p.Access.(access.SingleSingle)
 		val += fmt.Sprintf("%s << %d | ", p.Name, access.Mask.Lower)
 		if i == len(fun.Params)-1 || fun.Params[i+1].Access.StartAddr() != access.Addr {
 			val = val[:len(val)-3]

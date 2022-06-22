@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genMask(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
@@ -28,7 +29,7 @@ func genMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 
 	switch mask.Access.(type) {
-	case fbdl.AccessSingleSingle:
+	case access.SingleSingle:
 		genMaskSingleSingle(mask, fmts)
 	default:
 		panic("unknown single access strategy")
@@ -36,7 +37,7 @@ func genMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 }
 
 func genMaskSingleSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
-	access := mask.Access.(fbdl.AccessSingleSingle)
+	access := mask.Access.(access.SingleSingle)
 	accessMask := access.Mask
 
 	code := fmt.Sprintf(

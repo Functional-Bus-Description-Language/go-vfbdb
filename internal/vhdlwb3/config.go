@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 )
 
 func genConfig(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
@@ -28,9 +29,9 @@ func genConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 
 	switch cfg.Access.(type) {
-	case fbdl.AccessSingleSingle:
+	case access.SingleSingle:
 		genConfigSingleSingle(cfg, fmts)
-	case fbdl.AccessSingleContinuous:
+	case access.SingleContinuous:
 		genConfigSingleContinuous(cfg, fmts)
 	default:
 		panic("unknown single access strategy")
@@ -38,7 +39,7 @@ func genConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 }
 
 func genConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	access := cfg.Access.(fbdl.AccessSingleSingle)
+	access := cfg.Access.(access.SingleSingle)
 	mask := access.Mask
 
 	code := fmt.Sprintf(
@@ -61,7 +62,7 @@ func genConfigSingleContinuous(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 }
 
 func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(fbdl.AccessSingleContinuous)
+	a := cfg.Access.(access.SingleContinuous)
 	strategy := SeparateLast
 	atomicShadowRange := [2]int64{cfg.Width - 1 - a.EndMask.Width(), 0}
 	if cfg.HasDecreasingAccessOrder() {
@@ -103,7 +104,7 @@ func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatte
 }
 
 func genConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(fbdl.AccessSingleContinuous)
+	a := cfg.Access.(access.SingleContinuous)
 	chunks := makeAccessChunksContinuous(a, Compact)
 
 	for _, c := range chunks {
