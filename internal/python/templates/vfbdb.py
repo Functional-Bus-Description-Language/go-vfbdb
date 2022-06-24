@@ -21,46 +21,46 @@ class Func():
         if self.param_accesses is not None:
             assert len(params) == len(self.param_accesses), \
                 "{}() takes {} arguments but {} were given".format(self.__name__, len(self.param_accesses), len(params))
-        val = 0
+        data = 0
         current_addr = None
-        write_vals = []
+        write_datas = []
         for i, p in enumerate(params):
             a = self.param_accesses[i]
             if a['Type'] == 'SingleSingle':
-                assert 0 <= p < 2 ** a['Width'], "value overrange ({})".format(p)
+                assert 0 <= p < 2 ** a['Width'], "dataue overrange ({})".format(p)
                 if current_addr is None:
                     current_addr = a['Addr']
                 elif a['Addr'] > current_addr:
-                    write_vals.append(val)
-                    val = 0
+                    write_datas.append(data)
+                    data = 0
                     current_addr = a['Addr']
-                val |= p << a['Shift']
+                data |= p << a['Shift']
             elif a['Type'] == 'SingleContinuous':
-                assert 0 <= p < 2 ** a['Width'], "value overrange ({})".format(p)
+                assert 0 <= p < 2 ** a['Width'], "dataue overrange ({})".format(p)
                 for r in range(a['RegCount']):
                     if r == 0:
                         if current_addr is None:
                             current_addr = a['StartAddr']
                         elif a['StartAddr'] > current_addr:
-                            write_vals.append(val)
-                            val = 0
+                            write_datas.append(data)
+                            data = 0
                             current_addr = a['StartAddr']
-                        val |= (p & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
-                        write_vals.append(val)
+                        data |= (p & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
+                        write_datas.append(data)
                         p = p >> (BUS_WIDTH - a['StartShift'])
                     else:
                         current_addr += 1
-                        val = p & calc_mask((BUS_WIDTH, 0))
+                        data = p & calc_mask((BUS_WIDTH, 0))
                         p = p >> BUS_WIDTH
                         if r < a['RegCount'] - 1:
-                            write_vals.append(val)
+                            write_datas.append(data)
             else:
                 for v in p:
-                    assert 0 <= v < 2 ** a['Width'], "value overrange ({})".format(v)
+                    assert 0 <= v < 2 ** a['Width'], "dataue overrange ({})".format(v)
 
-        write_vals.append(val)
-        for i, val in enumerate(write_vals):
-            self.iface.write(self.params_start_addr + i, val)
+        write_datas.append(data)
+        for i, data in enumerate(write_datas):
+            self.iface.write(self.params_start_addr + i, data)
 
 
 class SingleSingle:
@@ -81,17 +81,17 @@ class SingleContinuous:
         self.width = 0
         self.masks = []
         self.reg_shifts = []
-        self.val_shifts = []
+        self.data_shifts = []
 
         for i in range(reg_count):
             if i == 0:
                 self.masks.append(calc_mask(start_mask))
                 self.reg_shifts.append(start_mask[1])
-                self.val_shifts.append(0)
+                self.data_shifts.append(0)
                 self.width += start_mask[0] - start_mask[1] + 1
             else:
                 self.reg_shifts.append(0)
-                self.val_shifts.append(self.width)
+                self.data_shifts.append(self.width)
                 if i == reg_count - 1:
                     self.masks.append(calc_mask(end_mask))
                     self.width += end_mask[0] - end_mask[1] + 1
@@ -103,30 +103,30 @@ class SingleContinuous:
             self.addrs.reverse()
             self.masks.reverse()
             self.reg_shifts.reverse()
-            self.val_shifts.reverse()
+            self.data_shifts.reverse()
 
     def read(self):
-        val = 0
+        data = 0
         for i, a in enumerate(self.addrs):
-            val |= ((self.iface.read(a) >> self.reg_shifts[i]) & self.masks[i]) << self.val_shifts[i]
-        return val
+            data |= ((self.iface.read(a) >> self.reg_shifts[i]) & self.masks[i]) << self.data_shifts[i]
+        return data
 
 class ConfigSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
-    def write(self, val):
-        assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
-        self.iface.write(self.addr, val << self.shift)
+    def write(self, data):
+        assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
+        self.iface.write(self.addr, data << self.shift)
 
 class ConfigSingleContinuous(SingleContinuous):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
         super().__init__(iface, start_addr, reg_count, start_mask, end_mask, decreasing_order)
 
-    def write(self, val):
-        assert 0 <= val < 2 ** self.width, "value overrange ({})".format(val)
+    def write(self, data):
+        assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
         for i, a in enumerate(self.addrs):
-            self.iface.write(a, ((val >> self.val_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+            self.iface.write(a, ((data >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
 
 class MaskSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):
@@ -218,14 +218,14 @@ class StatusArrayMultiple:
                 assert 0 <= i < self.item_count
                 reg_idx.add(i // self.items_per_access)
 
-        reg_values = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
+        reg_data = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
 
-        values = []
+        data = []
         for i in idx:
             shift = self.start_bit + self.width * (i % self.items_per_access)
             mask = (1 << self.width) - 1
-            values.append((reg_values[i // self.items_per_access] >> shift) & mask)
+            data.append((reg_data[i // self.items_per_access] >> shift) & mask)
 
-        return values
+        return data
 
 {{.Code}}
