@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from cosim_interface import CosimInterface
+import cosim
 import vfbdb
 
 
@@ -10,12 +10,12 @@ READ_FIFO_PATH = sys.argv[2]
 
 CLK_PERIOD = 10
 
-cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
+iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
     print("\nstarting cosimulation\n")
 
-    Main = vfbdb.Main(cosim_interface)
+    Main = vfbdb.Main(iface)
 
     id = Main.ID.read()
 
@@ -25,8 +25,8 @@ try:
     print(f"Timestamp: {Main.TIMESTAMP.read()}\n")
 
     print("\nending cosimulation")
-    cosim_interface.end(0)
+    iface.end(0)
 
 except Exception as E:
-    cosim_interface.end(1)
+    iface.end(1)
     print(traceback.format_exc())

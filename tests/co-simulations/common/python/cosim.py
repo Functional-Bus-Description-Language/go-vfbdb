@@ -1,7 +1,7 @@
 import os
 
 
-class CosimInterface:
+class Iface:
     def __init__(
         self, write_fifo_path, read_fifo_path, delay_function=None, delay=False
     ):
@@ -39,14 +39,14 @@ class CosimInterface:
     def _make_fifos(self):
         """Create named pipes needed for inter-process communication."""
         self._remove_fifos()
-        print("CosimInterface: making FIFOs")
+        print("CosimIface: making FIFOs")
         os.mkfifo(self.write_fifo_path)
         os.mkfifo(self.read_fifo_path)
 
     def _remove_fifos(self):
         """Remove named pipes."""
         try:
-            print("CosimInterface: removing FIFOs")
+            print("CosimIface: removing FIFOs")
             os.remove(self.write_fifo_path)
             os.remove(self.read_fifo_path)
         except:
@@ -155,7 +155,7 @@ class CosimInterface:
         status
             Status to be returned by the simulation process.
         """
-        print("CosimInterface: ending with status %d" % status)
+        print("CosimIface: ending with status %d" % status)
 
         cmd = "E" + ("%.8x" % status) + "\n"
         self.write_fifo.write(cmd)
@@ -170,7 +170,7 @@ class CosimInterface:
 
     def print_stats(self):
         print(
-            f"\nCosimInterface: transactions statistics:\n"
+            f"\nCosimIface: transactions statistics:\n"
             + f"  Write Count: {self.write_count}\n"
             + f"  Read Count:  {self.read_count}\n"
             + f"  RMW Count:   {self.rmw_count}"

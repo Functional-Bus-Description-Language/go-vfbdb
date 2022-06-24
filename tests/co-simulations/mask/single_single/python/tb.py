@@ -1,18 +1,18 @@
 import sys
 
-from cosim_interface import CosimInterface
+import cosim
 import vfbdb
 
 
 WRITE_FIFO_PATH = sys.argv[1]
 READ_FIFO_PATH = sys.argv[2]
 
-cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
+iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
     print("\nstarting cosimulation")
 
-    Main = vfbdb.Main(cosim_interface)
+    Main = vfbdb.Main(iface)
 
     max_val = 2 ** vfbdb.Main.WIDTH - 1
 
@@ -72,8 +72,8 @@ try:
     assert read == 1, f"read {read}, expecting 1"
 
     print("\nending cosimulation")
-    cosim_interface.end(0)
+    iface.end(0)
 
 except Exception as E:
-    cosim_interface.end(1)
+    iface.end(1)
     log.exception(E)

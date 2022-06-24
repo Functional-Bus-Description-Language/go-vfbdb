@@ -2,7 +2,7 @@ import random
 import sys
 import traceback
 
-from cosim_interface import CosimInterface
+import cosim
 import vfbdb
 
 WRITE_FIFO_PATH = sys.argv[1]
@@ -12,9 +12,9 @@ READ_FIFO_PATH = sys.argv[2]
 try:
     print("\nstarting cosimulation")
 
-    cosim_interface = CosimInterface(WRITE_FIFO_PATH, READ_FIFO_PATH)
+    iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
-    Main = vfbdb.Main(cosim_interface)
+    Main = vfbdb.Main(iface)
 
     c = random.randint(2**33, 2 ** 40 - 1)
     s = random.randint(0, 2 ** 16 - 1)
@@ -27,11 +27,11 @@ try:
 
     if c + s != result:
         print(f"Wrong result, got {result}, expecting {c+s}")
-        cosim_interface.end(1)
+        iface.end(1)
 
     print("\nending cosimulation")
-    cosim_interface.end(0)
+    iface.end(0)
 
 except Exception as E:
-    cosim_interface.end(1)
+    iface.end(1)
     print(traceback.format_exc())
