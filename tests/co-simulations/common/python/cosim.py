@@ -52,23 +52,23 @@ class Iface:
         except:
             pass
 
-    def write(self, addr, val):
+    def write(self, addr, data):
         """Write register.
         Parameters
         ----------
         addr
             Register address.
-        val
+        data
             Value to be written.
         """
         if self.delay:
             self.wait(self.delay_function())
 
         print(
-            "write: address 0x{:08x}, value {} (0x{:08x}) (0b{:032b})".format(addr, val, val, val)
+            "write: address 0x{:08x}, data {} (0x{:08x}) (0b{:032b})".format(addr, data, data, data)
         )
 
-        cmd = "W" + ("%.8x" % addr) + "," + ("%.8x" % val) + "\n"
+        cmd = "W" + ("%.8x" % addr) + "," + ("%.8x" % data) + "\n"
         self.write_fifo.write(cmd)
         self.write_fifo.flush()
 
@@ -101,29 +101,29 @@ class Iface:
             raise Exception("Error status returned")
 
         self.read_count += 1
-        val = int(s, 2)
-        print("read: value {} (0x{:08x}) (0b{:032b})".format(val, val, val))
+        data = int(s, 2)
+        print("read: data {} (0x{:08x}) (0b{:032b})".format(data, data, data))
 
-        return val
+        return data
 
-    def rmw(self, addr, val, mask):
+    def rmw(self, addr, data, mask):
         """Perform read-modify-write operation.
-        New value is determined by following formula: X := (X & ~mask) | (val & mask).
+        New data is determined by following formula: X := (X & ~mask) | (data & mask).
 
         Parameters:
         addr
             Register address.
-        val
+        data
             Value.
         mask
             Mask.
         """
         print(
-            "rmw: address 0x%.8x, value %d (0x%.8x) (%s), mask %d (%s)"
-            % (addr, val, val, bin(val), mask, bin(mask))
+            "rmw: address 0x%.8x, data %d (0x%.8x) (%s), mask %d (%s)"
+            % (addr, data, data, bin(data), mask, bin(mask))
         )
         X = self.read(addr)
-        self.write(addr, (X & abs(mask - 0xFFFFFFFF)) | (val & mask))
+        self.write(addr, (X & abs(mask - 0xFFFFFFFF)) | (data & mask))
 
         self.rmw_count += 1
 
