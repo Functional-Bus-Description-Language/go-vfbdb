@@ -120,7 +120,7 @@ class Iface:
             self.wait(self.delay_function())
 
         print(
-            "writeb: addr 0x{:08x}, data count {}".format(addr, len(data))
+            "writeb: addr 0x{:08x}, count {}".format(addr, len(data))
         )
 
         for i, d in enumerate(data):

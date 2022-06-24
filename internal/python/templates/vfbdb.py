@@ -64,7 +64,6 @@ class Func():
         else:
             self.iface.writeb(self.params_start_addr, write_data)
 
-
 class SingleSingle:
     def __init__(self, iface, addr, mask):
         self.iface = iface
