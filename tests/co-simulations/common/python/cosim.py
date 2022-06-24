@@ -34,6 +34,7 @@ class Iface:
         # Attributes related with statistics collection.
         self.write_count = 0
         self.read_count = 0
+        self.writeb_count = 0
         self.rmw_count = 0
 
     def _make_fifos(self):
@@ -59,13 +60,13 @@ class Iface:
         addr
             Register address.
         data
-            Value to be written.
+            Data to be written.
         """
         if self.delay:
             self.wait(self.delay_function())
 
         print(
-            "write: address 0x{:08x}, data {} (0x{:08x}) (0b{:032b})".format(addr, data, data, data)
+            "write: addr 0x{:08x}, data {} (0x{:08x}) (0b{:032b})".format(addr, data, data, data)
         )
 
         cmd = "W" + ("%.8x" % addr) + "," + ("%.8x" % data) + "\n"
@@ -90,7 +91,7 @@ class Iface:
         if self.delay:
             self.wait(self.delay_function())
 
-        print("read: address 0x{:08x}".format(addr))
+        print("read: addr 0x{:08x}".format(addr))
 
         cmd = "R" + ("%.8x" % addr) + "\n"
         self.write_fifo.write(cmd)
@@ -106,6 +107,27 @@ class Iface:
 
         return data
 
+    def writeb(self, addr, data):
+        """Write continuous block of registers.
+        Parameters
+        ----------
+        addr
+            Start address.
+        data
+            Data to be written.
+        """
+        if self.delay:
+            self.wait(self.delay_function())
+
+        print(
+            "writeb: addr 0x{:08x}, data count {}".format(addr, len(data))
+        )
+
+        for i, d in enumerate(data):
+            self.write(addr + i, d)
+
+        self.writeb_count += 1
+
     def rmw(self, addr, data, mask):
         """Perform read-modify-write operation.
         New data is determined by following formula: X := (X & ~mask) | (data & mask).
@@ -114,12 +136,12 @@ class Iface:
         addr
             Register address.
         data
-            Value.
+            Data.
         mask
             Mask.
         """
         print(
-            "rmw: address 0x%.8x, data %d (0x%.8x) (%s), mask %d (%s)"
+            "rmw: addr 0x%.8x, data %d (0x%.8x) (%s), mask %d (%s)"
             % (addr, data, data, bin(data), mask, bin(mask))
         )
         X = self.read(addr)
@@ -171,7 +193,8 @@ class Iface:
     def print_stats(self):
         print(
             f"\nCosimIface: transactions statistics:\n"
-            + f"  Write Count: {self.write_count}\n"
-            + f"  Read Count:  {self.read_count}\n"
-            + f"  RMW Count:   {self.rmw_count}"
+            + f"  write:  {self.write_count}\n"
+            + f"  read:   {self.read_count}\n"
+            + f"  writeb: {self.writeb_count}\n"
+            + f"  rmw:    {self.rmw_count}"
         )

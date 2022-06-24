@@ -23,7 +23,7 @@ class Func():
                 "{}() takes {} arguments but {} were given".format(self.__name__, len(self.param_accesses), len(params))
         data = 0
         current_addr = None
-        write_datas = []
+        write_data = []
         for i, p in enumerate(params):
             a = self.param_accesses[i]
             if a['Type'] == 'SingleSingle':
@@ -31,7 +31,7 @@ class Func():
                 if current_addr is None:
                     current_addr = a['Addr']
                 elif a['Addr'] > current_addr:
-                    write_datas.append(data)
+                    write_data.append(data)
                     data = 0
                     current_addr = a['Addr']
                 data |= p << a['Shift']
@@ -42,25 +42,27 @@ class Func():
                         if current_addr is None:
                             current_addr = a['StartAddr']
                         elif a['StartAddr'] > current_addr:
-                            write_datas.append(data)
+                            write_data.append(data)
                             data = 0
                             current_addr = a['StartAddr']
                         data |= (p & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
-                        write_datas.append(data)
+                        write_data.append(data)
                         p = p >> (BUS_WIDTH - a['StartShift'])
                     else:
                         current_addr += 1
                         data = p & calc_mask((BUS_WIDTH, 0))
                         p = p >> BUS_WIDTH
                         if r < a['RegCount'] - 1:
-                            write_datas.append(data)
+                            write_data.append(data)
             else:
                 for v in p:
                     assert 0 <= v < 2 ** a['Width'], "dataue overrange ({})".format(v)
 
-        write_datas.append(data)
-        for i, data in enumerate(write_datas):
-            self.iface.write(self.params_start_addr + i, data)
+        write_data.append(data)
+        if len(write_data) == 1:
+            self.iface.write(self.params_start_addr, write_data[0])
+        else:
+            self.iface.writeb(self.params_start_addr, write_data)
 
 
 class SingleSingle:
