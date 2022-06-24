@@ -15,7 +15,7 @@ filesets:
       - fbdl::vfbdb
 
 targets:
-  tb_cosim_python:
+  tb_python:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
@@ -24,7 +24,7 @@ targets:
       - vfbdb_dep
       - tb_cosim
     hooks:
-      pre_run: [tb_cosim_python]
+      pre_run: [tb_python]
     parameters:
       - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/single_continuous_3_regs_atomic_increasing_order/python_vhdl-wb3
       - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/single_continuous_3_regs_atomic_increasing_order/vhdl-wb3_python
@@ -46,7 +46,7 @@ parameters:
     paramtype: generic
 
 scripts:
-  tb_cosim_python:
+  tb_python:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - status

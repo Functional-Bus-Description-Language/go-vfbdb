@@ -15,7 +15,7 @@ filesets:
       - fbdl::vfbdb
 
 targets:
-  tb_cosim_python:
+  tb_python:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:

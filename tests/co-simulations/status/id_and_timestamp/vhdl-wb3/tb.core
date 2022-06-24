@@ -15,7 +15,7 @@ filesets:
       - fbdl::vfbdb
 
 targets:
-  tb_cosim_python:
+  tb_python:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
@@ -24,11 +24,11 @@ targets:
       - vfbdb_dep
       - tb_cosim
     hooks:
-      pre_run: [tb_cosim_python]
+      pre_run: [tb_python]
     parameters:
       - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/python_vhdl-wb3
       - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/vhdl-wb3_python
-  tb_cosim_c-sync:
+  tb_c-sync:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
@@ -37,7 +37,7 @@ targets:
       - vfbdb_dep
       - tb_cosim
     hooks:
-      pre_run: [tb_cosim_c-sync]
+      pre_run: [tb_c-sync]
     parameters:
       - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/c-sync_vhdl-wb3
       - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/vhdl-wb3_c-sync
@@ -65,13 +65,13 @@ parameters:
     paramtype: generic
 
 scripts:
-  tb_cosim_python:
+  tb_python:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - status
       - id_and_timestamp
       - vhdl-wb3
-  tb_cosim_c-sync:
+  tb_c-sync:
     cmd:
       - ../../../tests/co-simulations/common/c-sync/tb_cosim.sh
       - status
