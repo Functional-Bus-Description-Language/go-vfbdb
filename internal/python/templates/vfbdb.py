@@ -27,7 +27,7 @@ class Func():
         for i, p in enumerate(params):
             a = self.param_accesses[i]
             if a['Type'] == 'SingleSingle':
-                assert 0 <= p < 2 ** a['Width'], "dataue overrange ({})".format(p)
+                assert 0 <= p < 2 ** a['Width'], "data value overrange ({})".format(p)
                 if current_addr is None:
                     current_addr = a['Addr']
                 elif a['Addr'] > current_addr:
@@ -36,7 +36,7 @@ class Func():
                     current_addr = a['Addr']
                 data |= p << a['Shift']
             elif a['Type'] == 'SingleContinuous':
-                assert 0 <= p < 2 ** a['Width'], "dataue overrange ({})".format(p)
+                assert 0 <= p < 2 ** a['Width'], "data value overrange ({})".format(p)
                 for r in range(a['RegCount']):
                     if r == 0:
                         if current_addr is None:
@@ -56,7 +56,7 @@ class Func():
                             write_data.append(data)
             else:
                 for v in p:
-                    assert 0 <= v < 2 ** a['Width'], "dataue overrange ({})".format(v)
+                    assert 0 <= v < 2 ** a['Width'], "data value overrange ({})".format(v)
 
         write_data.append(data)
         if len(write_data) == 1:

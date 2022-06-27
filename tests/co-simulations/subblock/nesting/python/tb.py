@@ -1,5 +1,6 @@
-import sys
 import random
+import sys
+import traceback
 
 import cosim
 import vfbdb
@@ -35,4 +36,4 @@ try:
 
 except Exception as E:
     iface.end(1)
-    log.exception(E)
+    print(traceback.format_exc())

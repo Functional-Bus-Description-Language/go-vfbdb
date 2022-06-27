@@ -37,11 +37,11 @@ func genBlock(blk *fbdl.Block) string {
 		code += genSubblock(sb, blk)
 	}
 
-	decreaseIndent(1)
-
 	for _, fun := range blk.Funcs {
 		code += genFunc(fun, blk)
 	}
+
+	decreaseIndent(1)
 
 	for _, sb := range blk.Subblocks {
 		code += genBlock(sb)
