@@ -3,32 +3,32 @@ package vhdlwb3
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func genConfig(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	if cfg.IsArray {
+func genConfig(cfg elem.Config, fmts *BlockEntityFormatters) {
+	if cfg.IsArray() {
 		genConfigArray(cfg, fmts)
 	} else {
 		genConfigSingle(cfg, fmts)
 	}
 }
 
-func genConfigArray(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigArray(cfg elem.Config, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func genConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
+func genConfigSingle(cfg elem.Config, fmts *BlockEntityFormatters) {
 	dflt := ""
-	if cfg.Default != "" {
-		dflt = fmt.Sprintf(" := %s", cfg.Default.Extend(cfg.Width))
+	if cfg.Default() != "" {
+		dflt = fmt.Sprintf(" := %s", cfg.Default().Extend(cfg.Width()))
 	}
 
-	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", cfg.Name, cfg.Width-1, dflt)
+	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", cfg.Name(), cfg.Width()-1, dflt)
 	fmts.EntityFunctionalPorts += s
 
-	switch cfg.Access.(type) {
+	switch cfg.Access().(type) {
 	case access.SingleSingle:
 		genConfigSingleSingle(cfg, fmts)
 	case access.SingleContinuous:
@@ -38,8 +38,8 @@ func genConfigSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	access := cfg.Access.(access.SingleSingle)
+func genConfigSingleSingle(cfg elem.Config, fmts *BlockEntityFormatters) {
+	access := cfg.Access().(access.SingleSingle)
 	mask := access.Mask
 
 	code := fmt.Sprintf(
@@ -47,34 +47,34 @@ func genConfigSingleSingle(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
 			"         %[1]s_o <= master_out.dat(%[2]d downto %[3]d);\n"+
 			"      end if;\n"+
 			"      master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
-		cfg.Name, mask.Upper, mask.Lower,
+		cfg.Name(), mask.Upper, mask.Lower,
 	)
 
 	fmts.RegistersAccess.add([2]int64{access.Addr, access.Addr}, code)
 }
 
-func genConfigSingleContinuous(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	if cfg.Atomic == true {
+func genConfigSingleContinuous(cfg elem.Config, fmts *BlockEntityFormatters) {
+	if cfg.Atomic() == true {
 		genConfigSingleContinuousAtomic(cfg, fmts)
 	} else {
 		genConfigSingleContinuousNonAtomic(cfg, fmts)
 	}
 }
 
-func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.SingleContinuous)
+func genConfigSingleContinuousAtomic(cfg elem.Config, fmts *BlockEntityFormatters) {
+	a := cfg.Access().(access.SingleContinuous)
 	strategy := SeparateLast
-	atomicShadowRange := [2]int64{cfg.Width - 1 - a.EndMask.Width(), 0}
+	atomicShadowRange := [2]int64{cfg.Width() - 1 - a.EndMask.Width(), 0}
 	if cfg.HasDecreasingAccessOrder() {
 		strategy = SeparateFirst
-		atomicShadowRange[0] = cfg.Width - 1
+		atomicShadowRange[0] = cfg.Width() - 1
 		atomicShadowRange[1] = a.StartMask.Width()
 	}
 	chunks := makeAccessChunksContinuous(a, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_atomic : std_logic_vector(%d downto %d);\n",
-		cfg.Name, atomicShadowRange[0], atomicShadowRange[1],
+		cfg.Name(), atomicShadowRange[0], atomicShadowRange[1],
 	)
 
 	for i, c := range chunks {
@@ -86,7 +86,7 @@ func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatte
 					"         %[1]s_o(%[6]d downto %[7]d) <= %[1]s_atomic(%[6]d downto %[7]d);\n"+
 					"      end if;\n"+
 					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
-				cfg.Name, c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
+				cfg.Name(), c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
 				atomicShadowRange[0], atomicShadowRange[1],
 			)
 		} else {
@@ -95,7 +95,7 @@ func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatte
 					"         %[1]s_atomic(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
 					"      end if;\n"+
 					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
-				cfg.Name, c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
+				cfg.Name(), c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
 			)
 		}
 
@@ -103,8 +103,8 @@ func genConfigSingleContinuousAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatte
 	}
 }
 
-func genConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.SingleContinuous)
+func genConfigSingleContinuousNonAtomic(cfg elem.Config, fmts *BlockEntityFormatters) {
+	a := cfg.Access().(access.SingleContinuous)
 	chunks := makeAccessChunksContinuous(a, Compact)
 
 	for _, c := range chunks {
@@ -113,7 +113,7 @@ func genConfigSingleContinuousNonAtomic(cfg *fbdl.Config, fmts *BlockEntityForma
 				"         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
 				"      end if;\n"+
 				"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
-			cfg.Name, c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
+			cfg.Name(), c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
 		)
 
 		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)

@@ -5,15 +5,15 @@ import (
 	"os"
 	"sync"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
 var busWidth int64
 var outputPath string
 
-func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
-	busWidth = bus.Width
+func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs map[string]string) {
+	busWidth = bus.Width()
 	outputPath = cmdLineArgs["-path"] + "/"
 
 	err := os.MkdirAll(outputPath, os.FileMode(int(0775)))

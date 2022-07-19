@@ -3,32 +3,32 @@ package vhdlwb3
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func genMask(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
-	if mask.IsArray {
+func genMask(mask elem.Mask, fmts *BlockEntityFormatters) {
+	if mask.IsArray() {
 		genMaskArray(mask, fmts)
 	} else {
 		genMaskSingle(mask, fmts)
 	}
 }
 
-func genMaskArray(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
+func genMaskArray(mask elem.Mask, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func genMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
+func genMaskSingle(mask elem.Mask, fmts *BlockEntityFormatters) {
 	dflt := ""
-	if mask.Default != "" {
-		dflt = fmt.Sprintf(" := %s", mask.Default.Extend(mask.Width))
+	if mask.Default() != "" {
+		dflt = fmt.Sprintf(" := %s", mask.Default().Extend(mask.Width()))
 	}
 
-	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", mask.Name, mask.Width-1, dflt)
+	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", mask.Name(), mask.Width()-1, dflt)
 	fmts.EntityFunctionalPorts += s
 
-	switch mask.Access.(type) {
+	switch mask.Access().(type) {
 	case access.SingleSingle:
 		genMaskSingleSingle(mask, fmts)
 	default:
@@ -36,8 +36,8 @@ func genMaskSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genMaskSingleSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
-	access := mask.Access.(access.SingleSingle)
+func genMaskSingleSingle(mask elem.Mask, fmts *BlockEntityFormatters) {
+	access := mask.Access().(access.SingleSingle)
 	accessMask := access.Mask
 
 	code := fmt.Sprintf(
@@ -45,7 +45,7 @@ func genMaskSingleSingle(mask *fbdl.Mask, fmts *BlockEntityFormatters) {
 			"         %[1]s_o <= master_out.dat(%[2]d downto %[3]d);\n"+
 			"      end if;\n"+
 			"      master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
-		mask.Name, accessMask.Upper, accessMask.Lower,
+		mask.Name(), accessMask.Upper, accessMask.Lower,
 	)
 
 	fmts.RegistersAccess.add([2]int64{access.Addr, access.Addr}, code)

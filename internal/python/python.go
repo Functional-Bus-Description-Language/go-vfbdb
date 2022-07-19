@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 	"strconv"
 )
 
@@ -25,8 +25,8 @@ type pythonFormatters struct {
 	Code      string
 }
 
-func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
-	busWidth = bus.Width
+func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs map[string]string) {
+	busWidth = bus.Width()
 	outputPath = cmdLineArgs["-path"] + "/"
 
 	err := os.MkdirAll(outputPath, os.FileMode(int(0775)))
@@ -46,8 +46,8 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 
 	fmts := pythonFormatters{
 		BusWidth:  busWidth,
-		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
-		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
+		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default().Uint64(), 16)),
+		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default().Uint64(), 16)),
 		Code:      code,
 	}
 

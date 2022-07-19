@@ -3,27 +3,27 @@ package python
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func genMask(mask *fbdl.Mask, blk *fbdl.Block) string {
-	if mask.IsArray {
+func genMask(mask elem.Mask, blk elem.Block) string {
+	if mask.IsArray() {
 		return genMaskArray(mask, blk)
 	} else {
 		return genMaskSingle(mask, blk)
 	}
 }
 
-func genMaskSingle(mask *fbdl.Mask, blk *fbdl.Block) string {
+func genMaskSingle(mask elem.Mask, blk elem.Block) string {
 	var code string
 
-	switch mask.Access.(type) {
+	switch mask.Access().(type) {
 	case access.SingleSingle:
-		access := mask.Access.(access.SingleSingle)
+		access := mask.Access().(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleSingle(iface, %d, (%d, %d))\n",
-			mask.Name, blk.AddrSpace.Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
+			mask.Name(), blk.AddrSpace().Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
 		)
 	default:
 		panic("not yet implemented")
@@ -32,6 +32,6 @@ func genMaskSingle(mask *fbdl.Mask, blk *fbdl.Block) string {
 	return code
 }
 
-func genMaskArray(mask *fbdl.Mask, blk *fbdl.Block) string {
+func genMaskArray(mask elem.Mask, blk elem.Block) string {
 	panic("not yet implemented")
 }

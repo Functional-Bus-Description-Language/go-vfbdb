@@ -8,7 +8,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 	"strconv"
@@ -41,8 +41,8 @@ type vfbdbSourceFormatters struct {
 	TIMESTAMP string
 }
 
-func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs map[string]string) {
-	busWidth = bus.Width
+func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs map[string]string) {
+	busWidth = bus.Width()
 	outputPath = cmdLineArgs["-path"] + "/"
 
 	err := os.MkdirAll(outputPath, os.FileMode(int(0775)))
@@ -57,10 +57,10 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	defer hFile.Close()
 
 	addrType = c.WidthToWriteType(
-		int64(math.Log2(float64(bus.Sizes.BlockAligned))),
+		int64(math.Log2(float64(bus.Sizes().BlockAligned))),
 	)
-	readDataType = c.WidthToReadType(bus.Width)
-	writeDataType = c.WidthToWriteType(bus.Width)
+	readDataType = c.WidthToReadType(bus.Width())
+	writeDataType = c.WidthToWriteType(bus.Width())
 
 	hFmts := vfbdbHeaderFormatters{
 		AddrType:      addrType.String(),
@@ -80,8 +80,8 @@ func Generate(bus *fbdl.Block, pkgsConsts map[string]fbdl.Package, cmdLineArgs m
 	defer srcFile.Close()
 
 	srcFmts := vfbdbSourceFormatters{
-		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default.Uint64(), 16)),
-		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default.Uint64(), 16)),
+		ID:        fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("ID").Default().Uint64(), 16)),
+		TIMESTAMP: fmt.Sprintf("0x%s", strconv.FormatUint(bus.Status("TIMESTAMP").Default().Uint64(), 16)),
 	}
 
 	err = vfbdbSourceTmpl.Execute(srcFile, srcFmts)

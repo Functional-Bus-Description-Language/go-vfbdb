@@ -38,7 +38,7 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	}
 	srcFmts := BlockSourceFormatters{Code: ""}
 
-	for _, st := range b.Block.Statuses {
+	for _, st := range b.Block.Statuses() {
 		genStatus(st, &hFmts, &srcFmts)
 	}
 

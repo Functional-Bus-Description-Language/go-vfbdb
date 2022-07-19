@@ -1,18 +1,18 @@
 package utils
 
 import (
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 	"log"
 )
 
-// Block is a wrapper for fbdl.Block. It is needed, because in some languages
+// Block is a wrapper for elem.Block. It is needed, because in some languages
 // or implementations the hierarchy must be flattened. In such case, there
 // is a need to resolve name conflicts.
 type Block struct {
 	Name      string
 	NameLevel int
 	Path      []string
-	Block     *fbdl.Block
+	Block     elem.Block
 }
 
 // Rename renames Block based on the NameLevel and Path.
@@ -31,7 +31,7 @@ func (b *Block) Rename() {
 	b.Name = name
 }
 
-func CollectBlocks(blk *fbdl.Block, blocks []Block, path []string) []Block {
+func CollectBlocks(blk elem.Block, blocks []Block, path []string) []Block {
 	if blocks == nil {
 		blocks = []Block{Block{
 			Name: "Main", NameLevel: 1, Path: []string{"Main"}, Block: blk},
@@ -44,12 +44,12 @@ func CollectBlocks(blk *fbdl.Block, blocks []Block, path []string) []Block {
 			log.Fatalf("utils: colllect blocks: copying block path failed, copied %d, expected %d", n, len(path))
 		}
 
-		ent := Block{Name: blk.Name, Path: p, Block: blk}
+		ent := Block{Name: blk.Name(), Path: p, Block: blk}
 		blocks = append(blocks, ent)
 	}
 
-	for _, b := range blk.Subblocks {
-		path = append(path, b.Name)
+	for _, b := range blk.Subblocks() {
+		path = append(path, b.Name())
 		blocks = CollectBlocks(b, blocks, path)
 		path = path[:len(path)-1]
 	}
