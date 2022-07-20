@@ -1,5 +1,7 @@
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20220624100718-9b2978b35826 h1:tONoqqkVUH6KIQU96IB0bV5tvUNF3KJHA7P15bjVhm4=
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20220624100718-9b2978b35826/go.mod h1:3bwBasnb7YY0hKzgIh10ErXVsJUH05dxLptdjZr/hYw=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20220720074252-ef04ec8d8c75 h1:fJA95fXdNi7zkpFn+xTnASj22LhGZlc/wKebLNbCEvE=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20220720074252-ef04ec8d8c75/go.mod h1:znrTSwIOjpnr2F+e/2oANCFQiJkqvqbZkzdEYInLv58=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
