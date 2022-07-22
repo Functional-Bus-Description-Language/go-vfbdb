@@ -19,6 +19,8 @@ package {{.EntityName}}_pkg is
 {{.Constants}}
 -- Func types
 {{.FuncTypes}}
+-- Stream types
+{{.StreamTypes}}
 end package;
 
 
@@ -93,6 +95,7 @@ master_in.ack <= '0';
 master_in.err <= '0';
 
 -- Funcs Strobes Clear{{.FuncsStrobesClear}}
+-- Stream Strobes Clear{{.StreamsStrobesClear}}
 
 transfer : if
    master_out.cyc = '1'
@@ -119,7 +122,8 @@ then
    end if;
 {{end}}
 
-   -- Funcs Strobes Set{{.FuncsStrobesSet}}
+   -- Func Strobes Set{{.FuncsStrobesSet}}
+   -- Stream Strobes Set{{.StreamsStrobesSet}}
 
 end if transfer;
 

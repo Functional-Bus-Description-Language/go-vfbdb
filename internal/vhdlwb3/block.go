@@ -27,8 +27,9 @@ type BlockEntityFormatters struct {
 	SubblocksCount        int64
 
 	// Things going to package.
-	Constants string
-	FuncTypes string
+	Constants   string
+	FuncTypes   string
+	StreamTypes string
 
 	EntitySubblockPorts   string
 	EntityFunctionalPorts string
@@ -44,6 +45,9 @@ type BlockEntityFormatters struct {
 
 	FuncsStrobesClear string
 	FuncsStrobesSet   string
+
+	StreamsStrobesClear string
+	StreamsStrobesSet   string
 
 	DefaultValues string
 }
@@ -77,6 +81,10 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 
 	for _, fun := range b.Block.Funcs() {
 		genFunc(fun, &fmts)
+	}
+
+	for _, stream := range b.Block.Streams() {
+		genStream(stream, &fmts)
 	}
 
 	for _, st := range b.Block.Statuses() {

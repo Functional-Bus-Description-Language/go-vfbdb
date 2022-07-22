@@ -261,7 +261,9 @@ class Upstream():
             # TODO: Add support for groups.
 
             if a['Type'] == 'SingleSingle':
-                r['Status'] = StatusSingleSingle(self.buff_iface, a['Addr'] - self.addr, a['Mask'])
+                r['Status'] = StatusSingleSingle(
+                    self.buff_iface, a['Addr'] - self.addr, (a['Mask']['Upper'], a['Mask']['Lower'])
+                )
             elif a['Type'] == 'SingleContinuous':
                 r['Status'] = StatusSingleContinuous(
                     self.buff_iface, a['StartAddr'] - self.addr, a['RegCount'], a['StartMask'], a['EndMask'], False,
@@ -278,12 +280,12 @@ class Upstream():
         Non grouped returns are returned as values within tuple.
         """
         if self.reg_count == 1:
-            read_data = [[x] for x in iface.cread(addr, n)]
+            read_data = [[x] for x in self.iface.cread(self.addr, n)]
         else:
-            read_data = iface.creadb(addr, self.reg_count, n)
+            read_data = self.iface.creadb(self.addr, self.reg_count, n)
 
         data = []
-        for buff in range(read_data):
+        for buff in read_data:
             self.buff_iface.set_buff(buff)
             tup = [] # List to allow append but must be cast to tuple.
 
