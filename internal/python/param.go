@@ -5,54 +5,58 @@ import (
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+
+	"strings"
 )
 
-func genAccessList(accesses []access.Access) string {
-	if len(accesses) == 0 {
-		return "None,"
+func genAccess(acs access.Access, b *strings.Builder) {
+	switch acs.(type) {
+	case access.SingleSingle:
+		a := acs.(access.SingleSingle)
+		b.WriteString(
+			fmt.Sprintf(
+				"{'Type': 'SingleSingle', 'Width': %d, 'Addr': %d, 'Shift': %d},",
+				a.Width(), a.Addr, a.Mask.Lower,
+			),
+		)
+	case access.SingleContinuous:
+		a := acs.(access.SingleContinuous)
+		b.WriteString(
+			fmt.Sprintf(
+				"{'Type': 'SingleContinuous', 'Width': %d, 'StartAddr': %d, 'RegCount': %d, 'StartShift': %d},",
+				a.Width(), a.RegCount(), a.StartAddr(), a.StartMask.Lower,
+			),
+		)
+	case access.ArrayContinuous:
+		panic("not yet implemented")
+	case access.ArrayMultiple:
+		panic("not yet implemented")
+	case access.ArraySingle:
+		panic("not yet implemented")
+	default:
+		panic("should never happen")
 	}
-
-	code := "[\n"
-	increaseIndent(2)
-
-	for _, a := range accesses {
-		switch a.(type) {
-		case access.SingleSingle:
-			ass := a.(access.SingleSingle)
-			code += indent + fmt.Sprintf(
-				"{'Type': 'SingleSingle', 'Width': %d, 'Addr': %d, 'Shift': %d},\n",
-				a.Width(), ass.Addr, ass.Mask.Lower,
-			)
-		case access.SingleContinuous:
-			asc := a.(access.SingleContinuous)
-			code += indent + fmt.Sprintf(
-				"{'Type': 'SingleContinuous', 'Width': %d, 'StartAddr': %d, 'RegCount': %d, 'StartShift': %d},\n",
-				a.Width(), asc.RegCount(), asc.StartAddr(), asc.StartMask.Lower,
-			)
-		case access.ArrayContinuous:
-			panic("not yet implemented")
-		case access.ArrayMultiple:
-			panic("not yet implemented")
-		case access.ArraySingle:
-			panic("not yet implemented")
-		default:
-			panic("should never happen")
-		}
-	}
-
-	decreaseIndent(1)
-	code = code[:len(code)]
-	code += indent + "],"
-	decreaseIndent(1)
-
-	return code
 }
 
-func genParamAccessList(params []elem.Param) string {
-	accesses := []access.Access{}
-	for _, p := range params {
-		accesses = append(accesses, p.Access())
+func genParamList(params []elem.Param) string {
+	if len(params) == 0 {
+		return "None"
 	}
 
-	return genAccessList(accesses)
+	b := strings.Builder{}
+
+	b.WriteString("[\n")
+	increaseIndent(2)
+
+	for _, p := range params {
+		b.WriteString(fmt.Sprintf("%s{'Name': '%s', 'Access': ", indent, p.Name()))
+		genAccess(p.Access(), &b)
+		b.WriteString("},\n")
+	}
+
+	decreaseIndent(1)
+	b.WriteString(fmt.Sprintf("%s]", indent))
+	decreaseIndent(1)
+
+	return b.String()
 }

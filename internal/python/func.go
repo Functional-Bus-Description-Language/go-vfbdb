@@ -10,8 +10,9 @@ func genFunc(fun elem.Func, blk elem.Block) string {
 	code := indent + fmt.Sprintf("self.%s = Func(iface, %d, ",
 		fun.Name(), blk.AddrSpace().Start()+fun.ParamsStartAddr(),
 	)
-	code += genParamAccessList(fun.Params())
-	code += genReturnAccessList(fun.Returns())
+	code += genParamList(fun.Params())
+	code += ", "
+	code += genReturnList(fun.Returns())
 	code += ")\n"
 
 	return code

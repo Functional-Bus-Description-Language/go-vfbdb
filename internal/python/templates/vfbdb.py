@@ -27,20 +27,20 @@ class _BufferIface:
         return self.buff[addr]
 
 class Func():
-    def __init__(self, iface, params_start_addr, param_accesses, return_accesses):
+    def __init__(self, iface, params_start_addr, params, returns):
         self.iface = iface
         self.params_start_addr = params_start_addr
-        self.param_accesses = param_accesses
-        self.return_accesses = return_accesses
+        self.params = params
+        self.params = params
     def __call__(self, *params):
-        if self.param_accesses is not None:
-            assert len(params) == len(self.param_accesses), \
-                "{}() takes {} arguments but {} were given".format(self.__name__, len(self.param_accesses), len(params))
+        if self.params is not None:
+            assert len(params) == len(self.params), \
+                "{}() takes {} arguments but {} were given".format(self.__name__, len(self.params), len(params))
         data = 0
         current_addr = None
         write_data = []
         for i, p in enumerate(params):
-            a = self.param_accesses[i]
+            a = self.params[i]['Access']
             if a['Type'] == 'SingleSingle':
                 assert 0 <= p < 2 ** a['Width'], "data value overrange ({})".format(p)
                 if current_addr is None:
