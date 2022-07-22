@@ -11,6 +11,21 @@ TIMESTAMP = {{.TIMESTAMP}}
 def calc_mask(m):
     return (((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)) >> m[1]
 
+class _BufferIface:
+    """
+    _BufferIface is the internal interface used for reading/writing internal buffer
+    (after reading)/(before writing) the target buffer. It is very useful
+    as it allows treating func or stream params/returns as configs/statuses.
+    """
+    def set_buff(self, buff):
+        self.buff = buff
+
+    def write(self, addr, data):
+        self.buff[addr] = data
+
+    def read(self, addr):
+        return self.buff[addr]
+
 class Func():
     def __init__(self, iface, params_start_addr, param_accesses, return_accesses):
         self.iface = iface
@@ -228,5 +243,56 @@ class StatusArrayMultiple:
             data.append((reg_data[i // self.items_per_access] >> shift) & mask)
 
         return data
+
+class Upstream():
+    def __init__(self, iface, addr, returns):
+        self.iface = iface
+        self.addr = addr
+        self.buff_iface = _BufferIface()
+        # Count of registers needed to be read for single read.
+        self.reg_count = 0
+        self.returns = []
+
+        for ret in returns:
+            a = ret['Access']
+            self.reg_count += a['RegCount']
+            r = {}
+            r['Name'] = ret['Name']
+            # TODO: Add support for groups.
+
+            if a['Type'] == 'SingleSingle':
+                r['Status'] = StatusSingleSingle(self.buff_iface, a['Addr'] - self.addr, a['Mask'])
+            elif a['Type'] == 'SingleContinuous':
+                r['Status'] = StatusSingleContinuous(
+                    self.buff_iface, a['StartAddr'] - self.addr, a['RegCount'], a['StartMask'], a['EndMask'], False,
+                )
+            else:
+                raise Exception("not yet implemented")
+
+            self.returns.append(r)
+
+    def read(self, n):
+        """
+        Read the stream n times.
+        Read returns a tuple of tuples. Grouped returns are returned as dictionary (not yet supported).
+        Non grouped returns are returned as values within tuple.
+        """
+        if self.reg_count == 1:
+            read_data = [[x] for x in iface.cread(addr, n)]
+        else:
+            read_data = iface.creadb(addr, self.reg_count, n)
+
+        data = []
+        for buff in range(read_data):
+            self.buff_iface.set_buff(buff)
+            tup = [] # List to allow append but must be cast to tuple.
+
+            for ret in self.returns:
+                # NOTE: Groups are not yet supported so it is safe to immediately append.
+                tup.append(ret['Status'].read())
+
+            data.append(tuple(tup))
+
+        return tuple(data)
 
 {{.Code}}

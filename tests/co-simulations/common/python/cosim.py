@@ -6,17 +6,11 @@ class Iface:
         self, write_fifo_path, read_fifo_path, delay_function=None, delay=False
     ):
         """Create co-simulation interface.
-        Parameters:
-        -----------
-        write_fifo_path
-            Path to software -> firmware named pipe.
-        read_fifo_path
-            Path to firmware -> software named pipe.
-        delay_function
-            Reference to function returning random value when delay is set to 'True'.
-        delay
-            If set to 'True' there is a random delay between any write or read operation.
-            Useful for modelling real access times.
+        write_fifo_path - path to software -> firmware named pipe
+        read_fifo_path  - path to firmware -> software named pipe
+        delay_function  - reference to function returning random value when delay is set to 'True'
+        delay - if set to 'True' there is a random delay between any write or read operation.
+                Useful for modelling real access times.
         """
         self.write_fifo_path = write_fifo_path
         self.read_fifo_path = read_fifo_path
@@ -34,6 +28,7 @@ class Iface:
         # Attributes related with statistics collection.
         self.write_count = 0
         self.read_count = 0
+        self.cread_count = 0
         self.writeb_count = 0
         self.rmw_count = 0
 
@@ -54,13 +49,9 @@ class Iface:
             pass
 
     def write(self, addr, data):
-        """Write register.
-        Parameters
-        ----------
-        addr
-            Register address.
-        data
-            Data to be written.
+        """Single Write
+        addr  - register address
+        data  - data to be written
         """
         if self.delay:
             self.wait(self.delay_function())
@@ -81,12 +72,8 @@ class Iface:
             raise Exception("Wrong status returned:" + s.strip())
 
     def read(self, addr):
-        """Read register.
-
-        Parameters
-        ----------
-        addr
-            Register address.
+        """Single Read
+        addr - register address
         """
         if self.delay:
             self.wait(self.delay_function())
@@ -107,14 +94,19 @@ class Iface:
 
         return data
 
+    def cread(self, addr, n):
+        """Cyclic Read
+        addr - register address
+        n    - number of reads
+        """
+        data = [self.read(addr) for _ in range(n)]
+        self.cread_count += 1
+        return data
+
     def writeb(self, addr, data):
-        """Write continuous block of registers.
-        Parameters
-        ----------
-        addr
-            Start address.
-        data
-            Data to be written.
+        """Block Write
+        addr - start address
+        data - buffer with data to be written
         """
         if self.delay:
             self.wait(self.delay_function())
@@ -132,13 +124,9 @@ class Iface:
         """Perform read-modify-write operation.
         New data is determined by following formula: X := (X & ~mask) | (data & mask).
 
-        Parameters:
-        addr
-            Register address.
-        data
-            Data.
-        mask
-            Mask.
+        addr - register address
+        data - data
+        mask - mask
         """
         print(
             "rmw: addr 0x%.8x, data %d (0x%.8x) (%s), mask %d (%s)"
@@ -151,10 +139,7 @@ class Iface:
 
     def wait(self, time_ns):
         """Wait in the simulator for a given amount of time.
-        Parameters
-        ----------
-        time_ns
-            Time to wait in nanoseconds.
+        time_ns - time to wait in nanoseconds
         """
         assert time_ns > 0, "Wait time must be greater than 0"
 
@@ -172,10 +157,7 @@ class Iface:
 
     def end(self, status):
         """End a co-simulation with a given status.
-        Parameters:
-        -----------
-        status
-            Status to be returned by the simulation process.
+        status - status to be returned by the simulation process
         """
         print("CosimIface: ending with status %d" % status)
 
@@ -193,8 +175,9 @@ class Iface:
     def print_stats(self):
         print(
             f"\nCosimIface: transactions statistics:\n"
-            + f"  write:  {self.write_count}\n"
             + f"  read:   {self.read_count}\n"
+            + f"  write:  {self.write_count}\n"
+            + f"  cread:  {self.cread_count}\n"
             + f"  writeb: {self.writeb_count}\n"
             + f"  rmw:    {self.rmw_count}"
         )
