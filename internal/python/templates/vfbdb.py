@@ -54,9 +54,9 @@ def pack_args(params, *args):
                         buff.append(data)
                         data = 0
                         addr = a['StartAddr']
-                    data |= (arg & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
+                    data |= (arg & calc_mask(a['StartMask'])) << a['StartMask'][1]
                     buff.append(data)
-                    arg = arg >> (BUS_WIDTH - a['StartShift'])
+                    arg = arg >> (BUS_WIDTH - a['StartMask'][1])
                 else:
                     addr += 1
                     data = arg & calc_mask((BUS_WIDTH, 0))

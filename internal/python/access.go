@@ -22,8 +22,8 @@ func genAccess(acs access.Access, b *strings.Builder) {
 		a := acs.(access.SingleContinuous)
 		b.WriteString(
 			fmt.Sprintf(
-				"{'Type': 'SingleContinuous', 'Width': %d, 'StartAddr': %d, 'RegCount': %d, 'StartShift': %d},",
-				a.Width(), a.RegCount(), a.StartAddr(), a.StartMask.Lower,
+				"{'Type': 'SingleContinuous', 'StartAddr': %d, 'StartMask': (%d, %d), 'RegCount': %d},",
+				a.StartAddr(), a.StartMask.Upper, a.StartMask.Lower, a.RegCount(),
 			),
 		)
 	case access.ArrayContinuous:
