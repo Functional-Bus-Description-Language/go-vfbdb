@@ -19,7 +19,9 @@ func genParamList(params []elem.Param) string {
 	increaseIndent(2)
 
 	for _, p := range params {
-		b.WriteString(fmt.Sprintf("%s{'Name': '%s', 'Access': ", indent, p.Name()))
+		b.WriteString(
+			fmt.Sprintf("%s{'Name': '%s', 'Width': %d, 'Access': ", indent, p.Name(), p.Width()),
+		)
 		genAccess(p.Access(), &b)
 		b.WriteString("},\n")
 	}

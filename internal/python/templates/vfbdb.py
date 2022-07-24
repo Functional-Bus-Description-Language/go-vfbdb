@@ -26,58 +26,69 @@ class _BufferIface:
     def read(self, addr):
         return self.buff[addr]
 
+def pack_args(params, *args):
+    buff = []
+    addr = None # Current buffer address
+    data = 0
+
+    for i, arg in enumerate(args):
+        param = params[i]
+        assert 0 <= arg < 2 ** param['Width'], "data value overrange ({})".format(arg)
+
+        a = param['Access']
+
+        if a['Type'] == 'SingleSingle':
+            if addr is None:
+                addr = a['Addr']
+            elif a['Addr'] > addr:
+                buff.append(data)
+                data = 0
+                addr = a['Addr']
+            data |= arg << a['Mask'][1]
+        elif a['Type'] == 'SingleContinuous':
+            for r in range(a['RegCount']):
+                if r == 0:
+                    if addr is None:
+                        addr = a['StartAddr']
+                    elif a['StartAddr'] > addr:
+                        buff.append(data)
+                        data = 0
+                        addr = a['StartAddr']
+                    data |= (arg & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
+                    buff.append(data)
+                    arg = arg >> (BUS_WIDTH - a['StartShift'])
+                else:
+                    addr += 1
+                    data = arg & calc_mask((BUS_WIDTH, 0))
+                    arg = arg >> BUS_WIDTH
+                    if r < a['RegCount'] - 1:
+                        buff.append(data)
+        else:
+            for v in arg:
+                assert 0 <= v < 2 ** param['Width'], "data value overrange ({})".format(v)
+
+    buff.append(data)
+
+    return buff
+
 class Func():
     def __init__(self, iface, params_start_addr, params, returns):
         self.iface = iface
         self.params_start_addr = params_start_addr
         self.params = params
-        self.params = params
-    def __call__(self, *params):
-        if self.params is not None:
-            assert len(params) == len(self.params), \
-                "{}() takes {} arguments but {} were given".format(self.__name__, len(self.params), len(params))
-        data = 0
-        current_addr = None
-        write_data = []
-        for i, p in enumerate(params):
-            a = self.params[i]['Access']
-            if a['Type'] == 'SingleSingle':
-                assert 0 <= p < 2 ** a['Width'], "data value overrange ({})".format(p)
-                if current_addr is None:
-                    current_addr = a['Addr']
-                elif a['Addr'] > current_addr:
-                    write_data.append(data)
-                    data = 0
-                    current_addr = a['Addr']
-                data |= p << a['Shift']
-            elif a['Type'] == 'SingleContinuous':
-                assert 0 <= p < 2 ** a['Width'], "data value overrange ({})".format(p)
-                for r in range(a['RegCount']):
-                    if r == 0:
-                        if current_addr is None:
-                            current_addr = a['StartAddr']
-                        elif a['StartAddr'] > current_addr:
-                            write_data.append(data)
-                            data = 0
-                            current_addr = a['StartAddr']
-                        data |= (p & calc_mask((BUS_WIDTH - 1 - a['StartShift'], 0))) << a['StartShift']
-                        write_data.append(data)
-                        p = p >> (BUS_WIDTH - a['StartShift'])
-                    else:
-                        current_addr += 1
-                        data = p & calc_mask((BUS_WIDTH, 0))
-                        p = p >> BUS_WIDTH
-                        if r < a['RegCount'] - 1:
-                            write_data.append(data)
-            else:
-                for v in p:
-                    assert 0 <= v < 2 ** a['Width'], "data value overrange ({})".format(v)
 
-        write_data.append(data)
-        if len(write_data) == 1:
-            self.iface.write(self.params_start_addr, write_data[0])
+    def __call__(self, *args):
+        print(args)
+        if self.params is not None:
+            assert len(args) == len(self.params), \
+                "{}() takes {} arguments but {} were given".format(self.__name__, len(self.params), len(args))
+
+        write_buff = pack_args(self.params, *args)
+
+        if len(write_buff) == 1:
+            self.iface.write(self.params_start_addr, write_buff[0])
         else:
-            self.iface.writeb(self.params_start_addr, write_data)
+            self.iface.writeb(self.params_start_addr, write_buff)
 
 class SingleSingle:
     def __init__(self, iface, addr, mask):
@@ -262,7 +273,7 @@ class Upstream():
 
             if a['Type'] == 'SingleSingle':
                 r['Status'] = StatusSingleSingle(
-                    self.buff_iface, a['Addr'] - self.addr, (a['Mask']['Upper'], a['Mask']['Lower'])
+                    self.buff_iface, a['Addr'] - self.addr, (a['Mask'][0], a['Mask'][1])
                 )
             elif a['Type'] == 'SingleContinuous':
                 r['Status'] = StatusSingleContinuous(

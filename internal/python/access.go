@@ -14,7 +14,7 @@ func genAccess(acs access.Access, b *strings.Builder) {
 		a := acs.(access.SingleSingle)
 		b.WriteString(
 			fmt.Sprintf(
-				"{'Type': 'SingleSingle', 'Addr': %d, 'Mask': {'Upper': %d, 'Lower': %d}, 'RegCount': 1},",
+				"{'Type': 'SingleSingle', 'Addr': %d, 'Mask': (%d, %d), 'RegCount': 1},",
 				a.Addr, a.Mask.Upper, a.Mask.Lower,
 			),
 		)
