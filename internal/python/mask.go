@@ -20,10 +20,10 @@ func genMaskSingle(mask elem.Mask, blk elem.Block) string {
 
 	switch mask.Access().(type) {
 	case access.SingleSingle:
-		access := mask.Access().(access.SingleSingle)
+		a := mask.Access().(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleSingle(iface, %d, (%d, %d))\n",
-			mask.Name(), blk.AddrSpace().Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
+			mask.Name(), blk.AddrSpace().Start()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	default:
 		panic("not yet implemented")

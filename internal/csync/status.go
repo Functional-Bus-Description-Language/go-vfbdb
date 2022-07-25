@@ -6,6 +6,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
 func genStatus(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
@@ -36,12 +37,12 @@ func genStatusSingleSingle(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts
 
 	hFmts.Code += fmt.Sprintf("%s;", signature)
 
-	access := st.Access().(access.SingleSingle)
+	a := st.Access().(access.SingleSingle)
 	srcFmts.Code += fmt.Sprintf("%s {\n", signature)
 	if readDataType.Typ() != "ByteArray" && typ.Typ() != "ByteArray" {
 		if busWidth == st.Width() {
 			srcFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};", access.Addr,
+				"\treturn iface->read(%d, data);\n};", a.Addr,
 			)
 		} else {
 			srcFmts.Code += fmt.Sprintf(`	int err;
@@ -52,7 +53,7 @@ func genStatusSingleSingle(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts
 	}
 	*data = (aux >> %d) & %x;
 	return 0;
-};`, readDataType.Depointer().String(), access.Addr, access.Mask.Lower, access.Mask.Uint64(),
+};`, readDataType.Depointer().String(), a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
 		}
 	} else {

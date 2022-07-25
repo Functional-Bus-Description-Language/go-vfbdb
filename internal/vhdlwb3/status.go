@@ -43,24 +43,22 @@ func genStatusSingle(st elem.Status, fmts *BlockEntityFormatters) {
 }
 
 func genStatusSingleSingle(st elem.Status, fmts *BlockEntityFormatters) {
-	fbdlAccess := st.Access().(access.SingleSingle)
-	addr := fbdlAccess.Addr
-	mask := fbdlAccess.Mask
+	a := st.Access().(access.SingleSingle)
 
 	var code string
 	if fmts.EntityName == "Main" && (st.Name() == "ID" || st.Name() == "TIMESTAMP") {
 		code = fmt.Sprintf(
 			"      master_in.dat(%d downto %d) <= %s; -- %s",
-			mask.Upper, mask.Lower, string(st.Default()), st.Name(),
+			a.EndBit(), a.StartBit(), string(st.Default()), st.Name(),
 		)
 	} else {
 		code = fmt.Sprintf(
 			"      master_in.dat(%d downto %d) <= %s_i;\n",
-			mask.Upper, mask.Lower, st.Name(),
+			a.EndBit(), a.StartBit(), st.Name(),
 		)
 	}
 
-	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
+	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
 }
 
 func genStatusSingleContinuous(st elem.Status, fmts *BlockEntityFormatters) {
@@ -74,10 +72,10 @@ func genStatusSingleContinuous(st elem.Status, fmts *BlockEntityFormatters) {
 func genStatusSingleContinuousAtomic(st elem.Status, fmts *BlockEntityFormatters) {
 	a := st.Access().(access.SingleContinuous)
 	strategy := SeparateFirst
-	atomicShadowRange := [2]int64{st.Width() - 1, a.StartMask.Width()}
+	atomicShadowRange := [2]int64{st.Width() - 1, a.FirstRegWidth()}
 	if st.HasDecreasingAccessOrder() {
 		strategy = SeparateLast
-		atomicShadowRange[0] = st.Width() - 1 - a.EndMask.Width()
+		atomicShadowRange[0] = st.Width() - 1 - a.LastRegWidth()
 		atomicShadowRange[1] = 0
 	}
 	chunks := makeAccessChunksContinuous(a, strategy)
@@ -94,12 +92,12 @@ func genStatusSingleContinuousAtomic(st elem.Status, fmts *BlockEntityFormatters
 				"      %[1]s_atomic(%[2]d downto %[3]d) <= %[1]s_i(%[2]d downto %[3]d);\n"+
 					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_i(%[6]s downto %[7]s);",
 				st.Name(), atomicShadowRange[0], atomicShadowRange[1],
-				c.mask.Upper, c.mask.Lower, c.range_[0], c.range_[1],
+				c.endBit, c.startBit, c.range_[0], c.range_[1],
 			)
 		} else {
 			code = fmt.Sprintf(
 				"      master_in.dat(%d downto %d) <= %s_atomic(%s downto %s);",
-				c.mask.Upper, c.mask.Lower, st.Name(), c.range_[0], c.range_[1],
+				c.endBit, c.startBit, st.Name(), c.range_[0], c.range_[1],
 			)
 		}
 
@@ -113,7 +111,7 @@ func genStatusSingleContinuousNonAtomic(st elem.Status, fmts *BlockEntityFormatt
 	for _, c := range chunks {
 		code := fmt.Sprintf(
 			"      master_in.dat(%d downto %d) <= %s_i(%s downto %s);",
-			c.mask.Upper, c.mask.Lower, st.Name(), c.range_[0], c.range_[1],
+			c.endBit, c.startBit, st.Name(), c.range_[0], c.range_[1],
 		)
 
 		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
@@ -121,18 +119,18 @@ func genStatusSingleContinuousNonAtomic(st elem.Status, fmts *BlockEntityFormatt
 }
 
 func genStatusArraySingle(st elem.Status, fmts *BlockEntityFormatters) {
-	access := st.Access().(access.ArraySingle)
+	a := st.Access().(access.ArraySingle)
 
 	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name(), st.Count()-1, st.Width()-1)
 	fmts.EntityFunctionalPorts += port
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
-		access.Mask.Upper, access.Mask.Lower, st.Name(), access.StartAddr(),
+		a.EndBit(), a.StartBit(), st.Name(), a.StartAddr(),
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{access.StartAddr(), access.StartAddr() + access.RegCount() - 1},
+		[2]int64{a.StartAddr(), a.StartAddr() + a.RegCount() - 1},
 		code,
 	)
 }

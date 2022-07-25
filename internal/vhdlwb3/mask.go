@@ -37,16 +37,15 @@ func genMaskSingle(mask elem.Mask, fmts *BlockEntityFormatters) {
 }
 
 func genMaskSingleSingle(mask elem.Mask, fmts *BlockEntityFormatters) {
-	access := mask.Access().(access.SingleSingle)
-	accessMask := access.Mask
+	a := mask.Access().(access.SingleSingle)
 
 	code := fmt.Sprintf(
 		"      if master_out.we = '1' then\n"+
 			"         %[1]s_o <= master_out.dat(%[2]d downto %[3]d);\n"+
 			"      end if;\n"+
 			"      master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
-		mask.Name(), accessMask.Upper, accessMask.Lower,
+		mask.Name(), a.EndBit(), a.StartBit(),
 	)
 
-	fmts.RegistersAccess.add([2]int64{access.Addr, access.Addr}, code)
+	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
 }

@@ -14,16 +14,16 @@ func genAccess(acs access.Access, b *strings.Builder) {
 		a := acs.(access.SingleSingle)
 		b.WriteString(
 			fmt.Sprintf(
-				"{'Type': 'SingleSingle', 'Addr': %d, 'Mask': (%d, %d), 'RegCount': 1},",
-				a.Addr, a.Mask.Upper, a.Mask.Lower,
+				"{'Type': 'SingleSingle', 'Addr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': 1},",
+				a.Addr, a.StartBit(), a.EndBit(),
 			),
 		)
 	case access.SingleContinuous:
 		a := acs.(access.SingleContinuous)
 		b.WriteString(
 			fmt.Sprintf(
-				"{'Type': 'SingleContinuous', 'StartAddr': %d, 'StartMask': (%d, %d), 'RegCount': %d},",
-				a.StartAddr(), a.StartMask.Upper, a.StartMask.Lower, a.RegCount(),
+				"{'Type': 'SingleContinuous', 'StartAddr': %d, 'StartBit': %d,: 'EndBit': %d, 'RegCount': %d},",
+				a.StartAddr(), a.StartBit(), a.EndBit(), a.RegCount(),
 			),
 		)
 	case access.ArrayContinuous:

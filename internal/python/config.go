@@ -23,7 +23,7 @@ func genConfigSingle(cfg elem.Config, blk elem.Block) string {
 		a := cfg.Access().(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
-			cfg.Name(), blk.AddrSpace().Start()+a.Addr, a.Mask.Upper, a.Mask.Lower,
+			cfg.Name(), blk.AddrSpace().Start()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	case access.SingleContinuous:
 		a := cfg.Access().(access.SingleContinuous)
@@ -36,8 +36,8 @@ func genConfigSingle(cfg elem.Config, blk elem.Block) string {
 			cfg.Name(),
 			blk.AddrSpace().Start()+a.StartAddr(),
 			a.RegCount(),
-			a.StartMask.Upper, a.StartMask.Lower,
-			a.EndMask.Upper, a.EndMask.Lower,
+			busWidth-1, a.StartBit(),
+			a.EndBit(), 0,
 			decreasigOrder,
 		)
 	default:

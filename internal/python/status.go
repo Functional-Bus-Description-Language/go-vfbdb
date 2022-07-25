@@ -20,10 +20,10 @@ func genStatusSingle(st elem.Status, blk elem.Block) string {
 
 	switch st.Access().(type) {
 	case access.SingleSingle:
-		access := st.Access().(access.SingleSingle)
+		a := st.Access().(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
-			st.Name(), blk.AddrSpace().Start()+access.Addr, access.Mask.Upper, access.Mask.Lower,
+			st.Name(), blk.AddrSpace().Start()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	case access.SingleContinuous:
 		a := st.Access().(access.SingleContinuous)
@@ -36,8 +36,8 @@ func genStatusSingle(st elem.Status, blk elem.Block) string {
 			st.Name(),
 			blk.AddrSpace().Start()+a.StartAddr(),
 			a.RegCount(),
-			a.StartMask.Upper, a.StartMask.Lower,
-			a.EndMask.Upper, a.EndMask.Lower,
+			busWidth-1, a.StartBit(),
+			a.EndBit(), 0,
 			decreasigOrder,
 		)
 	default:
@@ -52,14 +52,14 @@ func genStatusArray(st elem.Status, blk elem.Block) string {
 
 	switch st.Access().(type) {
 	case access.ArraySingle:
-		access := st.Access().(access.ArraySingle)
+		a := st.Access().(access.ArraySingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name(),
-			blk.AddrSpace().Start()+access.StartAddr(),
-			access.Mask.Upper,
-			access.Mask.Lower,
-			access.RegCount(),
+			blk.AddrSpace().Start()+a.StartAddr(),
+			a.EndBit(),
+			a.StartBit(),
+			a.RegCount(),
 		)
 	case access.ArrayMultiple:
 		access := st.Access().(access.ArrayMultiple)

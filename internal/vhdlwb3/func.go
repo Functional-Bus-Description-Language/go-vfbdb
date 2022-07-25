@@ -47,7 +47,7 @@ func genFuncAccess(fun elem.Func, fmts *BlockEntityFormatters) {
 					"         %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);\n"+
 					"      end if;\n"+
 					"      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;\n",
-				fun.Name(), p.Name(), access.Mask.Upper, access.Mask.Lower,
+				fun.Name(), p.Name(), access.EndBit(), access.StartBit(),
 			)
 
 			fmts.RegistersAccess.add(addr, code)
@@ -60,7 +60,7 @@ func genFuncAccess(fun elem.Func, fmts *BlockEntityFormatters) {
 						"         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);\n"+
 						"      end if;\n"+
 						"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);\n",
-					fun.Name(), p.Name(), c.range_[0], c.range_[1], c.mask.Upper, c.mask.Lower,
+					fun.Name(), p.Name(), c.range_[0], c.range_[1], c.endBit, c.startBit,
 				)
 
 				fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
