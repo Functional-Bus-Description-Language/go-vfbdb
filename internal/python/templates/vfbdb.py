@@ -240,15 +240,15 @@ class StatusArrayMultiple:
                 assert 0 <= i < self.item_count
                 reg_idx.add(i // self.items_per_access)
 
-        buff = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
+        reg_data = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
 
         data = []
         for i in idx:
             shift = self.start_bit + self.width * (i % self.items_per_access)
             mask = (1 << self.width) - 1
-            data.append((buff[i // self.items_per_access] >> shift) & mask)
+            data.append((reg_data[i // self.items_per_access] >> shift) & mask)
 
-        return tuple(data)
+        return data
 
 class Upstream():
     def __init__(self, iface, addr, returns):
