@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 import cosim
 import vfbdb
@@ -14,12 +15,12 @@ try:
 
     Main = vfbdb.Main(iface)
 
-    print("Testing count % iterm per access = 0 scenerio.")
+    print("Testing count % items per access = 0 scenerio.")
 
     values = Main.Status_array0.read()
     assert len(values) == 8
     for i, v in enumerate(values):
-        assert v == i
+        assert v == i, f"got {v}, expecting {i}"
 
     idx = [2, 7]
     values = Main.Status_array0.read(idx)
@@ -66,4 +67,4 @@ try:
 
 except Exception as E:
     iface.end(1)
-    log.exception(E)
+    print(traceback.format_exc())

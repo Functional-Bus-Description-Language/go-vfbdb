@@ -9,23 +9,18 @@ import (
 )
 
 func genAccess(acs access.Access, b *strings.Builder) {
+	b.WriteString(
+		fmt.Sprintf(
+			"{'StartAddr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': %d, ",
+			acs.StartAddr(), acs.StartBit(), acs.EndBit(), acs.RegCount(),
+		),
+	)
+
 	switch acs.(type) {
 	case access.SingleSingle:
-		a := acs.(access.SingleSingle)
-		b.WriteString(
-			fmt.Sprintf(
-				"{'Type': 'SingleSingle', 'Addr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': 1},",
-				a.Addr, a.StartBit(), a.EndBit(),
-			),
-		)
+		b.WriteString("'Type': 'SingleSingle'")
 	case access.SingleContinuous:
-		a := acs.(access.SingleContinuous)
-		b.WriteString(
-			fmt.Sprintf(
-				"{'Type': 'SingleContinuous', 'StartAddr': %d, 'StartBit': %d,: 'EndBit': %d, 'RegCount': %d},",
-				a.StartAddr(), a.StartBit(), a.EndBit(), a.RegCount(),
-			),
-		)
+		b.WriteString("'Type': 'SingleContinuous'")
 	case access.ArrayContinuous:
 		panic("not yet implemented")
 	case access.ArrayMultiple:
@@ -35,4 +30,6 @@ func genAccess(acs access.Access, b *strings.Builder) {
 	default:
 		panic("should never happen")
 	}
+
+	b.WriteString("},")
 }

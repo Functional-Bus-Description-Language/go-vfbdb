@@ -76,4 +76,4 @@ try:
 
 except Exception as E:
     iface.end(1)
-    log.exception(E)
+    print(traceback.format_exc())

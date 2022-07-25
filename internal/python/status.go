@@ -67,7 +67,7 @@ func genStatusArray(st elem.Status, blk elem.Block) string {
 			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name(),
 			blk.AddrSpace().Start()+access.StartAddr(),
-			access.StartBit,
+			access.StartBit(),
 			access.ItemWidth,
 			access.ItemCount,
 			access.ItemsPerAccess,

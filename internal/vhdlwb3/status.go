@@ -151,21 +151,21 @@ func genStatusArrayMultiple(st elem.Status, fmts *BlockEntityFormatters) {
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
       end loop;`,
-			st.Count()-1, access.ItemWidth, access.StartBit, st.Name(),
+			st.Count()-1, access.ItemWidth, access.StartBit(), st.Name(),
 		)
 	} else if access.ItemsInLastReg() == 0 {
 		addr = [2]int64{access.StartAddr(), access.EndAddr()}
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			itemsPerAccess-1, access.ItemWidth, access.StartBit, st.Name(), access.StartAddr(), access.ItemsPerAccess,
+			itemsPerAccess-1, access.ItemWidth, access.StartBit(), st.Name(), access.StartAddr(), access.ItemsPerAccess,
 		)
 	} else {
 		addr = [2]int64{access.StartAddr(), access.EndAddr() - 1}
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			itemsPerAccess-1, access.ItemWidth, access.StartBit, st.Name(), access.StartAddr(), access.ItemsPerAccess,
+			itemsPerAccess-1, access.ItemWidth, access.StartBit(), st.Name(), access.StartAddr(), access.ItemsPerAccess,
 		)
 		fmts.RegistersAccess.add(addr, code)
 
@@ -173,7 +173,7 @@ func genStatusArrayMultiple(st elem.Status, fmts *BlockEntityFormatters) {
 		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
       end loop;`,
-			access.ItemsInLastReg()-1, access.ItemWidth, access.StartBit, st.Name(), (access.RegCount()-1)*access.ItemsPerAccess,
+			access.ItemsInLastReg()-1, access.ItemWidth, access.StartBit(), st.Name(), (access.RegCount()-1)*access.ItemsPerAccess,
 		)
 	}
 

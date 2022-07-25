@@ -37,26 +37,21 @@ def pack_args(params, *args):
 
         a = param['Access']
 
+        if addr is None:
+            addr = a['StartAddr']
+        elif a['StartAddr'] > addr:
+            buff.append(data)
+            data = 0
+            addr = a['StartAddr']
+
         if a['Type'] == 'SingleSingle':
-            if addr is None:
-                addr = a['Addr']
-            elif a['Addr'] > addr:
-                buff.append(data)
-                data = 0
-                addr = a['Addr']
-            data |= arg << a['Mask'][1]
+            data |= arg << a['StartBit']
         elif a['Type'] == 'SingleContinuous':
             for r in range(a['RegCount']):
                 if r == 0:
-                    if addr is None:
-                        addr = a['StartAddr']
-                    elif a['StartAddr'] > addr:
-                        buff.append(data)
-                        data = 0
-                        addr = a['StartAddr']
-                    data |= (arg & calc_mask(a['StartMask'])) << a['StartMask'][1]
+                    data |= (arg & calc_mask((BUS_WIDTH - 1, a['StartBit']))) << a['StartBit']
                     buff.append(data)
-                    arg = arg >> (BUS_WIDTH - a['StartMask'][1])
+                    arg = arg >> (BUS_WIDTH - a['StartBit'])
                 else:
                     addr += 1
                     data = arg & calc_mask((BUS_WIDTH, 0))
@@ -273,7 +268,7 @@ class Upstream():
 
             if a['Type'] == 'SingleSingle':
                 r['Status'] = StatusSingleSingle(
-                    self.buff_iface, a['Addr'] - self.addr, (a['Mask'][0], a['Mask'][1])
+                    self.buff_iface, a['StartAddr'] - self.addr, (a['EndBit'], a['StartBit'])
                 )
             elif a['Type'] == 'SingleContinuous':
                 r['Status'] = StatusSingleContinuous(
