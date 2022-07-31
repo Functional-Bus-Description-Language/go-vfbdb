@@ -31,8 +31,8 @@ library ieee;
 library general_cores;
    use general_cores.wishbone_pkg.all;
 
-library types;
-   use types.types.all;
+library ltypes;
+   use ltypes.types.all;
 
 library work;
    use work.wb3.all;
