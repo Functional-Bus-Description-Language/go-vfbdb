@@ -5,7 +5,7 @@ name: vhdl-wb3::cosim
 filesets:
   src:
     depend:
-      - mkru:vhdl:types
+      - mkru:vhdl-types:types
     files:
       - src/cosim.vhd
       - src/cosim_context.vhd

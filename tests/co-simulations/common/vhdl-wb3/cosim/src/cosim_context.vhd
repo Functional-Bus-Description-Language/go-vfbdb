@@ -10,8 +10,8 @@ context cosim_context is
    library general_cores;
       use general_cores.wishbone_pkg.all;
 
-   library types;
-      use types.types.all;
+   library ltypes;
+      use ltypes.types.all;
 
    library uvvm_util;
       context uvvm_util.uvvm_util_context;

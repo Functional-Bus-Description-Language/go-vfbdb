@@ -6,8 +6,8 @@ library ieee;
    use ieee.std_logic_1164.all;
    use ieee.numeric_std.all;
 
-library types;
-   use types.types.all;
+library ltypes;
+   use ltypes.types.all;
 
 library work;
    use work.wb3.all;
