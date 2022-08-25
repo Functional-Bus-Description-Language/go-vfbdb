@@ -19,7 +19,7 @@ func genStream(stream elem.Stream, fmts *BlockEntityFormatters) {
 }
 
 func genStreamType(stream elem.Stream, fmts *BlockEntityFormatters) {
-	s := fmt.Sprintf("\ntype t_%s is record\n", stream.Name())
+	s := fmt.Sprintf("\ntype %s_t is record\n", stream.Name())
 
 	// NOTE: Params and returns are generated in the same function.
 	// However, a stream must have only params or only returns, so length
@@ -57,7 +57,7 @@ func genStreamPorts(stream elem.Stream, fmts *BlockEntityFormatters) {
 		suffix = "i"
 	}
 
-	s := fmt.Sprintf(";\n   %s_%s : %s t_%[1]s;\n", stream.Name(), suffix, dir)
+	s := fmt.Sprintf(";\n   %s_%s : %s %[1]s_t;\n", stream.Name(), suffix, dir)
 
 	s += fmt.Sprintf("   %s_stb_o : out std_logic\n", stream.Name())
 

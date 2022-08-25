@@ -46,7 +46,7 @@ func genPkgsConsts(pkgsConsts map[string]elem.Package) string {
 		}
 
 		// Package type definition
-		s += fmt.Sprintf("type t_%s_pkg is record\n", pkgName)
+		s += fmt.Sprintf("type %s_pkg_t is record\n", pkgName)
 		for name, _ := range pkg.BoolConsts() {
 			s += fmt.Sprintf("   %s : boolean;\n", name)
 		}
@@ -65,7 +65,7 @@ func genPkgsConsts(pkgsConsts map[string]elem.Package) string {
 		s += fmt.Sprintf("end record;\n")
 
 		// Package constant definition
-		s += fmt.Sprintf("constant %[1]s_pkg : t_%[1]s_pkg := (\n", pkgName)
+		s += fmt.Sprintf("constant %[1]s_pkg : %[1]s_pkg_t := (\n", pkgName)
 		for name, b := range pkg.BoolConsts() {
 			s += fmt.Sprintf("   %s => %t,\n", name, b)
 		}

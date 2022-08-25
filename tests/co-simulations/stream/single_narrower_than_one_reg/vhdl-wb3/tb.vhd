@@ -18,7 +18,7 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal fifo : t_fifo;
+   signal fifo : fifo_t;
    signal fifo_stb : std_logic;
    signal val : unsigned(13 downto 0) := (others => '0');
 

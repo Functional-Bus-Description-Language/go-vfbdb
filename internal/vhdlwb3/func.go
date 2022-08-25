@@ -15,7 +15,7 @@ func genFunc(fun elem.Func, fmts *BlockEntityFormatters) {
 }
 
 func genFuncType(fun elem.Func, fmts *BlockEntityFormatters) {
-	s := fmt.Sprintf("\ntype t_%s is record\n", fun.Name())
+	s := fmt.Sprintf("\ntype %s_t is record\n", fun.Name())
 
 	for _, p := range fun.Params() {
 		if p.IsArray() {
@@ -31,7 +31,7 @@ func genFuncType(fun elem.Func, fmts *BlockEntityFormatters) {
 }
 
 func genFuncPort(fun elem.Func, fmts *BlockEntityFormatters) {
-	s := fmt.Sprintf(";\n   %s_o : out t_%[1]s", fun.Name())
+	s := fmt.Sprintf(";\n   %s_o : out %[1]s_t", fun.Name())
 	fmts.EntityFunctionalPorts += s
 }
 
