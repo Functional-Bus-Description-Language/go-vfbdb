@@ -142,7 +142,7 @@ static int cosim_iface_read(const uint8_t addr, uint32_t * const data) {
 
 	uint32_t aux = bin_to_uint32(response);
 
-	printf("read: data %u (%#.8x)", aux, aux);
+	printf("read: data %u (%#.8x)\n", aux, aux);
 
 	*data = aux;
 

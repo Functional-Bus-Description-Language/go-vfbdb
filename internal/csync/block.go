@@ -42,6 +42,10 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 		genStatus(st, &hFmts, &cFmts)
 	}
 
+	for _, cfg := range b.Block.Configs() {
+		genConfig(cfg, &hFmts, &cFmts)
+	}
+
 	genBlockH(b, hFmts)
 	genBlockC(b, cFmts)
 }

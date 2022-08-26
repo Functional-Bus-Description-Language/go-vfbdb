@@ -45,13 +45,11 @@ func genStatusSingleSingle(st elem.Status, hFmts *BlockHFormatters, cFmts *Block
 				"\treturn iface->read(%d, data);\n};", a.Addr,
 			)
 		} else {
-			cFmts.Code += fmt.Sprintf(`	int err;
-	%s aux;
-	err = iface->read(%d, &aux);
-	if (err) {
+			cFmts.Code += fmt.Sprintf(`	%s aux;
+	const int err = iface->read(%d, &aux);
+	if (err)
 		return err;
-	}
-	*data = (aux >> %d) & %x;
+	*data = (aux >> %d) & 0x%x;
 	return 0;
 };`, readType.Depointer().String(), a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
