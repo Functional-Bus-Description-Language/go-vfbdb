@@ -9,18 +9,18 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
-func genStatus(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
+func genStatus(st elem.Status, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if st.IsArray() {
 		panic("not yet implemented")
 	} else {
-		genStatusSingle(st, hFmts, srcFmts)
+		genStatusSingle(st, hFmts, cFmts)
 	}
 }
 
-func genStatusSingle(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
+func genStatusSingle(st elem.Status, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch st.Access().(type) {
 	case access.SingleSingle:
-		genStatusSingleSingle(st, hFmts, srcFmts)
+		genStatusSingleSingle(st, hFmts, cFmts)
 	case access.SingleContinuous:
 		panic("not yet implemented")
 	default:
@@ -28,7 +28,7 @@ func genStatusSingle(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts *Bloc
 	}
 }
 
-func genStatusSingleSingle(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts *BlockSourceFormatters) {
+func genStatusSingleSingle(st elem.Status, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	typ := c.WidthToReadType(st.Width())
 	signature := fmt.Sprintf(
 		"\n\nint vfbdb_%s_%s_read(const vfbdb_iface_t * const iface, %s const data)",
@@ -38,14 +38,14 @@ func genStatusSingleSingle(st elem.Status, hFmts *BlockHeaderFormatters, srcFmts
 	hFmts.Code += fmt.Sprintf("%s;", signature)
 
 	a := st.Access().(access.SingleSingle)
-	srcFmts.Code += fmt.Sprintf("%s {\n", signature)
+	cFmts.Code += fmt.Sprintf("%s {\n", signature)
 	if readType.Typ() != "ByteArray" && typ.Typ() != "ByteArray" {
 		if busWidth == st.Width() {
-			srcFmts.Code += fmt.Sprintf(
+			cFmts.Code += fmt.Sprintf(
 				"\treturn iface->read(%d, data);\n};", a.Addr,
 			)
 		} else {
-			srcFmts.Code += fmt.Sprintf(`	int err;
+			cFmts.Code += fmt.Sprintf(`	int err;
 	%s aux;
 	err = iface->read(%d, &aux);
 	if (err) {

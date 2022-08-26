@@ -20,33 +20,33 @@ var blockHeaderTmpl = template.Must(template.New("C-Sync header").Parse(blockHea
 var blockSourceTmplStr string
 var blockSourceTmpl = template.Must(template.New("C-Sync source").Parse(blockSourceTmplStr))
 
-type BlockHeaderFormatters struct {
+type BlockHFormatters struct {
 	BlockName string
 	Code      string
 }
 
-type BlockSourceFormatters struct {
+type BlockCFormatters struct {
 	Code string
 }
 
 func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	hFmts := BlockHeaderFormatters{
+	hFmts := BlockHFormatters{
 		BlockName: b.Name,
 		Code:      "",
 	}
-	srcFmts := BlockSourceFormatters{Code: ""}
+	cFmts := BlockCFormatters{Code: ""}
 
 	for _, st := range b.Block.Statuses() {
-		genStatus(st, &hFmts, &srcFmts)
+		genStatus(st, &hFmts, &cFmts)
 	}
 
-	genBlockHeader(b, hFmts)
-	genBlockSource(b, srcFmts)
+	genBlockH(b, hFmts)
+	genBlockC(b, cFmts)
 }
 
-func genBlockHeader(b utils.Block, hFmts BlockHeaderFormatters) {
+func genBlockH(b utils.Block, hFmts BlockHFormatters) {
 	f, err := os.Create(outputPath + fmt.Sprintf("%s.h", b.Name))
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
@@ -59,14 +59,14 @@ func genBlockHeader(b utils.Block, hFmts BlockHeaderFormatters) {
 	}
 }
 
-func genBlockSource(b utils.Block, srcFmts BlockSourceFormatters) {
+func genBlockC(b utils.Block, cFmts BlockCFormatters) {
 	f, err := os.Create(outputPath + fmt.Sprintf("%s.c", b.Name))
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}
 	defer f.Close()
 
-	err = blockSourceTmpl.Execute(f, srcFmts)
+	err = blockSourceTmpl.Execute(f, cFmts)
 	if err != nil {
 		log.Fatalf("generate C-Sync: %v", err)
 	}
