@@ -7,8 +7,8 @@ extern const uint32_t VFBDB_ID;
 extern const uint32_t VFBDB_TIMESTAMP;
 
 typedef struct {
-	int (*read)(const {{.AddrType}} addr, {{.ReadDataType}} const data);
-	int (*write)(const {{.AddrType}} addr, const {{.WriteDataType}} data);
+	int (*read)(const {{.AddrType}} addr, {{.ReadType}} const data);
+	int (*write)(const {{.AddrType}} addr, const {{.WriteType}} data);
 } vfbdb_iface_t;
 
 #define vfbdb_read(elem, data) (vfbdb_ ## elem ## _read(VFBDB_IFACE, data))

@@ -4,7 +4,6 @@ import (
 	_ "embed"
 	"fmt"
 	"log"
-	"math"
 	"os"
 	"text/template"
 
@@ -19,8 +18,8 @@ var busWidth int64
 var outputPath string
 
 var addrType c.Type
-var readDataType c.Type
-var writeDataType c.Type
+var readType c.Type
+var writeType c.Type
 
 //go:embed templates/vfbdb.h
 var vfbdbHeaderTmplStr string
@@ -31,9 +30,9 @@ var vfbdbSourceTmplStr string
 var vfbdbSourceTmpl = template.Must(template.New("C-Sync vfbdb.c").Parse(vfbdbSourceTmplStr))
 
 type vfbdbHeaderFormatters struct {
-	AddrType      string
-	ReadDataType  string
-	WriteDataType string
+	AddrType  string
+	ReadType  string
+	WriteType string
 }
 
 type vfbdbSourceFormatters struct {
@@ -56,16 +55,14 @@ func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs ma
 	}
 	defer hFile.Close()
 
-	addrType = c.WidthToWriteType(
-		int64(math.Log2(float64(bus.Sizes().BlockAligned))),
-	)
-	readDataType = c.WidthToReadType(bus.Width())
-	writeDataType = c.WidthToWriteType(bus.Width())
+	addrType = c.SizeToAddrType(bus.Sizes().BlockAligned)
+	readType = c.WidthToReadType(bus.Width())
+	writeType = c.WidthToWriteType(bus.Width())
 
 	hFmts := vfbdbHeaderFormatters{
-		AddrType:      addrType.String(),
-		ReadDataType:  readDataType.String(),
-		WriteDataType: writeDataType.String(),
+		AddrType:  addrType.String(),
+		ReadType:  readType.String(),
+		WriteType: writeType.String(),
 	}
 
 	err = vfbdbHeaderTmpl.Execute(hFile, hFmts)
