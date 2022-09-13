@@ -13,10 +13,11 @@ if __name__ == "__main__":
     with open(sys.argv[1], 'r') as config_file:
         config = yaml.safe_load(config_file)
 
-    files_root = config['files_root'] + "/"
+    files_root = config['files_root']
+    os.environ['FBDPATH'] = files_root
 
     try:
-        main = files_root + config['parameters']['main']
+        main = os.path.join(files_root, config['parameters']['main'])
     except:
         print("ERROR: Input .fbd main file ('main' parameter) musts be specified!")
         sys.exit(1)
@@ -31,7 +32,7 @@ if __name__ == "__main__":
         prev_v = None
         for v in val:
             if prev_v == '-path':
-                args.append(files_root + v)
+                args.append(os.path.join(files_root, v))
             else:
                 args.append(v)
             prev_v = v
