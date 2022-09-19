@@ -31,6 +31,10 @@ func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs ma
 
 	for _, b := range blocks {
 		wg.Add(1)
-		go genBlock(b, &wg)
+		main := false
+		if len(b.Path) == 1 && b.Path[0] == bus.Name() {
+			main = true
+		}
+		go genBlock(b, &wg, main)
 	}
 }

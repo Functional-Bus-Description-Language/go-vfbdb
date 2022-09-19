@@ -33,6 +33,7 @@ Flags:
 
 Parameters:
   -fusesoc-vlnv  FuseSoc VLNV tag.
+  -main name     Name of the main bus. Useful for testbenches.
   -path  Path for target directories with output files.
          The default is 'vfbdb' directory in the current working directory.
 `

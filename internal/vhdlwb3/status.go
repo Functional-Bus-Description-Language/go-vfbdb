@@ -7,11 +7,11 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func genStatus(st elem.Status, fmts *BlockEntityFormatters) {
+func genStatus(st elem.Status, fmts *BlockEntityFormatters, main bool) {
 	if st.IsArray() {
 		genStatusArray(st, fmts)
 	} else {
-		genStatusSingle(st, fmts)
+		genStatusSingle(st, fmts, main)
 	}
 }
 
@@ -26,15 +26,15 @@ func genStatusArray(st elem.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusSingle(st elem.Status, fmts *BlockEntityFormatters) {
-	if fmts.EntityName != "Main" || (st.Name() != "ID" && st.Name() != "TIMESTAMP") {
+func genStatusSingle(st elem.Status, fmts *BlockEntityFormatters, main bool) {
+	if !main || (st.Name() != "ID" && st.Name() != "TIMESTAMP") {
 		s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d downto 0)", st.Name(), st.Width()-1)
 		fmts.EntityFunctionalPorts += s
 	}
 
 	switch st.Access().(type) {
 	case access.SingleSingle:
-		genStatusSingleSingle(st, fmts)
+		genStatusSingleSingle(st, fmts, main)
 	case access.SingleContinuous:
 		genStatusSingleContinuous(st, fmts)
 	default:
@@ -42,11 +42,11 @@ func genStatusSingle(st elem.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusSingleSingle(st elem.Status, fmts *BlockEntityFormatters) {
+func genStatusSingleSingle(st elem.Status, fmts *BlockEntityFormatters, main bool) {
 	a := st.Access().(access.SingleSingle)
 
 	var code string
-	if fmts.EntityName == "Main" && (st.Name() == "ID" || st.Name() == "TIMESTAMP") {
+	if main && (st.Name() == "ID" || st.Name() == "TIMESTAMP") {
 		code = fmt.Sprintf(
 			"      master_in.dat(%d downto %d) <= %s; -- %s",
 			a.EndBit(), a.StartBit(), string(st.Default()), st.Name(),

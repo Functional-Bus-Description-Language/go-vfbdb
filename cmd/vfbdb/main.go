@@ -43,7 +43,14 @@ func main() {
 		printDebug = true
 	}
 
-	bus, pkgsConsts := fbdl.Compile(cmdLineArgs["global"]["main"])
+	mainName := "Main"
+	if _, ok := cmdLineArgs["global"]["-main"]; ok {
+		mainName = cmdLineArgs["global"]["-main"]
+	}
+	bus, pkgsConsts, err := fbdl.Compile(cmdLineArgs["global"]["main"], mainName)
+	if err != nil {
+		log.Fatalf("compile: %v", err)
+	}
 
 	if _, ok := cmdLineArgs["c-sync"]; ok {
 		csync.Generate(bus, pkgsConsts, cmdLineArgs["c-sync"])

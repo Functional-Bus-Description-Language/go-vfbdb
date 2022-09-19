@@ -6,9 +6,10 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func genBlock(blk elem.Block) string {
-	className := "Main"
-	if blk.Name() != "Main" {
+// Generate block. Main must be true only for the main block.
+func genBlock(blk elem.Block, main bool) string {
+	className := blk.Name()
+	if !main {
 		className = blk.Name() + "Class"
 	}
 
@@ -48,7 +49,7 @@ func genBlock(blk elem.Block) string {
 	decreaseIndent(1)
 
 	for _, sb := range blk.Subblocks() {
-		code += genBlock(sb)
+		code += genBlock(sb, false)
 	}
 
 	decreaseIndent(1)

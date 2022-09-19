@@ -61,7 +61,7 @@ func Parse() map[string]map[string]string {
 				args["global"][arg] = ""
 			} else if arg == "-debug" {
 				args["global"]["-debug"] = ""
-			} else if arg == "-fusesoc-vlnv" || arg == "-path" {
+			} else if arg == "-fusesoc-vlnv" || arg == "-main" || arg == "-path" {
 				currentParam = arg
 				expectArg = true
 			} else if !strings.HasPrefix(arg, "-") {

@@ -47,7 +47,7 @@ func genPkgsConsts(pkgsConsts map[string]elem.Package) string {
 
 		// Package type definition
 		s += fmt.Sprintf("type %s_pkg_t is record\n", pkgName)
-		for name, _ := range pkg.BoolConsts() {
+		for name := range pkg.BoolConsts() {
 			s += fmt.Sprintf("   %s : boolean;\n", name)
 		}
 		for name, list := range pkg.BoolListConsts() {

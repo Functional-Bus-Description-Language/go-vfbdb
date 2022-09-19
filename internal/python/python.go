@@ -34,7 +34,7 @@ func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs ma
 		log.Fatalf("generate Python: %v", err)
 	}
 
-	code := genBlock(bus)
+	code := genBlock(bus, true)
 
 	code += genPkgConsts(pkgsConsts)
 

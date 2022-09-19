@@ -34,9 +34,9 @@ func (b *Block) Rename() {
 func CollectBlocks(blk elem.Block, blocks []Block, path []string) []Block {
 	if blocks == nil {
 		blocks = []Block{Block{
-			Name: "Main", NameLevel: 1, Path: []string{"Main"}, Block: blk},
+			Name: blk.Name(), NameLevel: 1, Path: []string{blk.Name()}, Block: blk},
 		}
-		path = append(path, "Main")
+		path = append(path, blk.Name())
 	} else {
 		p := make([]string, len(path))
 		n := copy(p, path)
