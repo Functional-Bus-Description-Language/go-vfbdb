@@ -25,10 +25,12 @@ if __name__ == "__main__":
     args = ['vfbdb', '-fusesoc', '-fusesoc-vlnv', config['vlnv']]
 
     for param, val in config['parameters'].items():
-        if param in ['global', 'main']:
+        if param == 'main':
             continue
 
-        args.append(param)
+        if param != 'global':
+            args.append(param)
+
         prev_v = None
         for v in val:
             if prev_v == '-path':
