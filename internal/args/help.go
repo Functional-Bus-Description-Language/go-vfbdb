@@ -10,6 +10,7 @@ Version: %s
 
 Supported targets:
   - c-sync    C target with synchronous (blocking) interface functions,
+  - json      JSON target,
   - python    Python target,
   - vhdl-wb3  VHDL target for Wishbone compilant with revision B.3.
 To check valid flags and parameters for a given target type: 'vfbdb {target} -help'.
@@ -29,7 +30,7 @@ Flags:
             This flag rather should not be set manually.
             It is recommended to use vfbdb as a generator inside FuseSoc.
             All necessary files can be found in the 'FuseSoc' directory in the vfbdb repository.
-  -times    Print compile and generate times.
+  -times    Print compile and generate times. Not yet implemented.
 
 Parameters:
   -fusesoc-vlnv  FuseSoc VLNV tag.
@@ -47,6 +48,8 @@ func printTargetHelp(target string) {
 	switch target {
 	case "c-sync":
 		fmt.Print(csyncHelpMsg)
+	case "json":
+		fmt.Print(jsonHelpMsg)
 	case "python":
 		fmt.Print(pythonHelpMsg)
 	case "vhdl-wb3":
@@ -80,11 +83,20 @@ Parameters:
   -path  Path for output files.
 `
 
-var vhdlWb3HelpMsg string = `Vfbdb help for VHDL target.
+var vhdlWb3HelpMsg string = `Vfbdb help for vhdl-wb3 target.
 
 Flags:
   -help   Display help.
   -no-psl Do not include PSL assertions. Not yet implemented.
+
+Parameters:
+  -path  Path for output files.
+`
+
+var jsonHelpMsg string = `Vfbdb help for json target.
+
+Flags:
+  -help  Display help.
 
 Parameters:
   -path  Path for output files.

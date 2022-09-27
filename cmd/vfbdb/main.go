@@ -5,6 +5,7 @@ import (
 
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/args"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/csync"
+	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/json"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/python"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/vhdlwb3"
 
@@ -54,6 +55,10 @@ func main() {
 
 	if _, ok := cmdLineArgs["c-sync"]; ok {
 		csync.Generate(bus, pkgsConsts, cmdLineArgs["c-sync"])
+	}
+
+	if _, ok := cmdLineArgs["json"]; ok {
+		json.Generate(bus, pkgsConsts, cmdLineArgs["json"])
 	}
 
 	if _, ok := cmdLineArgs["python"]; ok {

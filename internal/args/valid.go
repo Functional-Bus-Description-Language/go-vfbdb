@@ -3,6 +3,7 @@ package args
 func isValidTarget(target string) bool {
 	validTargets := map[string]bool{
 		"c-sync":   true,
+		"json":     true,
 		"python":   true,
 		"vhdl-wb3": true,
 	}
@@ -18,6 +19,8 @@ func isValidFlag(flag string, target string) bool {
 	switch target {
 	case "c-sync":
 		return isValidFlagCSync(flag)
+	case "json":
+		return isValidFlagJSON(flag)
 	case "python":
 		return isValidFlagPython(flag)
 	case "vhdl-wb3":
@@ -31,6 +34,18 @@ func isValidFlagCSync(flag string) bool {
 	validFlags := map[string]bool{
 		"-help":       true,
 		"-no-asserts": true,
+	}
+
+	if _, ok := validFlags[flag]; ok {
+		return true
+	}
+
+	return false
+}
+
+func isValidFlagJSON(flag string) bool {
+	validFlags := map[string]bool{
+		"-help": true,
 	}
 
 	if _, ok := validFlags[flag]; ok {
@@ -74,6 +89,8 @@ func isValidParam(param string, target string) bool {
 	switch target {
 	case "c-sync":
 		return isValidParamCSync(param)
+	case "json":
+		return isValidParamJSON(param)
 	case "python":
 		return isValidParamPython(param)
 	case "vhdl-wb3":
@@ -84,6 +101,18 @@ func isValidParam(param string, target string) bool {
 }
 
 func isValidParamCSync(param string) bool {
+	validParams := map[string]bool{
+		"-path": true,
+	}
+
+	if _, ok := validParams[param]; ok {
+		return true
+	}
+
+	return false
+}
+
+func isValidParamJSON(param string) bool {
 	validParams := map[string]bool{
 		"-path": true,
 	}

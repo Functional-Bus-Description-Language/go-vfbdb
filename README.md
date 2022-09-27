@@ -6,6 +6,7 @@ Versatile Functional Bus Description Language compiler backend written in Go.
 
 Supported targets:
 - c-sync - C target with synchronous (blocking) interface functions,
+- json - json target,
 - python - Python target,
 - vhdl-wb3 - VHDL target for Wishbone compilant with revision B.3.
 
