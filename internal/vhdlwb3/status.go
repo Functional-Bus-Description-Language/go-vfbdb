@@ -62,7 +62,7 @@ func genStatusSingleSingle(st elem.Status, fmts *BlockEntityFormatters, main boo
 }
 
 func genStatusSingleContinuous(st elem.Status, fmts *BlockEntityFormatters) {
-	if st.Atomic() == true {
+	if st.Atomic() {
 		genStatusSingleContinuousAtomic(st, fmts)
 	} else {
 		genStatusSingleContinuousNonAtomic(st, fmts)

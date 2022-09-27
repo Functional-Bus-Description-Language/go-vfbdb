@@ -46,11 +46,11 @@ func printHelp() {
 func printTargetHelp(target string) {
 	switch target {
 	case "c-sync":
-		fmt.Printf(csyncHelpMsg)
+		fmt.Print(csyncHelpMsg)
 	case "python":
-		fmt.Printf(pythonHelpMsg)
+		fmt.Print(pythonHelpMsg)
 	case "vhdl-wb3":
-		fmt.Printf(vhdlWb3HelpMsg)
+		fmt.Print(vhdlWb3HelpMsg)
 	default:
 		panic("should never happen")
 	}

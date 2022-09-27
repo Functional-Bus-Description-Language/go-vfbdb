@@ -53,7 +53,7 @@ func genConfigSingleSingle(cfg elem.Config, fmts *BlockEntityFormatters) {
 }
 
 func genConfigSingleContinuous(cfg elem.Config, fmts *BlockEntityFormatters) {
-	if cfg.Atomic() == true {
+	if cfg.Atomic() {
 		genConfigSingleContinuousAtomic(cfg, fmts)
 	} else {
 		genConfigSingleContinuousNonAtomic(cfg, fmts)

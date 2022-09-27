@@ -10,27 +10,34 @@ help:
 	@echo "  build    Build binary."
 	@echo "  default  Run build."
 	@echo "Quality targets:"
-	@echo "  fmt  Format files with go fmt."
-	@echo "  vet  Examine go sources with go vet."
+	@echo "  fmt   Format files with go fmt."
+	@echo "  lint  Lint files with golangci-lint."
 	@echo "Test targets:"
 	@echo "  test  Run go test."
 	@echo "Other targets:"
 	@echo "  help  Print help message."
 
-all: fmt vet build
+# Build targets
+all: lint fmt build
 
 build:
 	go build -v -o $(PROJECT_NAME) ./cmd/vfbdb
 
+
+# Quality targets
 fmt:
 	go fmt ./...
 
-vet:
-	go vet ./...
+lint:
+	golangci-lint run
 
+
+# Test targets
 test:
 	go test ./...
-	
+
+
+# Installation targets
 install:
 	cp $(PROJECT_NAME) /usr/bin
 

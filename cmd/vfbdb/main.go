@@ -25,7 +25,7 @@ func (l Logger) Write(p []byte) (int, error) {
 	}
 
 	if print {
-		fmt.Fprintf(os.Stderr, string(p))
+		fmt.Fprint(os.Stderr, string(p))
 	}
 
 	return len(p), nil
@@ -86,7 +86,7 @@ func generateFuseSocCoreFile(fusesocVLNV string) {
 
 	s += "\ntargets:\n  default:\n    filesets:\n      - vhdl"
 
-	_, err = fmt.Fprintf(f, s)
+	_, err = fmt.Fprint(f, s)
 	if err != nil {
 		log.Fatalf("generate FuseSoc.core file: %v", err)
 	}

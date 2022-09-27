@@ -58,9 +58,9 @@ func CollectBlocks(blk elem.Block, blocks []Block, path []string) []Block {
 }
 
 func ResolveBlockNameConflicts(blocks []Block) {
-	for i, _ := range blocks[:len(blocks)-1] {
+	for i := range blocks[:len(blocks)-1] {
 		conflicts := []*Block{&blocks[i]}
-		for j, _ := range blocks[i+1:] {
+		for j := range blocks[i+1:] {
 			if blocks[i].Name == blocks[i+j+1].Name {
 				conflicts = append(conflicts, &blocks[i+j+1])
 			}

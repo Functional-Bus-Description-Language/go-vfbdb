@@ -8,7 +8,7 @@ func (rm RegisterMap) add(addr [2]int64, code string) {
 	}
 
 	overlaps := [][2]int64{}
-	for a, _ := range rm {
+	for a := range rm {
 		if (a[0] <= addr[0] && addr[0] <= a[1]) ||
 			a[0] <= addr[1] && addr[1] <= a[1] {
 			overlaps = append(overlaps, a)

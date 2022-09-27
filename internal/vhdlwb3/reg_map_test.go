@@ -48,7 +48,7 @@ func TestEndOverlap(t *testing.T) {
 		rm.add(test.first.addr, test.first.code)
 		rm.add(test.second.addr, test.second.code)
 
-		for addr, _ := range test.want {
+		for addr := range test.want {
 			if rm[addr] != test.want[addr] {
 				t.Errorf("[%d]: got %v, want %v", i, rm, test.want)
 			}
@@ -87,7 +87,7 @@ func TestMiddleOverlap(t *testing.T) {
 		rm.add(test.first.addr, test.first.code)
 		rm.add(test.second.addr, test.second.code)
 
-		for addr, _ := range test.want {
+		for addr := range test.want {
 			if rm[addr] != test.want[addr] {
 				t.Errorf("[%d]: got %v, want %v", i, rm, test.want)
 			}
@@ -134,7 +134,7 @@ func TestStartOverlap(t *testing.T) {
 		rm.add(test.first.addr, test.first.code)
 		rm.add(test.second.addr, test.second.code)
 
-		for addr, _ := range test.want {
+		for addr := range test.want {
 			if rm[addr] != test.want[addr] {
 				t.Errorf("[%d]: got %v, want %v", i, rm, test.want)
 			}

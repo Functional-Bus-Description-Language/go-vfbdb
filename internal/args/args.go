@@ -82,9 +82,7 @@ func Parse() map[string]map[string]string {
 		} else if isValidTarget(arg) {
 			currentTarget = arg
 			args[arg] = map[string]string{}
-		} else if !isValidParam(arg, currentTarget) &&
-			!isValidFlag(arg, currentTarget) &&
-			expectArg == false {
+		} else if !isValidParam(arg, currentTarget) && !isValidFlag(arg, currentTarget) && !expectArg {
 			log.Fatalf(
 				"'%s' is not valid flag or parameter for '%s' target, "+
 					"run 'vfbdb %[2]s -help' to see valid flags and parameters",

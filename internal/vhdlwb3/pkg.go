@@ -53,16 +53,16 @@ func genPkgsConsts(pkgsConsts map[string]elem.Package) string {
 		for name, list := range pkg.BoolListConsts() {
 			s += fmt.Sprintf("   %s : boolean_vector(0 to %d);\n", name, len(list)-1)
 		}
-		for name, _ := range pkg.IntConsts() {
+		for name := range pkg.IntConsts() {
 			s += fmt.Sprintf("   %s : int64;\n", name)
 		}
 		for name, list := range pkg.IntListConsts() {
 			s += fmt.Sprintf("   %s : int64_vector(0 to %d);\n", name, len(list)-1)
 		}
-		for name, _ := range pkg.StrConsts() {
+		for name := range pkg.StrConsts() {
 			s += fmt.Sprintf("   %s : string;\n", name)
 		}
-		s += fmt.Sprintf("end record;\n")
+		s += "end record;\n"
 
 		// Package constant definition
 		s += fmt.Sprintf("constant %[1]s_pkg : %[1]s_pkg_t := (\n", pkgName)
@@ -92,7 +92,7 @@ func genPkgsConsts(pkgsConsts map[string]elem.Package) string {
 			s += fmt.Sprintf("   %s => %q,\n", name, str)
 		}
 		s = s[:len(s)-2]
-		s += fmt.Sprintf("\n);\n")
+		s += "\n);\n"
 	}
 
 	return s
