@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: vfbdb:vhdl-wb3:subblock_nesting
+name: vfbdb:vhdl-wb3:subblock_0
 
 filesets:
   tb_cosim:
@@ -26,14 +26,14 @@ targets:
     hooks:
       pre_run: [tb_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/subblock/nesting/python_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/subblock/nesting/vhdl-wb3_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/subblock/0/python_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/subblock/0/vhdl-wb3_python
 
 generate:
   vfbdb_regs:
     generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/vfbdb/subblock/nesting/python/vhdl-wb3]
+      python: [-path, ../../../../../build/vfbdb/subblock/0/python/vhdl-wb3]
       vhdl-wb3: []
       main: ../bus.fbd
 
@@ -50,5 +50,5 @@ scripts:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - subblock
-      - nesting
+      - 0
       - vhdl-wb3
