@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: vfbdb:vhdl-wb3:config_single_single
+name: vfbdb:vhdl-wb3:config_0
 
 filesets:
   tb_cosim:
@@ -26,8 +26,8 @@ targets:
     hooks:
       pre_run: [tb_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/config/single_single/python_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/single_single/vhdl-wb3_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/config/0/python_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/0/vhdl-wb3_python
   tb_c-sync:
     default_tool: ghdl
     toplevel: tb_cosim
@@ -39,20 +39,20 @@ targets:
     hooks:
       pre_run: [tb_c-sync]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/config/single_single/c-sync_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/single_single/vhdl-wb3_c-sync
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/config/0/c-sync_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/0/vhdl-wb3_c-sync
 
 generate:
   vfbdb_regs:
     generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/vfbdb/config/single_single/python/vhdl-wb3]
+      python: [-path, ../../../../../build/vfbdb/config/0/python/vhdl-wb3]
       vhdl-wb3: []
       main: ../bus.fbd
   c-sync:
     generator: vfbdb
     parameters:
-      c-sync: [-path, ../../../../../build/vfbdb/config/single_single/c-sync/vhdl-wb3/vfbdb]
+      c-sync: [-path, ../../../../../build/vfbdb/config/0/c-sync/vhdl-wb3/vfbdb]
       vhdl-wb3: []
       main: ../bus.fbd
 
@@ -69,12 +69,12 @@ scripts:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - config
-      - single_single
+      - 0
       - vhdl-wb3
   tb_c-sync:
     cmd:
       - ../../../tests/co-simulations/common/c-sync/tb_cosim.sh
       - config
-      - single_single
+      - 0
       - vhdl-wb3
 
