@@ -1,4 +1,4 @@
-# Status context tests
+# Status tests
 
 ## 0
 Test checking whether the ID and TIMESTAMP `status` elements are generated correctly for the `bus` element.

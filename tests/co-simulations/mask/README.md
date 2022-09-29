@@ -1,4 +1,4 @@
-# Mask context tests
+# Mask tests
 
 ## 0
 Test checking whether the single `mask` with `Single` access strategy is written and read correctly.

@@ -1,4 +1,4 @@
-# Config context tests
+# Config tests
 
 ## 0
 Test checking whether the single `config` with `Single` access strategy is correctly written and read.
