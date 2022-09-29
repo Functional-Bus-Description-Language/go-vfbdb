@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: vfbdb:vhdl-wb3:id_and_timestamp
+name: vfbdb:vhdl-wb3:status_0
 
 filesets:
   tb_cosim:
@@ -26,8 +26,8 @@ targets:
     hooks:
       pre_run: [tb_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/python_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/vhdl-wb3_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/0/python_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/0/vhdl-wb3_python
   tb_c-sync:
     default_tool: ghdl
     toplevel: tb_cosim
@@ -39,20 +39,20 @@ targets:
     hooks:
       pre_run: [tb_c-sync]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/c-sync_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/id_and_timestamp/vhdl-wb3_c-sync
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/0/c-sync_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/0/vhdl-wb3_c-sync
 
 generate:
   python:
     generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/vfbdb/status/id_and_timestamp/python/vhdl-wb3]
+      python: [-path, ../../../../../build/vfbdb/status/0/python/vhdl-wb3]
       vhdl-wb3: []
       main: ../bus.fbd
   c-sync:
     generator: vfbdb
     parameters:
-      c-sync: [-path, ../../../../../build/vfbdb/status/id_and_timestamp/c-sync/vhdl-wb3/vfbdb]
+      c-sync: [-path, ../../../../../build/vfbdb/status/0/c-sync/vhdl-wb3/vfbdb]
       vhdl-wb3: []
       main: ../bus.fbd
 
@@ -69,11 +69,11 @@ scripts:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - status
-      - id_and_timestamp
+      - 0
       - vhdl-wb3
   tb_c-sync:
     cmd:
       - ../../../tests/co-simulations/common/c-sync/tb_cosim.sh
       - status
-      - id_and_timestamp
+      - 0
       - vhdl-wb3
