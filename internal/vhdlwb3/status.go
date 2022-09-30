@@ -73,11 +73,6 @@ func genStatusSingleContinuousAtomic(st elem.Status, fmts *BlockEntityFormatters
 	a := st.Access().(access.SingleContinuous)
 	strategy := SeparateFirst
 	atomicShadowRange := [2]int64{st.Width() - 1, a.FirstRegWidth()}
-	if st.HasDecreasingAccessOrder() {
-		strategy = SeparateLast
-		atomicShadowRange[0] = st.Width() - 1 - a.LastRegWidth()
-		atomicShadowRange[1] = 0
-	}
 	chunks := makeAccessChunksContinuous(a, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(

@@ -27,18 +27,13 @@ func genConfigSingle(cfg elem.Config, blk elem.Block) string {
 		)
 	case access.SingleContinuous:
 		a := cfg.Access().(access.SingleContinuous)
-		decreasigOrder := "False"
-		if cfg.HasDecreasingAccessOrder() {
-			decreasigOrder = "True"
-		}
 		code += indent + fmt.Sprintf(
-			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), %s)\n",
+			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name(),
 			blk.AddrSpace().Start()+a.StartAddr(),
 			a.RegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
-			decreasigOrder,
 		)
 	default:
 		panic("not yet implemented")

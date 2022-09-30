@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: vfbdb:vhdl-wb3:config_single_continuous_2_regs_atomic_decreasing_order
+name: vfbdb:vhdl-wb3:config_4
 
 filesets:
   tb_cosim:
@@ -26,14 +26,14 @@ targets:
     hooks:
       pre_run: [tb_python]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/config/single_continuous_2_regs_atomic_decreasing_order/python_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/single_continuous_2_regs_atomic_decreasing_order/vhdl-wb3_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/config/4/python_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/4/vhdl-wb3_python
 
 generate:
   vfbdb_regs:
     generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/vfbdb/config/single_continuous_2_regs_atomic_decreasing_order/python/vhdl-wb3]
+      python: [-path, ../../../../../build/vfbdb/config/4/python/vhdl-wb3]
       vhdl-wb3: []
       main: ../bus.fbd
 
@@ -50,5 +50,5 @@ scripts:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
       - config
-      - single_continuous_2_regs_atomic_decreasing_order
+      - 4
       - vhdl-wb3

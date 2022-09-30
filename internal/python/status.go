@@ -27,18 +27,14 @@ func genStatusSingle(st elem.Status, blk elem.Block) string {
 		)
 	case access.SingleContinuous:
 		a := st.Access().(access.SingleContinuous)
-		decreasigOrder := "False"
-		if st.HasDecreasingAccessOrder() {
-			decreasigOrder = "True"
-		}
+
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), %s)\n",
+			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name(),
 			blk.AddrSpace().Start()+a.StartAddr(),
 			a.RegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
-			decreasigOrder,
 		)
 	default:
 		panic("not yet implemented")

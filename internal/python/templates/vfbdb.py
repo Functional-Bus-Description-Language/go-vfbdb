@@ -97,7 +97,7 @@ class SingleSingle:
         return (self.iface.read(self.addr) >> self.shift) & self.mask
 
 class SingleContinuous:
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         self.iface = iface
         self.addrs = list(range(start_addr, start_addr + reg_count))
         self.width = 0
@@ -121,12 +121,6 @@ class SingleContinuous:
                     self.masks.append(calc_mask((BUS_WIDTH - 1, 0)))
                     self.width += BUS_WIDTH
 
-        if decreasing_order:
-            self.addrs.reverse()
-            self.masks.reverse()
-            self.reg_shifts.reverse()
-            self.data_shifts.reverse()
-
     def read(self):
         data = 0
         for i, a in enumerate(self.addrs):
@@ -142,8 +136,8 @@ class ConfigSingleSingle(SingleSingle):
         self.iface.write(self.addr, data << self.shift)
 
 class ConfigSingleContinuous(SingleContinuous):
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
-        super().__init__(iface, start_addr, reg_count, start_mask, end_mask, decreasing_order)
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
+        super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
 
     def write(self, data):
         assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
@@ -190,8 +184,8 @@ class StatusSingleSingle(SingleSingle):
         super().__init__(iface, addr, mask)
 
 class StatusSingleContinuous(SingleContinuous):
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, decreasing_order):
-        super().__init__(iface, start_addr, reg_count, start_mask, end_mask, decreasing_order)
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
+        super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
 
 class StatusArraySingle:
     def __init__(self, iface, addr, mask, item_count):
