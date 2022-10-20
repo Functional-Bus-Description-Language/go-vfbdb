@@ -41,14 +41,14 @@ func genConfigSingleSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *Bloc
 		hFmts.BlockName, cfg.Name(), wType.String(),
 	)
 
-	hFmts.Code += fmt.Sprintf("\n\n%s;\n%s;", readSignature, writeSignature)
+	hFmts.Code += fmt.Sprintf("\n%s;\n%s;\n", readSignature, writeSignature)
 
 	a := cfg.Access().(access.SingleSingle)
-	cFmts.Code += fmt.Sprintf("\n\n%s {\n", readSignature)
+	cFmts.Code += fmt.Sprintf("\n%s {\n", readSignature)
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width() {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};", a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -57,18 +57,19 @@ func genConfigSingleSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *Bloc
 		return err;
 	*data = (aux >> %d) & 0x%x;
 	return 0;
-};`, readType.Depointer().String(), a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+};
+`, readType.Depointer().String(), a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
 		}
 	} else {
 		panic("not yet implemented")
 	}
 
-	cFmts.Code += fmt.Sprintf("\n\n%s {\n", writeSignature)
+	cFmts.Code += fmt.Sprintf("\n%s {\n", writeSignature)
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width() {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->write(%d, data);\n};", a.Addr,
+				"\treturn iface->write(%d, data);\n};\n", a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(

@@ -1,6 +1,7 @@
 #ifndef _VFBDB_VFBDB_H_
 #define _VFBDB_VFBDB_H_
 
+#include <stddef.h>
 #include <stdint.h>
 
 extern const uint32_t VFBDB_ID;
@@ -9,6 +10,8 @@ extern const uint32_t VFBDB_TIMESTAMP;
 typedef struct {
 	int (*read)(const {{.AddrType}} addr, {{.ReadType}} const data);
 	int (*write)(const {{.AddrType}} addr, const {{.WriteType}} data);
+	int (*readb)(const {{.AddrType}} addr, {{.ReadType}} buf, size_t count);
+	int (*writeb)(const {{.AddrType}} addr, const {{.WriteType}} * buf, size_t count);
 } vfbdb_iface_t;
 
 #define vfbdb_read(elem, data) (vfbdb_ ## elem ## _read(VFBDB_IFACE, data))

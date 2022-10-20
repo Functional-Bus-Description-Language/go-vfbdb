@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <stddef.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -101,6 +102,12 @@ static int cosim_iface_write(const uint8_t addr, const uint32_t data) {
 	return 0;
 }
 
+
+static int cosim_iface_writeb(const uint8_t addr, const uint32_t * buf, size_t count) {
+	fprintf(stderr, "cosim iface: cosim_iface_writeb not yet implemented");
+	exit(EXIT_FAILURE);
+}
+
 static uint32_t bin_to_uint32(const char * const s) {
 	uint32_t u32 = 0;
 
@@ -151,6 +158,12 @@ static int cosim_iface_read(const uint8_t addr, uint32_t * const data) {
 	return 0;
 }
 
+
+static int cosim_iface_readb(const uint8_t addr, uint32_t * buf, size_t count) {
+	fprintf(stderr, "cosim iface: cosim_iface_readb not yet implemented");
+	exit(EXIT_FAILURE);
+}
+
 static void cosim_iface_atexit(void) {
 	static bool atexit = false;
 	if (atexit || write_fifo == NULL || read_fifo == NULL) {
@@ -188,7 +201,9 @@ void cosim_iface_init(char *wr_fifo_path, char *rd_fifo_path, delay_function_t d
 vfbdb_iface_t cosim_iface_iface(void) {
 	vfbdb_iface_t iface = {
 		read: cosim_iface_read,
-		write: cosim_iface_write
+		write: cosim_iface_write,
+		readb: cosim_iface_readb,
+		writeb: cosim_iface_writeb
 	};
 	return iface;
 }

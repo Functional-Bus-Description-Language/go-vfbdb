@@ -1,1 +1,2 @@
-#include "vfbdb.h"{{.Code}}
+#include "vfbdb.h"
+{{.Code}}
