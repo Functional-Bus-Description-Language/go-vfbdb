@@ -23,20 +23,21 @@ Usage:
   '-help' or '-version.'
 
 Flags:
-  -help     Display help.
-  -version  Display version.
-  -debug    Print debug messages.
-  -fusesoc  Generate FuseSoc '.core' file.
-            This flag rather should not be set manually.
-            It is recommended to use vfbdb as a generator inside FuseSoc.
-            All necessary files can be found in the 'FuseSoc' directory in the vfbdb repository.
-  -times    Print compile and generate times. Not yet implemented.
+  -help          Display help.
+  -version       Display version.
+  -debug         Print debug messages.
+  -fusesoc       Generate FuseSoc '.core' file.
+                 This flag rather should not be set manually.
+                 It is recommended to use vfbdb as a generator inside FuseSoc.
+                 All necessary files can be found in the 'FuseSoc' directory in the vfbdb repository.
+  -no-timestamp  Don't generate bus timestamp.
+  -times         Print compile and generate times. Not yet implemented.
 
 Parameters:
   -fusesoc-vlnv  FuseSoc VLNV tag.
-  -main name     Name of the main bus. Useful for testbenches.
-  -path  Path for target directories with output files.
-         The default is 'vfbdb' directory in the current working directory.
+  -main          Name of the main bus. Useful for testbenches.
+  -path          Path for target directories with output files.
+                 The default is 'vfbdb' directory in the current working directory.
 `
 
 func printHelp() {

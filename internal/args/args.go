@@ -57,7 +57,7 @@ func Parse() map[string]map[string]string {
 			} else if expectArg {
 				args["global"][currentParam] = arg
 				expectArg = false
-			} else if arg == "-fusesoc" || arg == "-times" {
+			} else if arg == "-fusesoc" || arg == "-no-timestamp" || arg == "-times" {
 				args["global"][arg] = ""
 			} else if arg == "-debug" {
 				args["global"]["-debug"] = ""
