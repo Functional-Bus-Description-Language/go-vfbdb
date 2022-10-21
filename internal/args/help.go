@@ -23,15 +23,15 @@ Usage:
   '-help' or '-version.'
 
 Flags:
-  -help          Display help.
-  -version       Display version.
-  -debug         Print debug messages.
-  -fusesoc       Generate FuseSoc '.core' file.
-                 This flag rather should not be set manually.
-                 It is recommended to use vfbdb as a generator inside FuseSoc.
-                 All necessary files can be found in the 'FuseSoc' directory in the vfbdb repository.
-  -no-timestamp  Don't generate bus timestamp.
-  -times         Print compile and generate times. Not yet implemented.
+  -help           Display help.
+  -version        Display version.
+  -debug          Print debug messages.
+  -fusesoc        Generate FuseSoc '.core' file.
+                  This flag rather should not be set manually.
+                  It is recommended to use vfbdb as a generator inside FuseSoc.
+                  All necessary files can be found in the 'FuseSoc' directory in the vfbdb repository.
+  -add-timestamp  Add bus generation bus timestamp.
+  -times          Print compile and generate times. Not yet implemented.
 
 Parameters:
   -fusesoc-vlnv  FuseSoc VLNV tag.

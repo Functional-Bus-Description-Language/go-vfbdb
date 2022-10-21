@@ -48,11 +48,11 @@ func main() {
 	if _, ok := cmdLineArgs["global"]["-main"]; ok {
 		mainName = cmdLineArgs["global"]["-main"]
 	}
-	noTimestamp := false
-	if _, ok := cmdLineArgs["global"]["-no-timestamp"]; ok {
-		noTimestamp = true
+	addTimestamp := false
+	if _, ok := cmdLineArgs["global"]["-add-timestamp"]; ok {
+		addTimestamp = true
 	}
-	bus, pkgsConsts, err := fbdl.Compile(cmdLineArgs["global"]["main"], mainName, noTimestamp)
+	bus, pkgsConsts, err := fbdl.Compile(cmdLineArgs["global"]["main"], mainName, addTimestamp)
 	if err != nil {
 		log.Fatalf("compile: %v", err)
 	}
