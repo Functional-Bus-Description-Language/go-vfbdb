@@ -22,6 +22,10 @@ func genBlock(blk elem.Block, main bool) string {
 	increaseIndent(1)
 	code += indent + "self.iface = iface\n"
 
+	for _, st := range blk.Statics() {
+		code += genStatic(st, blk)
+	}
+
 	for _, st := range blk.Statuses() {
 		code += genStatus(st, blk)
 	}

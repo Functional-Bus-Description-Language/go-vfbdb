@@ -1,9 +1,5 @@
 # Status tests
 
-## 0
-Test checking whether the ID and TIMESTAMP `status` elements are generated correctly for the `bus` element.
-It also checks whether they are accessible and coherent.
-
 ## 1
 Test checking whether the `status` element, spanning two registers, with the `Continuous` access strategy and nonatomic access is read correctly.
 The HDL must not contain any extra logic related with the atomic access.

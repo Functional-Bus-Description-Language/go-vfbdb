@@ -5,8 +5,6 @@
 import math
 
 BUS_WIDTH = {{.BusWidth}}
-ID = {{.ID}}
-TIMESTAMP = {{.TIMESTAMP}}
 
 def calc_mask(m):
     return (((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)) >> m[1]
@@ -178,6 +176,26 @@ class MaskSingleSingle(SingleSingle):
             reg_mask |= 1 << b
 
         self.iface.rmw(self.addr, mask << self.shift, reg_mask << self.shift)
+
+class Static:
+    def __init__(self, value):
+        self._value = value
+    @property
+    def value(self):
+        return self._value
+    @value.setter
+    def value(self, v):
+        raise Exception(f"cannot set value of static element")
+
+class StaticSingleSingle(Static, SingleSingle):
+    def __init__(self, iface, addr, mask, value):
+        Static.__init__(self, value)
+        SingleSingle.__init__(self, iface, addr, mask)
+
+class StaticSingleContinuous(Static, SingleContinuous):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, value):
+        Static.__init__(self, value)
+        SingleContinuous.__init__(self, iface, start_addr, reg_count, start_mask, end_mask)
 
 class StatusSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):

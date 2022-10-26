@@ -23,22 +23,28 @@ if __name__ == "__main__":
         sys.exit(1)
 
     args = ['vfbdb', '-fusesoc', '-fusesoc-vlnv', config['vlnv']]
+    global_args = []
+    targets_args = []
 
     for param, val in config['parameters'].items():
         if param == 'main':
             continue
 
-        if param != 'global':
-            args.append(param)
+        if param == 'global':
+            args_list = global_args
+        else:
+            targets_args.append(param)
+            args_list = targets_args
 
         prev_v = None
         for v in val:
             if prev_v == '-path':
-                args.append(os.path.join(files_root, v))
+                args_list.append(os.path.join(files_root, v))
             else:
-                args.append(v)
+                args_list.append(v)
             prev_v = v
 
+    args = args + global_args + targets_args
     args.append(main)
 
     ret = subprocess.run(args)

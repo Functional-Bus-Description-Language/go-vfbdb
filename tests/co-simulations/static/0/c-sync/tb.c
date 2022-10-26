@@ -17,15 +17,15 @@ int main(int argc, char *argv[]) {
 
 	uint32_t id;
 	vfbdb_read(Main_ID, &id);
-	if (id != VFBDB_ID) {
-		fprintf(stderr, "read wrong ID %x, expecting %x\n", id, VFBDB_ID);
+	if (id != vfbdb_Main_ID) {
+		fprintf(stderr, "read wrong ID %x, expecting %x\n", id, vfbdb_Main_ID);
 		cosim_iface_end(1);
 	}
 
 	uint32_t timestamp;
 	vfbdb_read(Main_TIMESTAMP, &timestamp);
-	if (timestamp != VFBDB_TIMESTAMP) {
-		fprintf(stderr, "read wrong TIMESTAMP %x, expecting %x\n", id, VFBDB_TIMESTAMP);
+	if (timestamp != vfbdb_Main_TIMESTAMP) {
+		fprintf(stderr, "read wrong TIMESTAMP %x, expecting %x\n", id, vfbdb_Main_TIMESTAMP);
 		cosim_iface_end(1);
 	}
 

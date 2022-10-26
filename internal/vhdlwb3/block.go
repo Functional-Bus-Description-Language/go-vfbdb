@@ -52,7 +52,7 @@ type BlockEntityFormatters struct {
 	DefaultValues string
 }
 
-func genBlock(b utils.Block, wg *sync.WaitGroup, main bool) {
+func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	defer wg.Done()
 
 	fmts := BlockEntityFormatters{
@@ -87,8 +87,12 @@ func genBlock(b utils.Block, wg *sync.WaitGroup, main bool) {
 		genStream(stream, &fmts)
 	}
 
+	for _, st := range b.Block.Statics() {
+		genStatic(st, &fmts)
+	}
+
 	for _, st := range b.Block.Statuses() {
-		genStatus(st, &fmts, main)
+		genStatus(st, &fmts)
 	}
 
 	for _, cfg := range b.Block.Configs() {

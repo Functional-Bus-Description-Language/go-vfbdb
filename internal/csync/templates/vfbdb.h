@@ -4,9 +4,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-extern const uint32_t VFBDB_ID;
-extern const uint32_t VFBDB_TIMESTAMP;
-
 typedef struct {
 	int (*read)(const {{.AddrType}} addr, {{.ReadType}} const data);
 	int (*write)(const {{.AddrType}} addr, const {{.WriteType}} data);

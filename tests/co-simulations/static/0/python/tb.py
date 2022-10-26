@@ -18,11 +18,12 @@ try:
     Main = vfbdb.Main(iface)
 
     id = Main.ID.read()
-
-    assert id == vfbdb.ID, f"Read wrong ID {id}, expecting {vfbdb.ID}"
-
+    assert id == Main.ID.value, f"Read wrong ID {id}, expecting {Main.ID.value}"
     print(f"ID: {id}\n")
-    print(f"Timestamp: {Main.TIMESTAMP.read()}\n")
+
+    ts = Main.TIMESTAMP.read()
+    assert ts == Main.TIMESTAMP.value, f"Read wrong TIMESTAMP {ts}, expecting {Main.TIMESTAMP.value}"
+    print(f"Timestamp: {ts}\n")
 
     print("\nending cosimulation")
     iface.end(0)
