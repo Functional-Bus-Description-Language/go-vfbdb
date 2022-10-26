@@ -63,7 +63,7 @@ func genConfigSingleContinuous(cfg elem.Config, fmts *BlockEntityFormatters) {
 func genConfigSingleContinuousAtomic(cfg elem.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access().(access.SingleContinuous)
 	strategy := SeparateLast
-	atomicShadowRange := [2]int64{cfg.Width() - 1 - a.LastRegWidth(), 0}
+	atomicShadowRange := [2]int64{cfg.Width() - 1 - a.EndRegWidth(), 0}
 	chunks := makeAccessChunksContinuous(a, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
