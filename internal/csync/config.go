@@ -9,18 +9,18 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
-func genConfig(cfg elem.Config, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfig(cfg elem.Config, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if cfg.IsArray() {
 		panic("not yet implemented")
 	} else {
-		genConfigSingle(cfg, hFmts, cFmts)
+		genConfigSingle(cfg, blk, hFmts, cFmts)
 	}
 }
 
-func genConfigSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfigSingle(cfg elem.Config, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch cfg.Access().(type) {
 	case access.SingleSingle:
-		genConfigSingleSingle(cfg, hFmts, cFmts)
+		genConfigSingleSingle(cfg, blk, hFmts, cFmts)
 	case access.SingleContinuous:
 		panic("not yet implemented")
 	default:
@@ -28,7 +28,7 @@ func genConfigSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *BlockCForm
 	}
 }
 
-func genConfigSingleSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfigSingleSingle(cfg elem.Config, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	rType := c.WidthToReadType(cfg.Width())
 	wType := c.WidthToWriteType(cfg.Width())
 
@@ -48,7 +48,7 @@ func genConfigSingleSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *Bloc
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width() {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};\n", a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", blk.AddrSpace().Start()+a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -58,7 +58,7 @@ func genConfigSingleSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *Bloc
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+`, readType.Depointer().String(), blk.AddrSpace().Start()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
 		}
 	} else {
@@ -69,11 +69,11 @@ func genConfigSingleSingle(cfg elem.Config, hFmts *BlockHFormatters, cFmts *Bloc
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width() {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->write(%d, data);\n};\n", a.Addr,
+				"\treturn iface->write(%d, data);\n};\n", blk.AddrSpace().Start()+a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(
-				"	return iface->write(%d, (data << %d));\n };", a.Addr, a.StartBit(),
+				"	return iface->write(%d, (data << %d));\n };", blk.AddrSpace().Start()+a.Addr, a.StartBit(),
 			)
 		}
 	} else {

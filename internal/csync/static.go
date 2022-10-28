@@ -10,18 +10,18 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
-func genStatic(st elem.Static, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStatic(st elem.Static, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if st.IsArray() {
 		panic("not yet implemented")
 	} else {
-		genStaticSingle(st, hFmts, cFmts)
+		genStaticSingle(st, blk, hFmts, cFmts)
 	}
 }
 
-func genStaticSingle(st elem.Static, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStaticSingle(st elem.Static, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch st.Access().(type) {
 	case access.SingleSingle:
-		genStaticSingleSingle(st, hFmts, cFmts)
+		genStaticSingleSingle(st, blk, hFmts, cFmts)
 	case access.SingleContinuous:
 		panic("not yet implemented")
 	default:
@@ -29,7 +29,7 @@ func genStaticSingle(st elem.Static, hFmts *BlockHFormatters, cFmts *BlockCForma
 	}
 }
 
-func genStaticSingleSingle(st elem.Static, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStaticSingleSingle(st elem.Static, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	wTyp := c.WidthToWriteType(st.Width())
 	rTyp := c.WidthToReadType(st.Width())
 
@@ -57,7 +57,7 @@ func genStaticSingleSingle(st elem.Static, hFmts *BlockHFormatters, cFmts *Block
 	if readType.Typ() != "ByteArray" && rTyp.Typ() != "ByteArray" {
 		if busWidth == st.Width() {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};\n", a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", blk.AddrSpace().Start()+a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -67,7 +67,7 @@ func genStaticSingleSingle(st elem.Static, hFmts *BlockHFormatters, cFmts *Block
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+`, readType.Depointer().String(), blk.AddrSpace().Start()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
 		}
 	} else {

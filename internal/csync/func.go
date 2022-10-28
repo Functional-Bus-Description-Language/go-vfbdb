@@ -10,29 +10,29 @@ import (
 	"strings"
 )
 
-func genFunc(fun elem.Func, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
-	sig := genFuncSignature(fun, hFmts)
+func genFunc(fun elem.Func, blk elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+	sig := genFuncSignature(fun, blk, hFmts)
 
 	hFmts.Code += "\n" + sig + ";\n"
 
 	cFmts.Code += fmt.Sprintf("\n%s {\n", sig)
 	if len(fun.Params()) == 0 && len(fun.Returns()) == 0 {
-		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", fun.StbAddr())
+		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", blk.AddrSpace().Start()+fun.StbAddr())
 		return
 	}
 
 	if len(fun.Params()) > 0 {
-		genFuncParamsAccess(fun, cFmts)
+		genFuncParamsAccess(fun, blk, cFmts)
 	}
 
 	if len(fun.Returns()) > 0 {
-		genFuncReturnsAccess(fun, cFmts)
+		genFuncReturnsAccess(fun, blk, cFmts)
 	}
 
 	cFmts.Code += "};\n"
 }
 
-func genFuncSignature(fun elem.Func, hFmts *BlockHFormatters) string {
+func genFuncSignature(fun elem.Func, blk elem.Block, hFmts *BlockHFormatters) string {
 	prefix := "int vfbdb_" + hFmts.BlockName + "_" + fun.Name()
 
 	params := strings.Builder{}
@@ -53,14 +53,14 @@ func genFuncSignature(fun elem.Func, hFmts *BlockHFormatters) string {
 	return prefix + "(" + params.String() + ")"
 }
 
-func genFuncParamsAccess(fun elem.Func, cFmts *BlockCFormatters) {
+func genFuncParamsAccess(fun elem.Func, blk elem.Block, cFmts *BlockCFormatters) {
 	if fun.ParamsBufSize() == 1 {
-		genFuncParamsAccessSingleReg(fun, cFmts)
+		genFuncParamsAccessSingleReg(fun, blk, cFmts)
 	}
 }
 
-func genFuncParamsAccessSingleReg(fun elem.Func, cFmts *BlockCFormatters) {
-	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", fun.StbAddr())
+func genFuncParamsAccessSingleReg(fun elem.Func, blk elem.Block, cFmts *BlockCFormatters) {
+	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.AddrSpace().Start()+fun.StbAddr())
 	for i, p := range fun.Params() {
 		if i != 0 {
 			cFmts.Code += " | "
@@ -76,6 +76,6 @@ func genFuncParamsAccessSingleReg(fun elem.Func, cFmts *BlockCFormatters) {
 	cFmts.Code += ");\n"
 }
 
-func genFuncReturnsAccess(fun elem.Func, cFmts *BlockCFormatters) {
+func genFuncReturnsAccess(fun elem.Func, blk elem.Block, cFmts *BlockCFormatters) {
 
 }
