@@ -48,7 +48,7 @@ func genConfigSingleSingle(cfg *elem.Config, blk *elem.Block, hFmts *BlockHForma
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};\n", blk.AddrSpace.Start()+a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", blk.StartAddr()+a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -58,7 +58,7 @@ func genConfigSingleSingle(cfg *elem.Config, blk *elem.Block, hFmts *BlockHForma
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), blk.AddrSpace.Start()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
 		}
 	} else {
@@ -69,11 +69,11 @@ func genConfigSingleSingle(cfg *elem.Config, blk *elem.Block, hFmts *BlockHForma
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->write(%d, data);\n};\n", blk.AddrSpace.Start()+a.Addr,
+				"\treturn iface->write(%d, data);\n};\n", blk.StartAddr()+a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(
-				"	return iface->write(%d, (data << %d));\n };", blk.AddrSpace.Start()+a.Addr, a.StartBit(),
+				"	return iface->write(%d, (data << %d));\n };", blk.StartAddr()+a.Addr, a.StartBit(),
 			)
 		}
 	} else {

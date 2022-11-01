@@ -42,7 +42,7 @@ func genStatusSingleSingle(st *elem.Status, blk *elem.Block, hFmts *BlockHFormat
 	if readType.Typ() != "ByteArray" && typ.Typ() != "ByteArray" {
 		if busWidth == st.Width {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};\n", blk.AddrSpace.Start()+a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", blk.StartAddr()+a.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -52,7 +52,7 @@ func genStatusSingleSingle(st *elem.Status, blk *elem.Block, hFmts *BlockHFormat
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), blk.AddrSpace.Start()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
 			)
 		}
 	} else {

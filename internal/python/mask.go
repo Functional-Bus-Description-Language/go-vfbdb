@@ -22,7 +22,7 @@ func genMaskSingle(mask *elem.Mask, blk *elem.Block) string {
 	case access.SingleSingle:
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleSingle(iface, %d, (%d, %d))\n",
-			mask.Name, blk.AddrSpace.Start()+a.Addr, a.EndBit(), a.StartBit(),
+			mask.Name, blk.StartAddr()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	default:
 		panic("not yet implemented")

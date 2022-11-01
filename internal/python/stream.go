@@ -17,7 +17,7 @@ func genStream(stream *elem.Stream, blk *elem.Block) string {
 	}
 
 	code := indent + fmt.Sprintf("self.%s = %s(iface, %d, ",
-		stream.Name, streamType, blk.AddrSpace.Start()+stream.StartAddr(),
+		stream.Name, streamType, blk.StartAddr()+stream.StartAddr(),
 	)
 
 	if stream.IsDownstream() {

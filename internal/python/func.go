@@ -8,7 +8,7 @@ import (
 
 func genFunc(fun *elem.Func, blk *elem.Block) string {
 	code := indent + fmt.Sprintf("self.%s = Func(iface, %d, ",
-		fun.Name, blk.AddrSpace.Start()+fun.ParamsStartAddr(),
+		fun.Name, blk.StartAddr()+fun.ParamsStartAddr(),
 	)
 	code += genParamList(fun.Params)
 	code += ", "

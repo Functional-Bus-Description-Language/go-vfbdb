@@ -76,7 +76,7 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	genConsts(&b.Block.ConstContainer, &fmts)
 
 	for _, sb := range b.Block.Subblocks {
-		genSubblock(sb, b.Block.AddrSpace.Start(), addrBitsCount, &fmts)
+		genSubblock(sb, b.Block.StartAddr(), addrBitsCount, &fmts)
 	}
 
 	for _, fun := range b.Block.Funcs {
@@ -150,7 +150,7 @@ func genSubblock(
 		fmts.CrossbarSubblockPortsOut += s
 	}
 
-	subblockAddr := sb.AddrSpace.Start() - superBlockAddrStart
+	subblockAddr := sb.StartAddr() - superBlockAddrStart
 	for i := int64(0); i < sb.Count; i++ {
 		fmts.SubblocksCount += 1
 

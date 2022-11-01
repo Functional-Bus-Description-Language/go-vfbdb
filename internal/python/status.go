@@ -22,13 +22,13 @@ func genStatusSingle(st *elem.Status, blk *elem.Block) string {
 	case access.SingleSingle:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
-			st.Name, blk.AddrSpace.Start()+a.Addr, a.EndBit(), a.StartBit(),
+			st.Name, blk.StartAddr()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	case access.SingleContinuous:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name,
-			blk.AddrSpace.Start()+a.StartAddr(),
+			blk.StartAddr()+a.StartAddr(),
 			a.RegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
@@ -48,7 +48,7 @@ func genStatusArray(st *elem.Status, blk *elem.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name,
-			blk.AddrSpace.Start()+a.StartAddr(),
+			blk.StartAddr()+a.StartAddr(),
 			a.EndBit(),
 			a.StartBit(),
 			a.RegCount(),
@@ -57,7 +57,7 @@ func genStatusArray(st *elem.Status, blk *elem.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.AddrSpace.Start()+a.StartAddr(),
+			blk.StartAddr()+a.StartAddr(),
 			a.StartBit(),
 			a.ItemWidth,
 			a.ItemCount,

@@ -22,13 +22,13 @@ func genConfigSingle(cfg *elem.Config, blk *elem.Block) string {
 	case access.SingleSingle:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
-			cfg.Name, blk.AddrSpace.Start()+a.Addr, a.EndBit(), a.StartBit(),
+			cfg.Name, blk.StartAddr()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	case access.SingleContinuous:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name,
-			blk.AddrSpace.Start()+a.StartAddr(),
+			blk.StartAddr()+a.StartAddr(),
 			a.RegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,

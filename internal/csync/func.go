@@ -17,7 +17,7 @@ func genFunc(fun *elem.Func, blk *elem.Block, hFmts *BlockHFormatters, cFmts *Bl
 
 	cFmts.Code += fmt.Sprintf("\n%s {\n", sig)
 	if len(fun.Params) == 0 && len(fun.Returns) == 0 {
-		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", blk.AddrSpace.Start()+fun.StbAddr)
+		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", blk.StartAddr()+fun.StbAddr)
 		return
 	}
 
@@ -60,7 +60,7 @@ func genFuncParamsAccess(fun *elem.Func, blk *elem.Block, cFmts *BlockCFormatter
 }
 
 func genFuncParamsAccessSingleReg(fun *elem.Func, blk *elem.Block, cFmts *BlockCFormatters) {
-	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.AddrSpace.Start()+fun.StbAddr)
+	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.StartAddr()+fun.StbAddr)
 	for i, p := range fun.Params {
 		if i != 0 {
 			cFmts.Code += " | "
