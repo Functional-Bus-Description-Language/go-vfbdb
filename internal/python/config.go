@@ -18,15 +18,13 @@ func genConfig(cfg *elem.Config, blk *elem.Block) string {
 func genConfigSingle(cfg *elem.Config, blk *elem.Block) string {
 	var code string
 
-	switch cfg.Access.(type) {
+	switch a := cfg.Access.(type) {
 	case access.SingleSingle:
-		a := cfg.Access.(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
 			cfg.Name, blk.AddrSpace.Start()+a.Addr, a.EndBit(), a.StartBit(),
 		)
 	case access.SingleContinuous:
-		a := cfg.Access.(access.SingleContinuous)
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name,

@@ -18,9 +18,8 @@ func genMask(mask *elem.Mask, blk *elem.Block) string {
 func genMaskSingle(mask *elem.Mask, blk *elem.Block) string {
 	var code string
 
-	switch mask.Access.(type) {
+	switch a := mask.Access.(type) {
 	case access.SingleSingle:
-		a := mask.Access.(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleSingle(iface, %d, (%d, %d))\n",
 			mask.Name, blk.AddrSpace.Start()+a.Addr, a.EndBit(), a.StartBit(),

@@ -18,17 +18,14 @@ func genStatic(st *elem.Static, blk *elem.Block) string {
 func genStaticSingle(st *elem.Static, blk *elem.Block) string {
 	var code string
 
-	switch st.Access.(type) {
+	switch a := st.Access.(type) {
 	case access.SingleSingle:
-		a := st.Access.(access.SingleSingle)
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleSingle(iface, %d, (%d, %d), 0b0%s)\n",
 			st.Name, blk.AddrSpace.Start()+a.Addr, a.EndBit(), a.StartBit(),
 			st.Default.ToBin().ValueLiteral(),
 		)
 	case access.SingleContinuous:
-		a := st.Access.(access.SingleContinuous)
-
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), 0b%s)\n",
 			st.Name,
