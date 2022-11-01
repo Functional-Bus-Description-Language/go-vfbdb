@@ -29,8 +29,8 @@ type vfbdbHeaderFormatters struct {
 	WriteType string
 }
 
-func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs map[string]string) {
-	busWidth = bus.Width()
+func Generate(bus *elem.Block, pkgsConsts map[string]*elem.Package, cmdLineArgs map[string]string) {
+	busWidth = bus.Width
 	outputPath = cmdLineArgs["-path"] + "/"
 
 	err := os.MkdirAll(outputPath, os.FileMode(int(0775)))
@@ -44,9 +44,9 @@ func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs ma
 	}
 	defer hFile.Close()
 
-	addrType = c.SizeToAddrType(bus.Sizes().BlockAligned)
-	readType = c.WidthToReadType(bus.Width())
-	writeType = c.WidthToWriteType(bus.Width())
+	addrType = c.SizeToAddrType(bus.Sizes.BlockAligned)
+	readType = c.WidthToReadType(bus.Width)
+	writeType = c.WidthToWriteType(bus.Width)
 
 	hFmts := vfbdbHeaderFormatters{
 		AddrType:  addrType.String(),

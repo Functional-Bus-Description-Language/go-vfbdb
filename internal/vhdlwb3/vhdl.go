@@ -12,8 +12,8 @@ import (
 var busWidth int64
 var outputPath string
 
-func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs map[string]string) {
-	busWidth = bus.Width()
+func Generate(bus *elem.Block, pkgsConsts map[string]*elem.Package, cmdLineArgs map[string]string) {
+	busWidth = bus.Width
 	outputPath = cmdLineArgs["-path"] + "/"
 
 	err := os.MkdirAll(outputPath, os.FileMode(int(0775)))

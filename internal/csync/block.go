@@ -38,19 +38,19 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	}
 	cFmts := BlockCFormatters{Code: ""}
 
-	for _, st := range b.Block.Statics() {
+	for _, st := range b.Block.Statics {
 		genStatic(st, b.Block, &hFmts, &cFmts)
 	}
 
-	for _, st := range b.Block.Statuses() {
+	for _, st := range b.Block.Statuses {
 		genStatus(st, b.Block, &hFmts, &cFmts)
 	}
 
-	for _, cfg := range b.Block.Configs() {
+	for _, cfg := range b.Block.Configs {
 		genConfig(cfg, b.Block, &hFmts, &cFmts)
 	}
 
-	for _, fun := range b.Block.Funcs() {
+	for _, fun := range b.Block.Funcs {
 		genFunc(fun, b.Block, &hFmts, &cFmts)
 	}
 

@@ -12,7 +12,7 @@ type Block struct {
 	Name      string
 	NameLevel int
 	Path      []string
-	Block     elem.Block
+	Block     *elem.Block
 }
 
 // Rename renames Block based on the NameLevel and Path.
@@ -31,12 +31,12 @@ func (b *Block) Rename() {
 	b.Name = name
 }
 
-func CollectBlocks(blk elem.Block, blocks []Block, path []string) []Block {
+func CollectBlocks(blk *elem.Block, blocks []Block, path []string) []Block {
 	if blocks == nil {
 		blocks = []Block{Block{
-			Name: blk.Name(), NameLevel: 1, Path: []string{blk.Name()}, Block: blk},
+			Name: blk.Name, NameLevel: 1, Path: []string{blk.Name}, Block: blk},
 		}
-		path = append(path, blk.Name())
+		path = append(path, blk.Name)
 	} else {
 		p := make([]string, len(path))
 		n := copy(p, path)
@@ -44,12 +44,12 @@ func CollectBlocks(blk elem.Block, blocks []Block, path []string) []Block {
 			log.Fatalf("utils: colllect blocks: copying block path failed, copied %d, expected %d", n, len(path))
 		}
 
-		ent := Block{Name: blk.Name(), Path: p, Block: blk}
+		ent := Block{Name: blk.Name, Path: p, Block: blk}
 		blocks = append(blocks, ent)
 	}
 
-	for _, b := range blk.Subblocks() {
-		path = append(path, b.Name())
+	for _, b := range blk.Subblocks {
+		path = append(path, b.Name)
 		blocks = CollectBlocks(b, blocks, path)
 		path = path[:len(path)-1]
 	}

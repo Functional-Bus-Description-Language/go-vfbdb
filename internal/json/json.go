@@ -9,7 +9,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func Generate(bus elem.Block, pkgsConsts map[string]elem.Package, cmdLineArgs map[string]string) {
+func Generate(bus *elem.Block, pkgsConsts map[string]*elem.Package, cmdLineArgs map[string]string) {
 	err := os.MkdirAll(cmdLineArgs["-path"], os.FileMode(int(0775)))
 	if err != nil {
 		log.Fatalf("generate reg json: %v", err)

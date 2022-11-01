@@ -58,48 +58,48 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	fmts := BlockEntityFormatters{
 		BusWidth:              busWidth,
 		EntityName:            b.Name,
-		MastersCount:          b.Block.Masters(),
-		RegistersCount:        b.Block.Sizes().Own,
-		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(b.Block.Sizes().Own)))),
+		MastersCount:          b.Block.Masters,
+		RegistersCount:        b.Block.Sizes.Own,
+		InternalAddrBitsCount: int64(math.Ceil(math.Log2(float64(b.Block.Sizes.Own)))),
 		AddressValues:         fmt.Sprintf("0 => \"%032b\"", 0),
 		RegistersAccess:       make(RegisterMap),
 	}
 
-	addrBitsCount := int(math.Log2(float64(b.Block.Sizes().BlockAligned)))
+	addrBitsCount := int(math.Log2(float64(b.Block.Sizes.BlockAligned)))
 
 	mask := 0
-	if len(b.Block.Subblocks()) > 0 {
+	if len(b.Block.Subblocks) > 0 {
 		mask = ((1 << addrBitsCount) - 1) ^ ((1 << fmts.InternalAddrBitsCount) - 1)
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
 
-	genConsts(b.Block, &fmts)
+	genConsts(&b.Block.ConstContainer, &fmts)
 
-	for _, sb := range b.Block.Subblocks() {
-		genSubblock(sb, b.Block.AddrSpace().Start(), addrBitsCount, &fmts)
+	for _, sb := range b.Block.Subblocks {
+		genSubblock(sb, b.Block.AddrSpace.Start(), addrBitsCount, &fmts)
 	}
 
-	for _, fun := range b.Block.Funcs() {
+	for _, fun := range b.Block.Funcs {
 		genFunc(fun, &fmts)
 	}
 
-	for _, stream := range b.Block.Streams() {
+	for _, stream := range b.Block.Streams {
 		genStream(stream, &fmts)
 	}
 
-	for _, st := range b.Block.Statics() {
+	for _, st := range b.Block.Statics {
 		genStatic(st, &fmts)
 	}
 
-	for _, st := range b.Block.Statuses() {
+	for _, st := range b.Block.Statuses {
 		genStatus(st, &fmts)
 	}
 
-	for _, cfg := range b.Block.Configs() {
+	for _, cfg := range b.Block.Configs {
 		genConfig(cfg, &fmts)
 	}
 
-	for _, mask := range b.Block.Masks() {
+	for _, mask := range b.Block.Masks {
 		genMask(mask, &fmts)
 	}
 
@@ -119,7 +119,7 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 }
 
 func genSubblock(
-	sb elem.Block,
+	sb *elem.Block,
 	superBlockAddrStart int64,
 	superBlockAddrBitsCount int,
 	fmts *BlockEntityFormatters,
@@ -129,49 +129,49 @@ func genSubblock(
 	s := fmt.Sprintf(
 		";\n   %s_master_o : out t_wishbone_master_out_array(%d downto 0);\n"+
 			"   %[1]s_master_i : in  t_wishbone_master_in_array(%[2]d downto 0)",
-		sb.Name(), sb.Count()-1,
+		sb.Name, sb.Count-1,
 	)
 	fmts.EntitySubblockPorts += s
 
-	if sb.Count() == 1 {
-		s := fmt.Sprintf("\n   master_i(%d) => %s_master_i(0),", initSubblocksCount+1, sb.Name())
+	if sb.Count == 1 {
+		s := fmt.Sprintf("\n   master_i(%d) => %s_master_i(0),", initSubblocksCount+1, sb.Name)
 		fmts.CrossbarSubblockPortsIn += s
 
-		s = fmt.Sprintf(",\n   master_o(%d) => %s_master_o(0)", initSubblocksCount+1, sb.Name())
+		s = fmt.Sprintf(",\n   master_o(%d) => %s_master_o(0)", initSubblocksCount+1, sb.Name)
 		fmts.CrossbarSubblockPortsOut += s
 	} else {
 		lowerBound := initSubblocksCount + 1
-		upperBound := lowerBound + sb.Count() - 1
+		upperBound := lowerBound + sb.Count - 1
 
-		s := fmt.Sprintf("\n   master_i(%d downto %d) => %s_master_i,", lowerBound, upperBound, sb.Name())
+		s := fmt.Sprintf("\n   master_i(%d downto %d) => %s_master_i,", lowerBound, upperBound, sb.Name)
 		fmts.CrossbarSubblockPortsIn += s
 
-		s = fmt.Sprintf(",\n   master_o(%d downto %d) => %s_master_o", lowerBound, upperBound, sb.Name())
+		s = fmt.Sprintf(",\n   master_o(%d downto %d) => %s_master_o", lowerBound, upperBound, sb.Name)
 		fmts.CrossbarSubblockPortsOut += s
 	}
 
-	subblockAddr := sb.AddrSpace().Start() - superBlockAddrStart
-	for i := int64(0); i < sb.Count(); i++ {
+	subblockAddr := sb.AddrSpace.Start() - superBlockAddrStart
+	for i := int64(0); i < sb.Count; i++ {
 		fmts.SubblocksCount += 1
 
 		s := fmt.Sprintf(", %d => \"%032b\"", fmts.SubblocksCount, subblockAddr)
 		fmts.AddressValues += s
 
-		mask := ((1 << superBlockAddrBitsCount) - 1) ^ ((1 << int(math.Log2(float64(sb.Sizes().BlockAligned)))) - 1)
+		mask := ((1 << superBlockAddrBitsCount) - 1) ^ ((1 << int(math.Log2(float64(sb.Sizes.BlockAligned)))) - 1)
 		s = fmt.Sprintf(", %d => \"%032b\"", fmts.SubblocksCount, mask)
 		fmts.MaskValues += s
 
-		subblockAddr += sb.Sizes().BlockAligned
+		subblockAddr += sb.Sizes.BlockAligned
 	}
 }
 
-func genConsts(blk elem.Block, fmts *BlockEntityFormatters) {
+func genConsts(c *elem.ConstContainer, fmts *BlockEntityFormatters) {
 	s := ""
 
-	for name, b := range blk.BoolConsts() {
+	for name, b := range c.BoolConsts {
 		s += fmt.Sprintf("constant %s : boolean := %t;\n", name, b)
 	}
-	for name, list := range blk.BoolListConsts() {
+	for name, list := range c.BoolListConsts {
 		s += fmt.Sprintf("constant %s : boolean_vector(0 to %d) := (", name, len(list)-1)
 		for i, b := range list {
 			s += fmt.Sprintf("%d => %t, ", i, b)
@@ -179,10 +179,10 @@ func genConsts(blk elem.Block, fmts *BlockEntityFormatters) {
 		s = s[:len(s)-2]
 		s += ");\n"
 	}
-	for name, i := range blk.IntConsts() {
+	for name, i := range c.IntConsts {
 		s += fmt.Sprintf("constant %s : int64 := signed'(x\"%016x\");\n", name, i)
 	}
-	for name, list := range blk.IntListConsts() {
+	for name, list := range c.IntListConsts {
 		s += fmt.Sprintf("constant %s : int64_vector(0 to %d) := (", name, len(list)-1)
 		for i, v := range list {
 			s += fmt.Sprintf("%d => signed'(x\"%016x\"), ", i, v)
@@ -190,7 +190,7 @@ func genConsts(blk elem.Block, fmts *BlockEntityFormatters) {
 		s = s[:len(s)-2]
 		s += ");\n"
 	}
-	for name, str := range blk.StrConsts() {
+	for name, str := range c.StrConsts {
 		s += fmt.Sprintf("constant %s : string := %q;\n", name, str)
 	}
 

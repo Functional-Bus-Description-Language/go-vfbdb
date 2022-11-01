@@ -6,7 +6,7 @@ import (
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
 )
 
-func genStream(stream elem.Stream, blk elem.Block) string {
+func genStream(stream *elem.Stream, blk *elem.Block) string {
 	if stream.IsDownstream() {
 		panic("downstream not yet supported")
 	}
@@ -17,13 +17,13 @@ func genStream(stream elem.Stream, blk elem.Block) string {
 	}
 
 	code := indent + fmt.Sprintf("self.%s = %s(iface, %d, ",
-		stream.Name(), streamType, blk.AddrSpace().Start()+stream.StartAddr(),
+		stream.Name, streamType, blk.AddrSpace.Start()+stream.StartAddr(),
 	)
 
 	if stream.IsDownstream() {
-		code += genParamList(stream.Params())
+		code += genParamList(stream.Params)
 	} else {
-		code += genReturnList(stream.Returns())
+		code += genReturnList(stream.Returns)
 	}
 
 	code += ")\n"
