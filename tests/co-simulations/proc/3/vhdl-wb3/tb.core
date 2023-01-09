@@ -1,6 +1,6 @@
 CAPI=2:
 
-name: vfbdb:vhdl-wb3:func_0
+name: vfbdb:vhdl-wb3:proc_3
 
 filesets:
   tb_cosim:
@@ -26,14 +26,14 @@ targets:
     hooks:
       pre_run: [tb_cosim]
     parameters:
-      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/func/0/python_vhdl-wb3
-      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/func/0/vhdl-wb3_python
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/proc/3/python_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/proc/3/vhdl-wb3_python
 
 generate:
   vfbdb_regs:
     generator: vfbdb
     parameters:
-      python: [-path, ../../../../../build/vfbdb/func/0/python/vhdl-wb3]
+      python: [-path, ../../../../../build/vfbdb/proc/3/python/vhdl-wb3]
       vhdl-wb3: []
       main: ../bus.fbd
 
@@ -49,6 +49,6 @@ scripts:
   tb_cosim:
     cmd:
       - ../../../tests/co-simulations/common/python/tb_cosim.sh
-      - func
-      - 0
+      - proc
+      - 3
       - vhdl-wb3

@@ -70,14 +70,14 @@ func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 		}
 	}
 	if len(proc.Params) == 0 {
-		fmts.RegistersAccess.add([2]int64{proc.StbAddr, proc.StbAddr}, "")
+		fmts.RegistersAccess.add([2]int64{proc.CallAddr, proc.CallAddr}, "")
 	}
 }
 
 func genProcStrobe(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	clear := fmt.Sprintf("\n%s_o.stb <= '0';", proc.Name)
 
-	fmts.ProcsStrobesClear += clear
+	fmts.ProcsCallsClear += clear
 
 	stbSet := `
    %s_stb : if addr = %d then
@@ -86,7 +86,7 @@ func genProcStrobe(proc *elem.Proc, fmts *BlockEntityFormatters) {
       end if;
    end if;
 `
-	set := fmt.Sprintf(stbSet, proc.Name, proc.StbAddr)
+	set := fmt.Sprintf(stbSet, proc.Name, proc.CallAddr)
 
-	fmts.ProcsStrobesSet += set
+	fmts.ProcsCallsSet += set
 }

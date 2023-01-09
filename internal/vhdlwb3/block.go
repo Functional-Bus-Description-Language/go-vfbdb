@@ -43,8 +43,8 @@ type BlockEntityFormatters struct {
 
 	RegistersAccess RegisterMap
 
-	ProcsStrobesClear string
-	ProcsStrobesSet   string
+	ProcsCallsClear string
+	ProcsCallsSet   string
 
 	StreamsStrobesClear string
 	StreamsStrobesSet   string

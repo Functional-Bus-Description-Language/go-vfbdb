@@ -17,7 +17,7 @@ func genProc(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters, cFmts *Bloc
 
 	cFmts.Code += fmt.Sprintf("\n%s {\n", sig)
 	if len(p.Params) == 0 && len(p.Returns) == 0 {
-		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", blk.StartAddr()+p.StbAddr)
+		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", blk.StartAddr()+p.CallAddr)
 		return
 	}
 
@@ -60,7 +60,7 @@ func genProcParamsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters)
 }
 
 func genProcParamsAccessSingleReg(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
-	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.StartAddr()+p.StbAddr)
+	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.StartAddr()+p.CallAddr)
 	for i, p := range p.Params {
 		if i != 0 {
 			cFmts.Code += " | "

@@ -17,8 +17,8 @@ package {{.EntityName}}_pkg is
 
 -- Constants
 {{.Constants}}
--- Func types
-{{.FuncTypes}}
+-- Proc types
+{{.ProcTypes}}
 -- Stream types
 {{.StreamTypes}}
 end package;
@@ -94,7 +94,7 @@ master_in.rty <= '0';
 master_in.ack <= '0';
 master_in.err <= '0';
 
--- Funcs Strobes Clear{{.FuncsStrobesClear}}
+-- Procs Calls Clear{{.ProcsCallsClear}}
 -- Stream Strobes Clear{{.StreamsStrobesClear}}
 
 transfer : if
@@ -122,7 +122,7 @@ then
    end if;
 {{end}}
 
-   -- Func Strobes Set{{.FuncsStrobesSet}}
+   -- Proc Calls Set{{.ProcsCallsSet}}
    -- Stream Strobes Set{{.StreamsStrobesSet}}
 
 end if transfer;
