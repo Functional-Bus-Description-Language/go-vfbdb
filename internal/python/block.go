@@ -42,8 +42,8 @@ func genBlock(blk *elem.Block, main bool) string {
 		code += genSubblock(sb, blk)
 	}
 
-	for _, fun := range blk.Funcs {
-		code += genFunc(fun, blk)
+	for _, proc := range blk.Procs {
+		code += genProc(proc, blk)
 	}
 
 	for _, stream := range blk.Streams {

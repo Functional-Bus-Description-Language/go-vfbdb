@@ -50,8 +50,8 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 		genConfig(cfg, b.Block, &hFmts, &cFmts)
 	}
 
-	for _, fun := range b.Block.Funcs {
-		genFunc(fun, b.Block, &hFmts, &cFmts)
+	for _, proc := range b.Block.Procs {
+		genProc(proc, b.Block, &hFmts, &cFmts)
 	}
 
 	genBlockH(b, hFmts)

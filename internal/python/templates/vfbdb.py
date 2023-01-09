@@ -64,7 +64,7 @@ def pack_args(params, *args):
 
     return buff
 
-class Func():
+class Proc():
     def __init__(self, iface, params_start_addr, params, returns):
         self.iface = iface
         self.params_start_addr = params_start_addr

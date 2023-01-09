@@ -28,7 +28,7 @@ type BlockEntityFormatters struct {
 
 	// Things going to package.
 	Constants   string
-	FuncTypes   string
+	ProcTypes   string
 	StreamTypes string
 
 	EntitySubblockPorts   string
@@ -43,8 +43,8 @@ type BlockEntityFormatters struct {
 
 	RegistersAccess RegisterMap
 
-	FuncsStrobesClear string
-	FuncsStrobesSet   string
+	ProcsStrobesClear string
+	ProcsStrobesSet   string
 
 	StreamsStrobesClear string
 	StreamsStrobesSet   string
@@ -79,8 +79,8 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 		genSubblock(sb, b.Block.StartAddr(), addrBitsCount, &fmts)
 	}
 
-	for _, fun := range b.Block.Funcs {
-		genFunc(fun, &fmts)
+	for _, proc := range b.Block.Procs {
+		genProc(proc, &fmts)
 	}
 
 	for _, stream := range b.Block.Streams {
