@@ -18,7 +18,7 @@ architecture test of tb_cosim is
 
    signal clk : std_logic := '0';
 
-   signal foo : foo_t;
+   signal foo : foo_out_t;
    signal count : std_logic_vector(31 downto 0) := (others => '0');
 
    -- Wishbone interfaces.
@@ -63,7 +63,7 @@ begin
    adder : process (clk) is
    begin
       if rising_edge(clk) then
-         if foo.stb = '1' then
+         if foo.call = '1' then
             count <= std_logic_vector(unsigned(count) + to_unsigned(1, count'length));
          end if;
       end if;

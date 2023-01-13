@@ -45,6 +45,8 @@ type BlockEntityFormatters struct {
 
 	ProcsCallsClear string
 	ProcsCallsSet   string
+	ProcsExitsClear string
+	ProcsExitsSet   string
 
 	StreamsStrobesClear string
 	StreamsStrobesSet   string

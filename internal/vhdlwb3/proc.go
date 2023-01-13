@@ -8,14 +8,16 @@ import (
 )
 
 func genProc(p *elem.Proc, fmts *BlockEntityFormatters) {
-	genProcType(p, fmts)
-	genProcPort(p, fmts)
+	genProcOutType(p, fmts)
+	genProcInType(p, fmts)
+	genProcPorts(p, fmts)
 	genProcAccess(p, fmts)
-	genProcStrobe(p, fmts)
+	genProcCall(p, fmts)
+	genProcExit(p, fmts)
 }
 
-func genProcType(proc *elem.Proc, fmts *BlockEntityFormatters) {
-	s := fmt.Sprintf("\ntype %s_t is record\n", proc.Name)
+func genProcOutType(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	s := fmt.Sprintf("\ntype %s_out_t is record\n", proc.Name)
 
 	for _, p := range proc.Params {
 		if p.IsArray {
@@ -25,13 +27,41 @@ func genProcType(proc *elem.Proc, fmts *BlockEntityFormatters) {
 		}
 	}
 
-	s += "   stb : std_logic;\nend record;\n"
+	s += "   call : std_logic;\n"
+
+	if len(proc.Returns) != 0 {
+		s += "   exitt : std_logic;\n"
+	}
+	s += "end record;\n"
 
 	fmts.ProcTypes += s
 }
 
-func genProcPort(proc *elem.Proc, fmts *BlockEntityFormatters) {
-	s := fmt.Sprintf(";\n   %s_o : out %[1]s_t", proc.Name)
+func genProcInType(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	if len(proc.Returns) == 0 {
+		return
+	}
+
+	s := fmt.Sprintf("\ntype %s_in_t is record\n", proc.Name)
+
+	for _, r := range proc.Returns {
+		if r.IsArray {
+			s += fmt.Sprintf("   %s : slv_vector(%d downto 0)(%d downto 0);\n", r.Name, r.Count-1, r.Width-1)
+		} else {
+			s += fmt.Sprintf("   %s : std_logic_vector(%d downto 0);\n", r.Name, r.Width-1)
+		}
+	}
+
+	s += "end record;\n"
+
+	fmts.ProcTypes += s
+}
+
+func genProcPorts(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	s := fmt.Sprintf(";\n   %s_o : out %[1]s_out_t", proc.Name)
+	if len(proc.Returns) != 0 {
+		s += fmt.Sprintf(";\n   %s_i : in %[1]s_in_t", proc.Name)
+	}
 	fmts.EntityFunctionalPorts += s
 }
 
@@ -74,19 +104,40 @@ func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genProcStrobe(proc *elem.Proc, fmts *BlockEntityFormatters) {
-	clear := fmt.Sprintf("\n%s_o.stb <= '0';", proc.Name)
+func genProcCall(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	clear := fmt.Sprintf("\n%s_o.call <= '0';", proc.Name)
 
 	fmts.ProcsCallsClear += clear
 
-	stbSet := `
-   %s_stb : if addr = %d then
+	callSet := `
+   %s_call : if addr = %d then
       if master_out.we = '1' then
-         %[1]s_o.stb <= '1';
+         %[1]s_o.call <= '1';
       end if;
    end if;
 `
-	set := fmt.Sprintf(stbSet, proc.Name, proc.CallAddr)
+	set := fmt.Sprintf(callSet, proc.Name, proc.CallAddr)
 
 	fmts.ProcsCallsSet += set
+}
+
+func genProcExit(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	if len(proc.Returns) == 0 {
+		return
+	}
+
+	clear := fmt.Sprintf("\n%s_o.exitt <= '0';", proc.Name)
+
+	fmts.ProcsExitsClear += clear
+
+	exitSet := `
+   %s_exit : if addr = %d then
+      if master_out.we = '0' then
+         %[1]s_o.exitt <= '1';
+      end if;
+   end if;
+`
+	set := fmt.Sprintf(exitSet, proc.Name, proc.ExitAddr)
+
+	fmts.ProcsExitsSet += set
 }

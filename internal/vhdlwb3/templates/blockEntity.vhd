@@ -95,6 +95,7 @@ master_in.ack <= '0';
 master_in.err <= '0';
 
 -- Procs Calls Clear{{.ProcsCallsClear}}
+-- Procs Exits Clear{{.ProcsExitsClear}}
 -- Stream Strobes Clear{{.StreamsStrobesClear}}
 
 transfer : if
@@ -123,6 +124,7 @@ then
 {{end}}
 
    -- Proc Calls Set{{.ProcsCallsSet}}
+   -- Proc Exits Set{{.ProcsExitsSet}}
    -- Stream Strobes Set{{.StreamsStrobesSet}}
 
 end if transfer;
