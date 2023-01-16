@@ -3,6 +3,7 @@
 # https://github.com/Functional-Bus-Description-Language/go-vfbdb
 
 import math
+import time
 
 BUS_WIDTH = {{.BusWidth}}
 
@@ -64,6 +65,19 @@ def pack_args(params, *args):
 
     return buff
 
+class EmptyProc():
+    def __init__(self, iface, call_addr, delay, exit_addr):
+        self.iface = iface
+        self.call_addr = call_addr
+        self.delay = delay
+        self.exit_addr = exit_addr
+    def __call__(self):
+        self.iface.write(self.call_addr, 0)
+        if self.delay is not None:
+            if self.delay != 0:
+                time.sleep(self.delay)
+            self.iface.read(self.exit_addr)
+
 class Proc():
     def __init__(self, iface, params_start_addr, params, returns):
         self.iface = iface
@@ -71,7 +85,6 @@ class Proc():
         self.params = params
 
     def __call__(self, *args):
-        print(args)
         if self.params is not None:
             assert len(args) == len(self.params), \
                 "{}() takes {} arguments but {} were given".format(self.__name__, len(self.params), len(args))

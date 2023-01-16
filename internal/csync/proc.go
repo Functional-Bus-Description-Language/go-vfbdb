@@ -17,8 +17,7 @@ func genProc(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters, cFmts *Bloc
 
 	cFmts.Code += fmt.Sprintf("\n%s {\n", sig)
 	if len(p.Params) == 0 && len(p.Returns) == 0 {
-		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n};\n", blk.StartAddr()+p.CallAddr)
-		return
+		cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, 0);\n", blk.StartAddr()+p.CallAddr)
 	}
 
 	if len(p.Params) > 0 {
@@ -55,11 +54,13 @@ func genProcSignature(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters) st
 
 func genProcParamsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
 	if p.ParamsBufSize() == 1 {
-		genProcParamsAccessSingleReg(p, blk, cFmts)
+		genProcParamsAccessSingleWrite(p, blk, cFmts)
+	} else {
+		genProcParamsAccessBlockWrite(p, blk, cFmts)
 	}
 }
 
-func genProcParamsAccessSingleReg(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcParamsAccessSingleWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
 	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.StartAddr()+p.CallAddr)
 	for i, p := range p.Params {
 		if i != 0 {
@@ -76,6 +77,47 @@ func genProcParamsAccessSingleReg(p *elem.Proc, blk *elem.Block, cFmts *BlockCFo
 	cFmts.Code += ");\n"
 }
 
+func genProcParamsAccessBlockWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+	panic("not yet implemented")
+}
+
 func genProcReturnsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
-	panic("not implemented")
+	if p.ReturnsBufSize() == 1 {
+		genProcReturnsAccessSingleRead(p, blk, cFmts)
+	} else {
+		genProcReturnsAccessBlockRead(p, blk, cFmts)
+	}
+}
+
+func genProcReturnsAccessSingleRead(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+	cFmts.Code += fmt.Sprintf("\t%s _rdata;\n", c.WidthToWriteType(blk.Width))
+
+	cFmts.Code += fmt.Sprintf("\tconst int err = iface.read(%d, &_rdata);\n", p.ExitAddr)
+	cFmts.Code += "\tif (err)\n\t\t return err;\n"
+
+	for _, r := range p.Returns {
+		switch a := r.Access.(type) {
+		case access.SingleSingle:
+			cFmts.Code += fmt.Sprintf(
+				"\t*%s = (_rdata >> %d) & 0x%X;\n",
+				r.Name, a.StartBit(), c.MaskToValue(a.StartBit(), a.EndBit()),
+			)
+		default:
+			panic("not yet implemented")
+		}
+	}
+	cFmts.Code += "\treturn 0;\n"
+}
+
+func genProcReturnsAccessBlockRead(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+	panic("not yet implemented")
+	/*
+		cFmts.Code += fmt.Sprintf(
+			"\t%s _rbuff[%d];\n", c.WidthToWriteType(blk.Width), p.ReturnsBufSize(),
+		)
+		cFmts.Code += fmt.Sprintf(
+			"\tconst int err = iface.readb(%d, _rbuff, %d);\n", p.ReturnsStartAddr(), p.ReturnsBufSize(),
+		)
+		cFmts.Code += "\tif (err)\n\t\t return err;\n"
+	*/
 }
