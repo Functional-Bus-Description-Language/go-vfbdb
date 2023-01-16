@@ -12,8 +12,12 @@ func genProc(p *elem.Proc, fmts *BlockEntityFormatters) {
 	genProcInType(p, fmts)
 	genProcPorts(p, fmts)
 	genProcAccess(p, fmts)
-	genProcCall(p, fmts)
-	genProcExit(p, fmts)
+	if p.CallAddr != nil {
+		genProcCall(p, fmts)
+	}
+	if p.ExitAddr != nil {
+		genProcExit(p, fmts)
+	}
 }
 
 func genProcOutType(proc *elem.Proc, fmts *BlockEntityFormatters) {
@@ -99,8 +103,11 @@ func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 			panic("not yet implemented")
 		}
 	}
-	if len(proc.Params) == 0 {
+	if proc.CallAddr != nil {
 		fmts.RegistersAccess.add([2]int64{*proc.CallAddr, *proc.CallAddr}, "")
+	}
+	if proc.ExitAddr != nil {
+		fmts.RegistersAccess.add([2]int64{*proc.ExitAddr, *proc.ExitAddr}, "")
 	}
 }
 
