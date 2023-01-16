@@ -61,6 +61,14 @@ func genProcParamsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters)
 }
 
 func genProcParamsAccessSingleWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+	if p.Delay == nil && len(p.Returns) == 0 {
+		genProcParamsAccessSingleWriteNoDelayNoReturns(p, blk, cFmts)
+	} else {
+		panic("not yet implemented")
+	}
+}
+
+func genProcParamsAccessSingleWriteNoDelayNoReturns(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
 	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.StartAddr()+p.CallAddr)
 	for i, p := range p.Params {
 		if i != 0 {
