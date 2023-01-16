@@ -27,10 +27,10 @@ func genEmptyProc(p *elem.Proc, blk *elem.Block) string {
 	exitAddr := "None"
 	if p.Delay != nil {
 		delay = fmt.Sprintf("%d + %d * 1e-9", p.Delay.S, p.Delay.Ns)
-		exitAddr = fmt.Sprintf("%d", blk.StartAddr()+p.ExitAddr)
+		exitAddr = fmt.Sprintf("%d", blk.StartAddr()+*p.ExitAddr)
 	}
 	code := indent + fmt.Sprintf("self.%s = EmptyProc(iface, %d, %s, %s)\n",
-		p.Name, blk.StartAddr()+p.CallAddr, delay, exitAddr,
+		p.Name, blk.StartAddr()+*p.CallAddr, delay, exitAddr,
 	)
 
 	return code

@@ -100,7 +100,7 @@ func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 		}
 	}
 	if len(proc.Params) == 0 {
-		fmts.RegistersAccess.add([2]int64{proc.CallAddr, proc.CallAddr}, "")
+		fmts.RegistersAccess.add([2]int64{*proc.CallAddr, *proc.CallAddr}, "")
 	}
 }
 
@@ -116,7 +116,7 @@ func genProcCall(proc *elem.Proc, fmts *BlockEntityFormatters) {
       end if;
    end if;
 `
-	set := fmt.Sprintf(callSet, proc.Name, proc.CallAddr)
+	set := fmt.Sprintf(callSet, proc.Name, *proc.CallAddr)
 
 	fmts.ProcsCallsSet += set
 }
@@ -137,7 +137,7 @@ func genProcExit(proc *elem.Proc, fmts *BlockEntityFormatters) {
       end if;
    end if;
 `
-	set := fmt.Sprintf(exitSet, proc.Name, proc.ExitAddr)
+	set := fmt.Sprintf(exitSet, proc.Name, *proc.ExitAddr)
 
 	fmts.ProcsExitsSet += set
 }
