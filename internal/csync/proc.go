@@ -100,7 +100,7 @@ func genProcReturnsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters
 func genProcReturnsAccessSingleRead(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
 	cFmts.Code += fmt.Sprintf("\t%s _rdata;\n", c.WidthToWriteType(blk.Width))
 
-	cFmts.Code += fmt.Sprintf("\tconst int err = iface.read(%d, &_rdata);\n", p.ExitAddr)
+	cFmts.Code += fmt.Sprintf("\tconst int err = iface->read(%d, &_rdata);\n", p.ExitAddr)
 	cFmts.Code += "\tif (err)\n\t\t return err;\n"
 
 	for _, r := range p.Returns {
