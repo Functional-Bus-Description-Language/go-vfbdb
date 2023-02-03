@@ -70,6 +70,11 @@ func genProcPorts(proc *elem.Proc, fmts *BlockEntityFormatters) {
 }
 
 func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	genProcParamsAccess(proc, fmts)
+	genProcReturnsAccess(proc, fmts)
+}
+
+func genProcParamsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	for _, p := range proc.Params {
 		switch p.Access.(type) {
 		case access.SingleSingle:
@@ -99,6 +104,31 @@ func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 
 				fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
 			}
+		default:
+			panic("not yet implemented")
+		}
+	}
+	if proc.CallAddr != nil {
+		fmts.RegistersAccess.add([2]int64{*proc.CallAddr, *proc.CallAddr}, "")
+	}
+	if proc.ExitAddr != nil {
+		fmts.RegistersAccess.add([2]int64{*proc.ExitAddr, *proc.ExitAddr}, "")
+	}
+}
+
+func genProcReturnsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
+	for _, r := range proc.Returns {
+		switch r.Access.(type) {
+		case access.SingleSingle:
+			access := r.Access.(access.SingleSingle)
+
+			addr := [2]int64{access.StartAddr(), access.StartAddr()}
+			code := fmt.Sprintf(
+				"      master_in.dat(%[1]d downto %[2]d) <= %[3]s_i.%[4]s;\n",
+				access.EndBit(), access.StartBit(), proc.Name, r.Name,
+			)
+
+			fmts.RegistersAccess.add(addr, code)
 		default:
 			panic("not yet implemented")
 		}
