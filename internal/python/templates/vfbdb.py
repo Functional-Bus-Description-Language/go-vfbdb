@@ -134,7 +134,7 @@ class ParamsProc():
 class ReturnsProc():
     def __init__(self, iface, returns_start_addr, returns, delay, call_addr):
         self.iface = iface
-        self.returns_start_addr = params_start_addr
+        self.returns_start_addr = returns_start_addr
         self.delay = delay
         self.exit_addr = exit_addr
 
