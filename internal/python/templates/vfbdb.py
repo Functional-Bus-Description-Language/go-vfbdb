@@ -65,9 +65,9 @@ def pack_params(params, *args):
 
     return buf
 
-def crate_mock_returns(buf_iface, start_addr, returns):
+def create_mock_returns(buf_iface, start_addr, returns):
     """
-    Crate_mock_returns crates mock returns that can be used with internal software buffer.
+    Create_mock_returns creates mock returns that can be used with internal software buffer.
     It is useful to be used with proc with returns and with upstram.
     """
     buf_size = 0
@@ -136,10 +136,10 @@ class ReturnsProc():
         self.iface = iface
         self.returns_start_addr = returns_start_addr
         self.delay = delay
-        self.exit_addr = exit_addr
+        self.call_addr = call_addr
 
         self.buf_iface = _BufferIface()
-        self.buf_size, self.returns = crate_mock_returns(self.buf_iface, addr, returns)
+        self.buf_size, self.returns = create_mock_returns(self.buf_iface, returns_start_addr, returns)
 
     def __call__(self, *args):
         if self.delay is not None:
@@ -347,7 +347,7 @@ class Upstream():
         self.iface = iface
         self.addr = addr
         self.buf_iface = _BufferIface()
-        self.buf_size, self.returns = crate_mock_returns(self.buf_iface, addr, returns)
+        self.buf_size, self.returns = create_mock_returns(self.buf_iface, addr, returns)
 
     def read(self, n):
         """
