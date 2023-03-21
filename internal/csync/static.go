@@ -49,7 +49,7 @@ func genStaticSingleSingle(st *elem.Static, blk *elem.Block, hFmts *BlockHFormat
 		"\nconst %s vfbdb_%s_%s = %s;\n",
 		wTyp.String(), hFmts.BlockName, st.Name,
 		// XXX: Uint64 is currently used. Below code needs fix if static is longer than 64 bits.
-		fmt.Sprintf("0x%s", strconv.FormatUint(st.Default.Uint64(), 16)),
+		fmt.Sprintf("0x%s", strconv.FormatUint(st.InitValue.Uint64(), 16)),
 	)
 
 	a := st.Access.(access.SingleSingle)

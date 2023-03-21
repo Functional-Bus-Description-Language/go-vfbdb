@@ -1,6 +1,6 @@
 Main bus
-	Cfg0 config; width = 6; default = b"010101"
+	Cfg0 config; width = 6; init-value = b"010101"
 	St0  status; width = 6
 
-	Cfg1 config; width = 4; default = b"11"
+	Cfg1 config; width = 4; init-value = b"11"
 	St1  status; width = 4

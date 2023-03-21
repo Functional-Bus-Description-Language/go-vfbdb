@@ -21,8 +21,8 @@ func genMaskArray(mask *elem.Mask, fmts *BlockEntityFormatters) {
 
 func genMaskSingle(mask *elem.Mask, fmts *BlockEntityFormatters) {
 	dflt := ""
-	if mask.Default != "" {
-		dflt = fmt.Sprintf(" := %s", mask.Default.Extend(mask.Width))
+	if mask.InitValue != "" {
+		dflt = fmt.Sprintf(" := %s", mask.InitValue.Extend(mask.Width))
 	}
 
 	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", mask.Name, mask.Width-1, dflt)

@@ -23,7 +23,7 @@ func genStaticSingle(st *elem.Static, blk *elem.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleSingle(iface, %d, (%d, %d), 0b0%s)\n",
 			st.Name, blk.StartAddr()+a.Addr, a.EndBit(), a.StartBit(),
-			st.Default.ToBin().ValueLiteral(),
+			st.InitValue.ToBin().ValueLiteral(),
 		)
 	case access.SingleContinuous:
 		code += indent + fmt.Sprintf(
@@ -33,7 +33,7 @@ func genStaticSingle(st *elem.Static, blk *elem.Block) string {
 			a.RegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
-			st.Default.ToBin().ValueLiteral(),
+			st.InitValue.ToBin().ValueLiteral(),
 		)
 	default:
 		panic("not yet implemented")

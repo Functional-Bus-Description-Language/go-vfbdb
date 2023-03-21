@@ -18,7 +18,7 @@ func genStatic(st *elem.Static, fmts *BlockEntityFormatters) {
 func genStaticSingle(st *elem.Static, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf(
 		";\n   %s_o : out std_logic_vector(%d downto 0) := %s",
-		st.Name, st.Width-1, string(st.Default),
+		st.Name, st.Width-1, string(st.InitValue),
 	)
 	fmts.EntityFunctionalPorts += s
 
@@ -37,7 +37,7 @@ func genStaticSingleSingle(st *elem.Static, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s; -- %s",
-		a.EndBit(), a.StartBit(), string(st.Default), st.Name,
+		a.EndBit(), a.StartBit(), string(st.InitValue), st.Name,
 	)
 
 	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)

@@ -21,8 +21,8 @@ func genConfigArray(cfg *elem.Config, fmts *BlockEntityFormatters) {
 
 func genConfigSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
 	dflt := ""
-	if cfg.Default != "" {
-		dflt = fmt.Sprintf(" := %s", cfg.Default.Extend(cfg.Width))
+	if cfg.InitValue != "" {
+		dflt = fmt.Sprintf(" := %s", cfg.InitValue.Extend(cfg.Width))
 	}
 
 	s := fmt.Sprintf(";\n   %s_o : buffer std_logic_vector(%d downto 0)%s", cfg.Name, cfg.Width-1, dflt)
