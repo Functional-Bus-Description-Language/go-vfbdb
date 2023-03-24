@@ -25,15 +25,33 @@ class _BufferIface:
     def read(self, addr):
         return self.buf[addr]
 
+def check_arg_values(params, *args):
+    """
+    check_arg_values checks that all arguments are in valid range and raises
+    an exception if any argument is out of range.
+    """
+    for arg_idx, arg in enumerate(args):
+        param = params[arg_idx]
+
+        type = param['Access']['Type']
+
+        if type.startswith("Single"):
+            assert 0 <= arg < 2 ** param['Width'], "{} value overrange ({})".format(param['Name'], arg)
+        elif type.startswith("Array"):
+            for val_idx, v in enumerate(arg):
+                assert 0 <= v < 2 ** param['Width'], "{}[{}] value overrange ({})".format(param['Name'], val_idx, v)
+        else:
+            raise Exception("invalid param access type {}".format(type))
+
 def pack_params(params, *args):
+    check_arg_values(params, *args)
+
     buf = []
-    addr = None # Current buffer address
+    addr = None # Current argument address
     data = 0
 
     for i, arg in enumerate(args):
         param = params[i]
-        assert 0 <= arg < 2 ** param['Width'], "data value overrange ({})".format(arg)
-
         a = param['Access']
 
         if addr is None:
@@ -58,8 +76,7 @@ def pack_params(params, *args):
                     if r < a['RegCount'] - 1:
                         buf.append(data)
         else:
-            for v in arg:
-                assert 0 <= v < 2 ** param['Width'], "data value overrange ({})".format(v)
+            raise Exception("unhandled access type {}".format(a['Type']))
 
     buf.append(data)
 

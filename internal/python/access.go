@@ -11,18 +11,18 @@ import (
 func genAccess(acs access.Access, b *strings.Builder) {
 	b.WriteString(
 		fmt.Sprintf(
-			"{'StartAddr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': %d, ",
+			"{'StartAddr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': %d, 'Type': ",
 			acs.StartAddr(), acs.StartBit(), acs.EndBit(), acs.RegCount(),
 		),
 	)
 
 	switch acs.(type) {
 	case access.SingleSingle:
-		b.WriteString("'Type': 'SingleSingle'")
+		b.WriteString("'SingleSingle'")
 	case access.SingleContinuous:
-		b.WriteString("'Type': 'SingleContinuous'")
+		b.WriteString("'SingleContinuous'")
 	case access.ArrayContinuous:
-		panic("not yet implemented")
+		b.WriteString("'ArrayContinuous'")
 	case access.ArrayMultiple:
 		panic("not yet implemented")
 	case access.ArraySingle:
