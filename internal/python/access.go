@@ -16,13 +16,13 @@ func genAccess(acs access.Access, b *strings.Builder) {
 		),
 	)
 
-	switch acs.(type) {
+	switch a := acs.(type) {
 	case access.SingleSingle:
 		b.WriteString("'SingleSingle'")
 	case access.SingleContinuous:
 		b.WriteString("'SingleContinuous'")
 	case access.ArrayContinuous:
-		b.WriteString("'ArrayContinuous'")
+		b.WriteString(fmt.Sprintf("'ArrayContinuous', 'ItemCount': %d", a.ItemCount))
 	case access.ArrayMultiple:
 		panic("not yet implemented")
 	case access.ArraySingle:

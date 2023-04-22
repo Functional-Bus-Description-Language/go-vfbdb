@@ -52,6 +52,8 @@ type BlockEntityFormatters struct {
 	StreamsStrobesSet   string
 
 	DefaultValues string
+
+	CombinationalProcesses string
 }
 
 func genBlock(b utils.Block, wg *sync.WaitGroup) {

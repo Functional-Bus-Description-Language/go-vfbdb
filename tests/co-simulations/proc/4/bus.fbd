@@ -1,0 +1,4 @@
+Main bus
+	Add proc
+		terms [10]param; width = 25
+	Result status

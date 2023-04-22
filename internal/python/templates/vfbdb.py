@@ -8,6 +8,9 @@ import time
 BUS_WIDTH = {{.BusWidth}}
 
 def calc_mask(m):
+    """
+    calc_mask calculates mask based on tuple (End Bit, Start Bit).
+    """
     return (((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)) >> m[1]
 
 class _BufferIface:
@@ -36,8 +39,12 @@ def check_arg_values(params, *args):
         type = param['Access']['Type']
 
         if type.startswith("Single"):
-            assert 0 <= arg < 2 ** param['Width'], "{} value overrange ({})".format(param['Name'], arg)
+            assert 0 <= arg < 2 ** param['Width'], \
+                "{} value overrange ({})".format(param['Name'], arg)
         elif type.startswith("Array"):
+            assert len(arg) == param['Access']['ItemCount'], \
+                "invalid number of items ({}) for {} param, expecting {} items".format(len(arg), param['Name'], param['ItemCount'])
+
             for val_idx, v in enumerate(arg):
                 assert 0 <= v < 2 ** param['Width'], "{}[{}] value overrange ({})".format(param['Name'], val_idx, v)
         else:
@@ -50,8 +57,8 @@ def pack_params(params, *args):
     addr = None # Current argument address
     data = 0
 
-    for i, arg in enumerate(args):
-        param = params[i]
+    for arg_idx, arg in enumerate(args):
+        param = params[arg_idx]
         a = param['Access']
 
         if addr is None:
@@ -75,6 +82,25 @@ def pack_params(params, *args):
                     arg = arg >> BUS_WIDTH
                     if r < a['RegCount'] - 1:
                         buf.append(data)
+                        data = 0
+        elif a['Type'] == 'ArrayContinuous':
+            start_bit = a['StartBit']
+            for i, v in  enumerate(arg):
+                width = param['Width']
+                # Number of registers ith argument from vector occupies.
+                reg_count = int(math.ceil((width - (BUS_WIDTH - start_bit)) / BUS_WIDTH)) + 1
+                for _ in range(reg_count):
+                    reg_width = width
+                    if reg_width > BUS_WIDTH - start_bit:
+                        reg_width = BUS_WIDTH - start_bit
+                    data |= (v & ((1 << reg_width) - 1)) << start_bit
+                    v >>= reg_width
+                    start_bit = (start_bit + reg_width)
+                    if start_bit >= BUS_WIDTH:
+                        buf.append(data)
+                        data = 0
+                        start_bit %= BUS_WIDTH
+                    width -= reg_width
         else:
             raise Exception("unhandled access type {}".format(a['Type']))
 

@@ -75,45 +75,114 @@ func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 }
 
 func genProcParamsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
-	for _, p := range proc.Params {
-		switch p.Access.(type) {
+	for _, param := range proc.Params {
+		switch param.Access.(type) {
 		case access.SingleSingle:
-			access := p.Access.(access.SingleSingle)
-
-			addr := [2]int64{access.StartAddr(), access.StartAddr()}
-			code := fmt.Sprintf(
-				"      if master_out.we = '1' then\n"+
-					"         %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);\n"+
-					"      end if;\n"+
-					"      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;\n",
-				proc.Name, p.Name, access.EndBit(), access.StartBit(),
-			)
-
-			fmts.RegistersAccess.add(addr, code)
+			genProcParamAccessSingleSingle(proc, fmts, param)
 		case access.SingleContinuous:
-			chunks := makeAccessChunksContinuous(p.Access.(access.SingleContinuous), Compact)
-
-			for _, c := range chunks {
-				code := fmt.Sprintf(
-					"      if master_out.we = '1' then\n"+
-						"         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);\n"+
-						"      end if;\n"+
-						"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);\n",
-					proc.Name, p.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
-				)
-
-				fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
-			}
+			genProcParamAccessSingleContinuous(proc, fmts, param)
+		case access.ArrayContinuous:
+			genProcParamAccessArrayContinuous(proc, fmts, param)
 		default:
-			panic("not yet implemented")
+			panic("should never happen")
 		}
 	}
-	if proc.CallAddr != nil {
-		fmts.RegistersAccess.add([2]int64{*proc.CallAddr, *proc.CallAddr}, "")
+
+	if proc.IsEmpty() || (proc.IsReturn() && proc.Delay != nil) {
+		if proc.CallAddr != nil {
+			fmts.RegistersAccess.add([2]int64{*proc.CallAddr, *proc.CallAddr}, "")
+		}
 	}
-	if proc.ExitAddr != nil {
-		fmts.RegistersAccess.add([2]int64{*proc.ExitAddr, *proc.ExitAddr}, "")
+}
+
+func genProcParamAccessSingleSingle(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
+	a := param.Access.(access.SingleSingle)
+
+	code := fmt.Sprintf(
+		"      if master_out.we = '1' then\n"+
+			"         %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);\n"+
+			"      end if;\n"+
+			"      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;\n",
+		proc.Name, param.Name, a.EndBit(), a.StartBit(),
+	)
+	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.StartAddr()}, code)
+}
+
+func genProcParamAccessSingleContinuous(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
+	a := param.Access.(access.SingleContinuous)
+
+	chunks := makeAccessChunksContinuous(a, Compact)
+	for _, c := range chunks {
+		code := fmt.Sprintf(
+			"      if master_out.we = '1' then\n"+
+				"         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);\n"+
+				"      end if;\n"+
+				"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);\n",
+			proc.Name, param.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
+		)
+		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
 	}
+}
+
+func genProcParamAccessArrayContinuous(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
+	a := param.Access.(access.ArrayContinuous)
+
+	fmts.SignalDeclarations += fmt.Sprintf(
+		"signal %s_%s : slv_vector(%d downto 0)(%d downto 0);\n",
+		proc.Name, param.Name, a.RegCount(), busWidth-1,
+	)
+
+	code := fmt.Sprintf(
+		"      if master_out.we = '1' then\n"+
+			"         %s_%s(addr - %d) <= master_out.dat;\n"+
+			"      end if;\n",
+		proc.Name, param.Name, a.StartAddr(),
+	)
+	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.EndAddr()}, code)
+
+	code = fmt.Sprintf(
+		"\n%s_%s_driver : process(%[1]s_%[2]s) is\n"+
+			"   constant bus_width : natural := %d;\n"+
+			"   constant item_width : natural := %d;\n"+
+			"   constant item_count : natural := %d;\n"+
+			"   variable start_bit : natural;\n"+
+			"   variable width : natural;\n"+
+			"   variable chunk_width : natural;\n"+
+			"   variable item_idx : natural;\n"+
+			"   variable next_addr : boolean;\n"+
+			"begin\n"+
+			"   start_bit := %d;\n"+
+			"   width := 0;\n"+
+			"   item_idx := 0;\n"+
+			"   for addr in 0 to %d loop\n"+
+			"      next_addr := false;\n"+
+			"      while not next_addr loop\n"+
+			"         if item_width - width < bus_width - start_bit then\n"+
+			"            chunk_width := item_width - width;\n"+
+			"         else\n"+
+			"            chunk_width := bus_width - start_bit;\n"+
+			"         end if;\n"+
+			"         %[1]s_o.%[2]s(item_idx)(chunk_width + width - 1 downto width) <= %[1]s_%[2]s(addr)(chunk_width + start_bit - 1 downto start_bit);\n"+
+			"         width := width + chunk_width;\n"+
+			"\n         if width = item_width then\n"+
+			"            item_idx := item_idx + 1;\n"+
+			"            if item_idx = item_count then\n"+
+			"               exit;\n"+
+			"            end if;\n"+
+			"            width := 0;\n"+
+			"         end if;\n"+
+			"\n         start_bit := start_bit + chunk_width;\n"+
+			"         if start_bit = bus_Width then\n"+
+			"            next_addr := true;\n"+
+			"            start_bit := 0;\n"+
+			"         end if;\n"+
+			"      end loop;\n" +
+			"   end loop;\n" +
+			"end process;\n",
+		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.StartBit(), a.RegCount()-1,
+	)
+	fmts.CombinationalProcesses += code
+
 }
 
 func genProcReturnsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
@@ -133,11 +202,10 @@ func genProcReturnsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 			panic("not yet implemented")
 		}
 	}
-	if proc.CallAddr != nil {
-		fmts.RegistersAccess.add([2]int64{*proc.CallAddr, *proc.CallAddr}, "")
-	}
-	if proc.ExitAddr != nil {
-		fmts.RegistersAccess.add([2]int64{*proc.ExitAddr, *proc.ExitAddr}, "")
+	if (proc.IsEmpty() || proc.IsParam()) && proc.Delay != nil {
+		if proc.ExitAddr != nil {
+			fmts.RegistersAccess.add([2]int64{*proc.ExitAddr, *proc.ExitAddr}, "")
+		}
 	}
 }
 

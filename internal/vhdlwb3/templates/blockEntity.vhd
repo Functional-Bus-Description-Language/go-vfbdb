@@ -133,6 +133,10 @@ if rst_i = '1' then
    master_in <= C_DUMMY_WB_MASTER_IN;
 end if;
 end if;
-end process;
+end process register_access;
+
+
+-- Combinational processes
+{{.CombinationalProcesses}}
 
 end architecture;
