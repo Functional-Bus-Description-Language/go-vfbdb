@@ -8,7 +8,7 @@
 |-----------------------------------------------------|
 | Single Single | Single Continuous | Array Continuous|
 |-----------------------------------------------------|
-|       -       |         -         |       4         |
+|       -       |         -         |      4, 5       |
 ------------------------------------------------------|
 ```
 
@@ -50,3 +50,8 @@ Both parameters are placed within 2 registers.
 Test checking `proc` with 1 parameter and no returns.
 The `param` is array with `Continuous` access strategy.
 Single argument is narrower than signle register, but no more than one argument fits single register.
+
+## 5
+Test checking `proc` with 1 parameter and no returns.
+The `param` is array with `Continuous` access strategy.
+Single register stores 2 or 3 whole items.
