@@ -141,44 +141,37 @@ func genProcParamAccessArrayContinuous(proc *elem.Proc, fmts *BlockEntityFormatt
 	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.EndAddr()}, code)
 
 	code = fmt.Sprintf(
-		"\n%s_%s_driver : process(%[1]s_%[2]s) is\n"+
-			"   constant bus_width : natural := %d;\n"+
-			"   constant item_width : natural := %d;\n"+
-			"   constant item_count : natural := %d;\n"+
-			"   variable start_bit : natural;\n"+
-			"   variable width : natural;\n"+
-			"   variable chunk_width : natural;\n"+
-			"   variable item_idx : natural;\n"+
-			"   variable next_addr : boolean;\n"+
-			"begin\n"+
-			"   start_bit := %d;\n"+
-			"   width := 0;\n"+
-			"   item_idx := 0;\n"+
-			"   for addr in 0 to %d loop\n"+
-			"      next_addr := false;\n"+
-			"      while not next_addr loop\n"+
-			"         if item_width - width < bus_width - start_bit then\n"+
-			"            chunk_width := item_width - width;\n"+
-			"         else\n"+
-			"            chunk_width := bus_width - start_bit;\n"+
-			"         end if;\n"+
-			"         %[1]s_o.%[2]s(item_idx)(chunk_width + width - 1 downto width) <= %[1]s_%[2]s(addr)(chunk_width + start_bit - 1 downto start_bit);\n"+
-			"         width := width + chunk_width;\n"+
-			"\n         if width = item_width then\n"+
-			"            item_idx := item_idx + 1;\n"+
-			"            if item_idx = item_count then\n"+
-			"               exit;\n"+
-			"            end if;\n"+
-			"            width := 0;\n"+
-			"         end if;\n"+
-			"\n         start_bit := start_bit + chunk_width;\n"+
-			"         if start_bit = bus_Width then\n"+
-			"            next_addr := true;\n"+
-			"            start_bit := 0;\n"+
-			"         end if;\n"+
-			"      end loop;\n" +
-			"   end loop;\n" +
-			"end process;\n",
+		`
+%s_%s_driver : process(%[1]s_%[2]s) is
+   variable start_bit : natural;
+   variable width : natural;
+   variable chunk_width : natural;
+   variable item_idx : natural;
+begin
+   start_bit := %[6]d;
+   width := 0;
+   item_idx := 0;
+   for addr in 0 to %[7]d loop
+      loop
+         chunk_width := %[4]d - width when %[4]d - width < %[3]d - start_bit else %[3]d - start_bit;
+         %[1]s_o.%[2]s(item_idx)(chunk_width + width - 1 downto width) <= %[1]s_%[2]s(addr)(chunk_width + start_bit - 1 downto start_bit);
+
+         width := width + chunk_width;
+         if width = %[4]d then
+            item_idx := item_idx + 1;
+            exit when item_idx = %[5]d;
+            width := 0;
+         end if;
+
+         start_bit := start_bit + chunk_width;
+         if start_bit = %[3]d then
+            start_bit := 0;
+            exit;
+         end if;
+      end loop;
+   end loop;
+end process;
+`,
 		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.StartBit(), a.RegCount()-1,
 	)
 	fmts.CombinationalProcesses += code
