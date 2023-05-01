@@ -130,9 +130,9 @@ func genSubblock(
 ) {
 	initSubblocksCount := fmts.SubblocksCount
 
-	s := fmt.Sprintf(
-		";\n   %s_master_o : out t_wishbone_master_out_array(%d downto 0);\n"+
-			"   %[1]s_master_i : in  t_wishbone_master_in_array(%[2]d downto 0)",
+	s := fmt.Sprintf(`;
+   %s_master_o : out t_wishbone_master_out_array(%d downto 0);
+   %[1]s_master_i : in  t_wishbone_master_in_array(%[2]d downto 0)`,
 		sb.Name, sb.Count-1,
 	)
 	fmts.EntitySubblockPorts += s

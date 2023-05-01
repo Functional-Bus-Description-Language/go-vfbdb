@@ -73,9 +73,9 @@ func genStatusSingleContinuousAtomic(st *elem.Status, fmts *BlockEntityFormatter
 	for i, c := range chunks {
 		var code string
 		if (strategy == SeparateFirst && i == 0) || (strategy == SeparateLast && i == len(chunks)-1) {
-			code = fmt.Sprintf(
-				"      %[1]s_atomic(%[2]d downto %[3]d) <= %[1]s_i(%[2]d downto %[3]d);\n"+
-					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_i(%[6]s downto %[7]s);",
+			code = fmt.Sprintf(`
+      %[1]s_atomic(%[2]d downto %[3]d) <= %[1]s_i(%[2]d downto %[3]d);
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_i(%[6]s downto %[7]s);`,
 				st.Name, atomicShadowRange[0], atomicShadowRange[1],
 				c.endBit, c.startBit, c.range_[0], c.range_[1],
 			)
@@ -133,21 +133,24 @@ func genStatusArrayMultiple(st *elem.Status, fmts *BlockEntityFormatters) {
 
 	if access.ItemCount <= itemsPerAccess {
 		addr = [2]int64{access.StartAddr(), access.EndAddr()}
-		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+		code = fmt.Sprintf(`
+      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
       end loop;`,
 			st.Count-1, access.ItemWidth, access.StartBit(), st.Name,
 		)
 	} else if access.ItemsInLastReg() == 0 {
 		addr = [2]int64{access.StartAddr(), access.EndAddr()}
-		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+		code = fmt.Sprintf(`
+      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
 			itemsPerAccess-1, access.ItemWidth, access.StartBit(), st.Name, access.StartAddr(), access.ItemsPerAccess,
 		)
 	} else {
 		addr = [2]int64{access.StartAddr(), access.EndAddr() - 1}
-		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+		code = fmt.Sprintf(`
+      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
 			itemsPerAccess-1, access.ItemWidth, access.StartBit(), st.Name, access.StartAddr(), access.ItemsPerAccess,
@@ -155,7 +158,8 @@ func genStatusArrayMultiple(st *elem.Status, fmts *BlockEntityFormatters) {
 		fmts.RegistersAccess.add(addr, code)
 
 		addr = [2]int64{access.EndAddr(), access.EndAddr()}
-		code = fmt.Sprintf(`      for i in 0 to %[1]d loop
+		code = fmt.Sprintf(`
+      for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
       end loop;`,
 			access.ItemsInLastReg()-1, access.ItemWidth, access.StartBit(), st.Name, (access.RegCount()-1)*access.ItemsPerAccess,

@@ -79,11 +79,11 @@ func genUpstreamAccess(stream *elem.Stream, fmts *BlockEntityFormatters) {
 			chunks := makeAccessChunksContinuous(a, Compact)
 
 			for _, c := range chunks {
-				code := fmt.Sprintf(
-					"      if master_out.we = '1' then\n"+
-						"         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);\n"+
-						"      end if;\n"+
-						"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);\n",
+				code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);
+      end if;
+      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);`,
 					stream.Name, r.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 				)
 

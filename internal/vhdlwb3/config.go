@@ -41,11 +41,11 @@ func genConfigSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
 func genConfigSingleSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(access.SingleSingle)
 
-	code := fmt.Sprintf(
-		"      if master_out.we = '1' then\n"+
-			"         %[1]s_o <= master_out.dat(%[2]d downto %[3]d);\n"+
-			"      end if;\n"+
-			"      master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;",
+	code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o <= master_out.dat(%[2]d downto %[3]d);
+      end if;
+      master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;`,
 		cfg.Name, a.EndBit(), a.StartBit(),
 	)
 
@@ -74,21 +74,22 @@ func genConfigSingleContinuousAtomic(cfg *elem.Config, fmts *BlockEntityFormatte
 	for i, c := range chunks {
 		var code string
 		if (strategy == SeparateFirst && i == 0) || (strategy == SeparateLast && i == len(chunks)-1) {
-			code = fmt.Sprintf(
-				"      if master_out.we = '1' then\n"+
-					"         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
-					"         %[1]s_o(%[6]d downto %[7]d) <= %[1]s_atomic(%[6]d downto %[7]d);\n"+
-					"      end if;\n"+
-					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
+			code = fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);
+         %[1]s_o(%[6]d downto %[7]d) <= %[1]s_atomic(%[6]d downto %[7]d);
+      end if;
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);`,
 				cfg.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 				atomicShadowRange[0], atomicShadowRange[1],
 			)
 		} else {
-			code = fmt.Sprintf(
-				"      if master_out.we = '1' then\n"+
-					"         %[1]s_atomic(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
-					"      end if;\n"+
-					"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
+			code = fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_atomic(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);
+      end if;
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);
+`,
 				cfg.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 			)
 		}
@@ -102,11 +103,11 @@ func genConfigSingleContinuousNonAtomic(cfg *elem.Config, fmts *BlockEntityForma
 	chunks := makeAccessChunksContinuous(a, Compact)
 
 	for _, c := range chunks {
-		code := fmt.Sprintf(
-			"      if master_out.we = '1' then\n"+
-				"         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);\n"+
-				"      end if;\n"+
-				"      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);",
+		code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);
+      end if;
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);`,
 			cfg.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 		)
 

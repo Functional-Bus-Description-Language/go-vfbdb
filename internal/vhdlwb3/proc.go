@@ -98,11 +98,11 @@ func genProcParamsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 func genProcParamAccessSingleSingle(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
 	a := param.Access.(access.SingleSingle)
 
-	code := fmt.Sprintf(
-		"      if master_out.we = '1' then\n"+
-			"         %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);\n"+
-			"      end if;\n"+
-			"      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;\n",
+	code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);
+      end if;
+      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;`,
 		proc.Name, param.Name, a.EndBit(), a.StartBit(),
 	)
 	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.StartAddr()}, code)
@@ -113,11 +113,11 @@ func genProcParamAccessSingleContinuous(proc *elem.Proc, fmts *BlockEntityFormat
 
 	chunks := makeAccessChunksContinuous(a, Compact)
 	for _, c := range chunks {
-		code := fmt.Sprintf(
-			"      if master_out.we = '1' then\n"+
-				"         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);\n"+
-				"      end if;\n"+
-				"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);\n",
+		code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);
+      end if;
+      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);`,
 			proc.Name, param.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 		)
 		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
@@ -132,10 +132,10 @@ func genProcParamAccessArrayContinuous(proc *elem.Proc, fmts *BlockEntityFormatt
 		proc.Name, param.Name, a.RegCount(), busWidth-1,
 	)
 
-	code := fmt.Sprintf(
-		"      if master_out.we = '1' then\n"+
-			"         %s_%s(addr - %d) <= master_out.dat;\n"+
-			"      end if;\n",
+	code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %s_%s(addr - %d) <= master_out.dat;
+      end if;`,
 		proc.Name, param.Name, a.StartAddr(),
 	)
 	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.EndAddr()}, code)
