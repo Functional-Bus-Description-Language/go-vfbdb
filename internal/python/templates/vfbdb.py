@@ -10,6 +10,7 @@ BUS_WIDTH = {{.BusWidth}}
 def calc_mask(m):
     """
     calc_mask calculates mask based on tuple (End Bit, Start Bit).
+    The returned mask is shifted to the right.
     """
     return (((1 << (m[0] + 1)) - 1) ^ ((1 << m[1]) - 1)) >> m[1]
 
@@ -268,36 +269,80 @@ class MaskSingleSingle(SingleSingle):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
-    def set(self, bits=None):
+    def _bits_to_iterable(self, bits):
         if bits == None:
-            bits = range(self.width)
+            return range(self.width)
         elif type(bits) == int:
-            bits = [bits]
+            return (bits,)
+        return bits
 
-        mask = 0
+    def _assert_bits_in_range(self, bits):
         for b in bits:
             assert 0 <= b < self.width, "mask overrange"
-            mask |= 1 << b
 
-        self.iface.write(self.addr, mask << self.shift)
-
-    def update(self, bits, mode="set"):
-        if mode not in ["set", "clear"]:
-            raise Exception("invalid mode '" + mode + "'")
+    def _assert_bits_to_update(self, bits):
         if bits == None:
             raise Exception("bits to update cannot have None value")
         if type(bits).__name__ in ["list", "tuple", "range", "set"] and len(bits) == 0:
             raise Exception("empty " + type(bits) + " of bits to update")
 
-        mask = 0
-        reg_mask = 0
-        for b in bits:
-            assert 0 <= b < self.width, "mask overrange"
-            if mode == "set":
-                mask |= 1 << b
-            reg_mask |= 1 << b
+    def set(self, bits=None):
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
 
-        self.iface.rmw(self.addr, mask << self.shift, reg_mask << self.shift)
+        mask = 0
+        for b in bits:
+            mask |= 1 << b
+
+        self.iface.write(self.addr, mask << self.shift)
+
+    def clear(self, bits=None):
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = self.mask
+        for b in bits:
+            mask ^= 1 << b
+
+        self.iface.write(self.addr, mask << self.shift)
+
+    def toggle(self, bits=None):
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        xor_mask = 0
+        for b in bits:
+            xor_mask |= 1 << b
+        xor_mask <<= self.shift
+
+        mask = self.iface.read(self.addr) ^ xor_mask
+        self.iface.write(self.addr, mask)
+
+    def update_set(self, bits):
+        self._assert_bits_to_update(bits)
+
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = 0
+        for b in bits:
+            mask |= 1 << b
+
+        mask = self.iface.read(self.addr) | (mask << self.shift)
+        self.iface.write(self.addr, mask)
+
+    def update_clear(self, bits):
+        self._assert_bits_to_update(bits)
+
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = 2**BUS_WIDTH - 1
+        for b in bits:
+            mask ^= 1 << b
+
+        mask = self.iface.read(self.addr) & (mask << self.shift)
+        self.iface.write(self.addr, mask)
 
 class Static:
     def __init__(self, value):
