@@ -6,6 +6,8 @@ github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230321141714-536
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230321141714-5362bcf502cf/go.mod h1:mkyfvTvezKbxXOW9sVCxlwEWApVqr+lbuVWHjIg+yXc=
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230329084341-4f7ef99302a2 h1:v0i8d4QaFmj7TOcnj+dvE7ZImAtpqZc/RoPGsATV0H4=
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230329084341-4f7ef99302a2/go.mod h1:mkyfvTvezKbxXOW9sVCxlwEWApVqr+lbuVWHjIg+yXc=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230510101858-13fcc15cf205 h1:tGlSKWVBLp4l4sJZ+0RsJ4FQ+q0YWDIMfZmkFN3O+Pw=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230510101858-13fcc15cf205/go.mod h1:mkyfvTvezKbxXOW9sVCxlwEWApVqr+lbuVWHjIg+yXc=
 github.com/creack/pty v1.1.7/go.mod h1:lj5s0c3V2DBrqTV7llrYr5NG6My20zk30Fl46Y7DoTY=
 github.com/creack/pty v1.1.9/go.mod h1:oKZEueFk5CKHvIhNR5MUki03XCEU+Q6VDXinZuGJ33E=
 github.com/creack/pty v1.1.18 h1:n56/Zwd5o6whRC5PMGretI4IdRLlmBXYNjScPaBgsbY=
@@ -38,6 +40,8 @@ github.com/smacker/go-tree-sitter v0.0.0-20230226123037-c459dbde1464 h1:hd1+Vqu6
 github.com/smacker/go-tree-sitter v0.0.0-20230226123037-c459dbde1464/go.mod h1:q99oHDsbP0xRwmn7Vmob8gbSMNyvJ83OauXPSuHQuKE=
 github.com/smacker/go-tree-sitter v0.0.0-20230415045416-af16b1008751 h1:wdUkSQcQGanefAyUHCQi4BHxCjxGd1JFwAIQY+EGdm4=
 github.com/smacker/go-tree-sitter v0.0.0-20230415045416-af16b1008751/go.mod h1:q99oHDsbP0xRwmn7Vmob8gbSMNyvJ83OauXPSuHQuKE=
+github.com/smacker/go-tree-sitter v0.0.0-20230501083651-a7d92773b3aa h1:exZ0FwfhblsYbgfqYH+W/3sFye821WD02NjBmc+ENhE=
+github.com/smacker/go-tree-sitter v0.0.0-20230501083651-a7d92773b3aa/go.mod h1:q99oHDsbP0xRwmn7Vmob8gbSMNyvJ83OauXPSuHQuKE=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0 h1:1zr/of2m5FGMsad5YfcqgdqdWrIhu+EBEJRhR1U7z/c=
@@ -58,10 +62,14 @@ golang.org/x/exp v0.0.0-20230321023759-10a507213a29 h1:ooxPy7fPvB4kwsA2h+iBNHkAb
 golang.org/x/exp v0.0.0-20230321023759-10a507213a29/go.mod h1:CxIveKay+FTh1D0yPZemJVgC/95VzuuOLq5Qi4xnoYc=
 golang.org/x/exp v0.0.0-20230420155640-133eef4313cb h1:rhjz/8Mbfa8xROFiH+MQphmAmgqRM0bOMnytznhWEXk=
 golang.org/x/exp v0.0.0-20230420155640-133eef4313cb/go.mod h1:V1LtkGg67GoY2N1AnLN78QLrzxkLyJw7RJb1gzOOz9w=
+golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df h1:UA2aFVmmsIlefxMk29Dp2juaUSth8Pyn3Tq5Y5mJGME=
+golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df/go.mod h1:FXUEEKJgO7OQYeo8N01OfiKP8RXMtf6e8aTskBGqWdc=
 golang.org/x/mod v0.9.0 h1:KENHtAZL2y3NLMYZeHY9DW8HW8V+kQyJsY/V9JlKvCs=
 golang.org/x/mod v0.9.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
 golang.org/x/mod v0.10.0 h1:lFO9qtOdlre5W1jxS3r/4szv2/6iXxScdzjoBMXNhYk=
 golang.org/x/mod v0.10.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
+golang.org/x/mod v0.11.0 h1:bUO06HqtnRcc/7l71XBe4WcqTZ+3AH1J59zWDDwLKgU=
+golang.org/x/mod v0.11.0/go.mod h1:iBbtSCu2XBx23ZKBPSOrRkjjQPZFPuis4dIYUhu/chs=
 golang.org/x/net v0.8.0 h1:Zrh2ngAOFYneWTAIAPethzeaQLuHwhuBkuV6ZiRnUaQ=
 golang.org/x/net v0.8.0/go.mod h1:QVkue5JL9kW//ek3r6jTKnTFis1tRmNAW2P1shuFdJc=
 golang.org/x/net v0.9.0 h1:aWJ/m6xSmxWBx+V0XRHTlrYrPG56jKsLdTFmsSsCzOM=

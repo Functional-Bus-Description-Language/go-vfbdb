@@ -2,7 +2,7 @@ module github.com/Functional-Bus-Description-Language/go-vfbdb
 
 go 1.18
 
-require github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230329084341-4f7ef99302a2
+require github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20230510101858-13fcc15cf205
 
 require (
 	github.com/creack/pty v1.1.18 // indirect
@@ -14,12 +14,12 @@ require (
 	github.com/pkg/diff v0.0.0-20210226163009-20ebb0f2a09e // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
-	github.com/smacker/go-tree-sitter v0.0.0-20230415045416-af16b1008751 // indirect
+	github.com/smacker/go-tree-sitter v0.0.0-20230501083651-a7d92773b3aa // indirect
 	github.com/stretchr/objx v0.5.0 // indirect
 	github.com/stretchr/testify v1.8.2 // indirect
 	github.com/yuin/goldmark v1.5.4 // indirect
-	golang.org/x/exp v0.0.0-20230420155640-133eef4313cb // indirect
-	golang.org/x/mod v0.10.0 // indirect
+	golang.org/x/exp v0.0.0-20230626212559-97b1e661b5df // indirect
+	golang.org/x/mod v0.11.0 // indirect
 	golang.org/x/net v0.9.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/sys v0.7.0 // indirect
