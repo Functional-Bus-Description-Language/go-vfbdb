@@ -86,7 +86,32 @@ func genProcParamsAccessSingleWriteNoDelayNoReturns(p *elem.Proc, blk *elem.Bloc
 }
 
 func genProcParamsAccessBlockWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
-	panic("not yet implemented")
+	if p.Delay == nil && len(p.Returns) == 0 {
+		genProcParamsAccessBlockWriteNoDelayNoReturns(p, blk, cFmts)
+	} else {
+		panic("not yet implemented")
+	}
+}
+
+func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+	cFmts.Code += fmt.Sprintf("\t%s buf[%d] = {0};\n\n", c.WidthToWriteType(blk.Width), proc.ParamsBufSize())
+
+	for _, p := range proc.Params {
+		switch a := p.Access.(type) {
+		case access.SingleSingle:
+			cFmts.Code += fmt.Sprintf(
+				"\tbuf[%d] |= %s << %d;\n",
+				a.Addr-proc.ParamsStartAddr(), p.Name, a.StartBit(),
+			)
+		default:
+			panic("not yet implemented")
+		}
+	}
+
+	cFmts.Code += fmt.Sprintf(
+		"\n\treturn iface->writeb(%d, buf, %d);\n",
+		blk.StartAddr()+proc.ParamsStartAddr(), proc.ParamsBufSize(),
+	)
 }
 
 func genProcReturnsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
