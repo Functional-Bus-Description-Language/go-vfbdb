@@ -3,10 +3,10 @@ package python
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genStream(stream *elem.Stream, blk *elem.Block) string {
+func genStream(stream *fn.Stream, blk *fn.Block) string {
 	if stream.IsDownstream() {
 		panic("downstream not yet supported")
 	}

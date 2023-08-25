@@ -4,13 +4,13 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 	_ "github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 	"strings"
 )
 
-func genProc(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genProc(p *fn.Proc, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	sig := genProcSignature(p, blk, hFmts)
 
 	hFmts.Code += "\n" + sig + ";\n"
@@ -31,7 +31,7 @@ func genProc(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters, cFmts *Bloc
 	cFmts.Code += "};\n"
 }
 
-func genProcSignature(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters) string {
+func genProcSignature(p *fn.Proc, blk *fn.Block, hFmts *BlockHFormatters) string {
 	prefix := "int vfbdb_" + hFmts.BlockName + "_" + p.Name
 
 	params := strings.Builder{}
@@ -52,7 +52,7 @@ func genProcSignature(p *elem.Proc, blk *elem.Block, hFmts *BlockHFormatters) st
 	return prefix + "(" + params.String() + ")"
 }
 
-func genProcParamsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcParamsAccess(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	if p.ParamsBufSize() == 1 {
 		genProcParamsAccessSingleWrite(p, blk, cFmts)
 	} else {
@@ -60,7 +60,7 @@ func genProcParamsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters)
 	}
 }
 
-func genProcParamsAccessSingleWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcParamsAccessSingleWrite(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	if p.Delay == nil && len(p.Returns) == 0 {
 		genProcParamsAccessSingleWriteNoDelayNoReturns(p, blk, cFmts)
 	} else {
@@ -68,7 +68,7 @@ func genProcParamsAccessSingleWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockC
 	}
 }
 
-func genProcParamsAccessSingleWriteNoDelayNoReturns(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcParamsAccessSingleWriteNoDelayNoReturns(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	cFmts.Code += fmt.Sprintf("\treturn iface->write(%d, ", blk.StartAddr()+*p.CallAddr)
 	for i, p := range p.Params {
 		if i != 0 {
@@ -85,7 +85,7 @@ func genProcParamsAccessSingleWriteNoDelayNoReturns(p *elem.Proc, blk *elem.Bloc
 	cFmts.Code += ");\n"
 }
 
-func genProcParamsAccessBlockWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcParamsAccessBlockWrite(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	if p.Delay == nil && len(p.Returns) == 0 {
 		genProcParamsAccessBlockWriteNoDelayNoReturns(p, blk, cFmts)
 	} else {
@@ -93,7 +93,7 @@ func genProcParamsAccessBlockWrite(p *elem.Proc, blk *elem.Block, cFmts *BlockCF
 	}
 }
 
-func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	cFmts.Code += fmt.Sprintf("\t%s buf[%d] = {0};\n\n", c.WidthToWriteType(blk.Width), proc.ParamsBufSize())
 
 	for _, p := range proc.Params {
@@ -114,7 +114,7 @@ func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *elem.Proc, blk *elem.Bl
 	)
 }
 
-func genProcReturnsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcReturnsAccess(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	if p.ReturnsBufSize() == 1 {
 		genProcReturnsAccessSingleRead(p, blk, cFmts)
 	} else {
@@ -122,7 +122,7 @@ func genProcReturnsAccess(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters
 	}
 }
 
-func genProcReturnsAccessSingleRead(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcReturnsAccessSingleRead(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	cFmts.Code += fmt.Sprintf("\t%s _rdata;\n", c.WidthToWriteType(blk.Width))
 
 	cFmts.Code += fmt.Sprintf("\tconst int err = iface->read(%d, &_rdata);\n", *p.ExitAddr)
@@ -142,7 +142,7 @@ func genProcReturnsAccessSingleRead(p *elem.Proc, blk *elem.Block, cFmts *BlockC
 	cFmts.Code += "\treturn 0;\n"
 }
 
-func genProcReturnsAccessBlockRead(p *elem.Proc, blk *elem.Block, cFmts *BlockCFormatters) {
+func genProcReturnsAccessBlockRead(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
 	panic("not yet implemented")
 	/*
 		cFmts.Code += fmt.Sprintf(

@@ -3,12 +3,12 @@ package python
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 
 	"strings"
 )
 
-func genParamList(params []*elem.Param) string {
+func genParamList(params []*fn.Param) string {
 	if len(params) == 0 {
 		return "None"
 	}

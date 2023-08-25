@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genStatus(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatus(st *fn.Status, fmts *BlockEntityFormatters) {
 	if st.IsArray {
 		genStatusArray(st, fmts)
 	} else {
@@ -15,7 +15,7 @@ func genStatus(st *elem.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusArray(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusArray(st *fn.Status, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case access.ArraySingle:
 		genStatusArraySingle(st, fmts)
@@ -26,7 +26,7 @@ func genStatusArray(st *elem.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusSingle(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d downto 0)", st.Name, st.Width-1)
 	fmts.EntityFunctionalPorts += s
 
@@ -40,7 +40,7 @@ func genStatusSingle(st *elem.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusSingleSingle(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusSingleSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	a := st.Access.(access.SingleSingle)
 
 	code := fmt.Sprintf(
@@ -51,7 +51,7 @@ func genStatusSingleSingle(st *elem.Status, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
 }
 
-func genStatusSingleContinuous(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusSingleContinuous(st *fn.Status, fmts *BlockEntityFormatters) {
 	if st.Atomic {
 		genStatusSingleContinuousAtomic(st, fmts)
 	} else {
@@ -59,7 +59,7 @@ func genStatusSingleContinuous(st *elem.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusSingleContinuousAtomic(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusSingleContinuousAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
 	a := st.Access.(access.SingleContinuous)
 	strategy := SeparateFirst
 	atomicShadowRange := [2]int64{st.Width - 1, a.StartRegWidth()}
@@ -90,7 +90,7 @@ func genStatusSingleContinuousAtomic(st *elem.Status, fmts *BlockEntityFormatter
 	}
 }
 
-func genStatusSingleContinuousNonAtomic(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusSingleContinuousNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
 	chunks := makeAccessChunksContinuous(st.Access.(access.SingleContinuous), Compact)
 
 	for _, c := range chunks {
@@ -103,7 +103,7 @@ func genStatusSingleContinuousNonAtomic(st *elem.Status, fmts *BlockEntityFormat
 	}
 }
 
-func genStatusArraySingle(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusArraySingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	a := st.Access.(access.ArraySingle)
 
 	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
@@ -120,7 +120,7 @@ func genStatusArraySingle(st *elem.Status, fmts *BlockEntityFormatters) {
 	)
 }
 
-func genStatusArrayMultiple(st *elem.Status, fmts *BlockEntityFormatters) {
+func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
 	access := st.Access.(access.ArrayMultiple)
 
 	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)

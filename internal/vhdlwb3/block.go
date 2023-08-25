@@ -9,7 +9,7 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
@@ -123,7 +123,7 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 }
 
 func genSubblock(
-	sb *elem.Block,
+	sb *fn.Block,
 	superBlockAddrStart int64,
 	superBlockAddrBitsCount int,
 	fmts *BlockEntityFormatters,
@@ -169,7 +169,7 @@ func genSubblock(
 	}
 }
 
-func genConsts(c *elem.ConstContainer, fmts *BlockEntityFormatters) {
+func genConsts(c *fn.ConstContainer, fmts *BlockEntityFormatters) {
 	s := ""
 
 	for name, b := range c.BoolConsts {

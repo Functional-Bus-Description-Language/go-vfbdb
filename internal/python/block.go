@@ -3,11 +3,11 @@ package python
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
 // Generate block. Main must be true only for the main block.
-func genBlock(blk *elem.Block, main bool) string {
+func genBlock(blk *fn.Block, main bool) string {
 	className := blk.Name
 	if !main {
 		className = blk.Name + "Class"
@@ -61,7 +61,7 @@ func genBlock(blk *elem.Block, main bool) string {
 	return code
 }
 
-func genSubblock(sb *elem.Block, blk *elem.Block) string {
+func genSubblock(sb *fn.Block, blk *fn.Block) string {
 	if sb.IsArray {
 		return genSublockArray(sb, blk)
 	} else {
@@ -69,11 +69,11 @@ func genSubblock(sb *elem.Block, blk *elem.Block) string {
 	}
 }
 
-func genSublockArray(sb *elem.Block, blk *elem.Block) string {
+func genSublockArray(sb *fn.Block, blk *fn.Block) string {
 	panic("not yet implemented")
 }
 
-func genSublockSingle(sb *elem.Block, blk *elem.Block) string {
+func genSublockSingle(sb *fn.Block, blk *fn.Block) string {
 	code := indent + fmt.Sprintf("self.%[1]s = self.%[1]sClass(self.iface)\n", sb.Name)
 
 	return code

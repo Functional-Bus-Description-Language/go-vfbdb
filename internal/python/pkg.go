@@ -3,10 +3,10 @@ package python
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genPkgConsts(pkgsConsts map[string]*elem.Package) string {
+func genPkgConsts(pkgsConsts map[string]*fn.Package) string {
 	s := ""
 
 	for pkgName, pkg := range pkgsConsts {

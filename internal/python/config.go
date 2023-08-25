@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genConfig(cfg *elem.Config, blk *elem.Block) string {
+func genConfig(cfg *fn.Config, blk *fn.Block) string {
 	if cfg.IsArray {
 		return genConfigArray(cfg, blk)
 	} else {
@@ -15,7 +15,7 @@ func genConfig(cfg *elem.Config, blk *elem.Block) string {
 	}
 }
 
-func genConfigSingle(cfg *elem.Config, blk *elem.Block) string {
+func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 	var code string
 
 	switch a := cfg.Access.(type) {
@@ -40,6 +40,6 @@ func genConfigSingle(cfg *elem.Config, blk *elem.Block) string {
 	return code
 }
 
-func genConfigArray(cfg *elem.Config, blk *elem.Block) string {
+func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 	panic("not yet implemented")
 }

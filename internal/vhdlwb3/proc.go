@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genProc(p *elem.Proc, fmts *BlockEntityFormatters) {
+func genProc(p *fn.Proc, fmts *BlockEntityFormatters) {
 	genProcOutType(p, fmts)
 	genProcInType(p, fmts)
 	genProcPorts(p, fmts)
@@ -20,7 +20,7 @@ func genProc(p *elem.Proc, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genProcOutType(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcOutType(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf("\ntype %s_out_t is record\n", proc.Name)
 
 	for _, p := range proc.Params {
@@ -41,7 +41,7 @@ func genProcOutType(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	fmts.ProcTypes += s
 }
 
-func genProcInType(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcInType(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	if len(proc.Returns) == 0 {
 		return
 	}
@@ -61,7 +61,7 @@ func genProcInType(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	fmts.ProcTypes += s
 }
 
-func genProcPorts(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcPorts(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf(";\n   %s_o : out %[1]s_out_t", proc.Name)
 	if len(proc.Returns) != 0 {
 		s += fmt.Sprintf(";\n   %s_i : in %[1]s_in_t", proc.Name)
@@ -69,12 +69,12 @@ func genProcPorts(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 }
 
-func genProcAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	genProcParamsAccess(proc, fmts)
 	genProcReturnsAccess(proc, fmts)
 }
 
-func genProcParamsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcParamsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	for _, param := range proc.Params {
 		switch param.Access.(type) {
 		case access.SingleSingle:
@@ -95,7 +95,7 @@ func genProcParamsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genProcParamAccessSingleSingle(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
+func genProcParamAccessSingleSingle(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
 	a := param.Access.(access.SingleSingle)
 
 	code := fmt.Sprintf(`
@@ -108,7 +108,7 @@ func genProcParamAccessSingleSingle(proc *elem.Proc, fmts *BlockEntityFormatters
 	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.StartAddr()}, code)
 }
 
-func genProcParamAccessSingleContinuous(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
+func genProcParamAccessSingleContinuous(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
 	a := param.Access.(access.SingleContinuous)
 
 	chunks := makeAccessChunksContinuous(a, Compact)
@@ -124,7 +124,7 @@ func genProcParamAccessSingleContinuous(proc *elem.Proc, fmts *BlockEntityFormat
 	}
 }
 
-func genProcParamAccessArrayContinuous(proc *elem.Proc, fmts *BlockEntityFormatters, param *elem.Param) {
+func genProcParamAccessArrayContinuous(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
 	a := param.Access.(access.ArrayContinuous)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
@@ -178,7 +178,7 @@ end process;
 
 }
 
-func genProcReturnsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcReturnsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	for _, r := range proc.Returns {
 		switch r.Access.(type) {
 		case access.SingleSingle:
@@ -202,7 +202,7 @@ func genProcReturnsAccess(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genProcCall(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcCall(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	clear := fmt.Sprintf("\n%s_o.call <= '0';", proc.Name)
 
 	fmts.ProcsCallsClear += clear
@@ -219,7 +219,7 @@ func genProcCall(proc *elem.Proc, fmts *BlockEntityFormatters) {
 	fmts.ProcsCallsSet += set
 }
 
-func genProcExit(proc *elem.Proc, fmts *BlockEntityFormatters) {
+func genProcExit(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	if len(proc.Returns) == 0 {
 		return
 	}

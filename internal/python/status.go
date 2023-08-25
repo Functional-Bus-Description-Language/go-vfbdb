@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genStatus(st *elem.Status, blk *elem.Block) string {
+func genStatus(st *fn.Status, blk *fn.Block) string {
 	if st.IsArray {
 		return genStatusArray(st, blk)
 	} else {
@@ -15,7 +15,7 @@ func genStatus(st *elem.Status, blk *elem.Block) string {
 	}
 }
 
-func genStatusSingle(st *elem.Status, blk *elem.Block) string {
+func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 	var code string
 
 	switch a := st.Access.(type) {
@@ -40,7 +40,7 @@ func genStatusSingle(st *elem.Status, blk *elem.Block) string {
 	return code
 }
 
-func genStatusArray(st *elem.Status, blk *elem.Block) string {
+func genStatusArray(st *fn.Status, blk *fn.Block) string {
 	var code string
 
 	switch a := st.Access.(type) {

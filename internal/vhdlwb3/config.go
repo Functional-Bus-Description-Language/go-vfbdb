@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genConfig(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfig(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	if cfg.IsArray {
 		genConfigArray(cfg, fmts)
 	} else {
@@ -15,11 +15,11 @@ func genConfig(cfg *elem.Config, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genConfigArray(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfigArray(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func genConfigSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfigSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	dflt := ""
 	if cfg.InitValue != "" {
 		dflt = fmt.Sprintf(" := %s", cfg.InitValue.Extend(cfg.Width))
@@ -38,7 +38,7 @@ func genConfigSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genConfigSingleSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(access.SingleSingle)
 
 	code := fmt.Sprintf(`
@@ -52,7 +52,7 @@ func genConfigSingleSingle(cfg *elem.Config, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
 }
 
-func genConfigSingleContinuous(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleContinuous(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	if cfg.Atomic {
 		genConfigSingleContinuousAtomic(cfg, fmts)
 	} else {
@@ -60,7 +60,7 @@ func genConfigSingleContinuous(cfg *elem.Config, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genConfigSingleContinuousAtomic(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleContinuousAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(access.SingleContinuous)
 	strategy := SeparateLast
 	atomicShadowRange := [2]int64{cfg.Width - 1 - a.EndRegWidth(), 0}
@@ -98,7 +98,7 @@ func genConfigSingleContinuousAtomic(cfg *elem.Config, fmts *BlockEntityFormatte
 	}
 }
 
-func genConfigSingleContinuousNonAtomic(cfg *elem.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleContinuousNonAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	a := cfg.Access.(access.SingleContinuous)
 	chunks := makeAccessChunksContinuous(a, Compact)
 

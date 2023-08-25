@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
-func genConfig(cfg *elem.Config, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfig(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if cfg.IsArray {
 		panic("not yet implemented")
 	} else {
@@ -17,7 +17,7 @@ func genConfig(cfg *elem.Config, blk *elem.Block, hFmts *BlockHFormatters, cFmts
 	}
 }
 
-func genConfigSingle(cfg *elem.Config, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfigSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch cfg.Access.(type) {
 	case access.SingleSingle:
 		genConfigSingleSingle(cfg, blk, hFmts, cFmts)
@@ -28,7 +28,7 @@ func genConfigSingle(cfg *elem.Config, blk *elem.Block, hFmts *BlockHFormatters,
 	}
 }
 
-func genConfigSingleSingle(cfg *elem.Config, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	rType := c.WidthToReadType(cfg.Width)
 	wType := c.WidthToWriteType(cfg.Width)
 

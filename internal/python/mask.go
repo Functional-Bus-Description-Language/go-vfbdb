@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genMask(mask *elem.Mask, blk *elem.Block) string {
+func genMask(mask *fn.Mask, blk *fn.Block) string {
 	if mask.IsArray {
 		return genMaskArray(mask, blk)
 	} else {
@@ -15,7 +15,7 @@ func genMask(mask *elem.Mask, blk *elem.Block) string {
 	}
 }
 
-func genMaskSingle(mask *elem.Mask, blk *elem.Block) string {
+func genMaskSingle(mask *fn.Mask, blk *fn.Block) string {
 	var code string
 
 	switch a := mask.Access.(type) {
@@ -31,6 +31,6 @@ func genMaskSingle(mask *elem.Mask, blk *elem.Block) string {
 	return code
 }
 
-func genMaskArray(mask *elem.Mask, blk *elem.Block) string {
+func genMaskArray(mask *fn.Mask, blk *fn.Block) string {
 	panic("not yet implemented")
 }

@@ -7,7 +7,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
 //go:embed templates/wb3.vhd
@@ -18,7 +18,7 @@ type wb3PackageFormatters struct {
 	PkgsConsts string
 }
 
-func genWb3Package(pkgsConsts map[string]*elem.Package) {
+func genWb3Package(pkgsConsts map[string]*fn.Package) {
 	filePath := outputPath + "wb3.vhd"
 
 	f, err := os.Create(filePath)
@@ -37,7 +37,7 @@ func genWb3Package(pkgsConsts map[string]*elem.Package) {
 	addGeneratedFile(filePath)
 }
 
-func genPkgsConsts(pkgsConsts map[string]*elem.Package) string {
+func genPkgsConsts(pkgsConsts map[string]*fn.Package) string {
 	s := ""
 
 	for pkgName, pkg := range pkgsConsts {

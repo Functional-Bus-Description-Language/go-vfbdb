@@ -2,11 +2,11 @@ package python
 
 import (
 	"fmt"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"strings"
 )
 
-func genReturnList(returns []*elem.Return) string {
+func genReturnList(returns []*fn.Return) string {
 	if len(returns) == 0 {
 		return "None"
 	}

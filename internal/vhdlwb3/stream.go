@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genStream(stream *elem.Stream, fmts *BlockEntityFormatters) {
+func genStream(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	genStreamType(stream, fmts)
 	genStreamPorts(stream, fmts)
 
@@ -18,7 +18,7 @@ func genStream(stream *elem.Stream, fmts *BlockEntityFormatters) {
 	genStreamStrobe(stream, fmts)
 }
 
-func genStreamType(stream *elem.Stream, fmts *BlockEntityFormatters) {
+func genStreamType(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	s := fmt.Sprintf("\ntype %s_t is record\n", stream.Name)
 
 	// NOTE: Params and returns are generated in the same function.
@@ -48,7 +48,7 @@ func genStreamType(stream *elem.Stream, fmts *BlockEntityFormatters) {
 	fmts.StreamTypes += s
 }
 
-func genStreamPorts(stream *elem.Stream, fmts *BlockEntityFormatters) {
+func genStreamPorts(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	dir := "out"
 	suffix := "o"
 
@@ -64,7 +64,7 @@ func genStreamPorts(stream *elem.Stream, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 }
 
-func genUpstreamAccess(stream *elem.Stream, fmts *BlockEntityFormatters) {
+func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	for _, r := range stream.Returns {
 		switch a := r.Access.(type) {
 		case access.SingleSingle:
@@ -98,7 +98,7 @@ func genUpstreamAccess(stream *elem.Stream, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStreamStrobe(stream *elem.Stream, fmts *BlockEntityFormatters) {
+func genStreamStrobe(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	clear := fmt.Sprintf("\n%s_stb_o <= '0';", stream.Name)
 
 	fmts.StreamsStrobesClear += clear

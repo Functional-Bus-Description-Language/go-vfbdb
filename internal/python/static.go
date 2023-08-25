@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genStatic(st *elem.Static, blk *elem.Block) string {
+func genStatic(st *fn.Static, blk *fn.Block) string {
 	if st.IsArray {
 		panic("not yet implemented")
 	} else {
@@ -15,7 +15,7 @@ func genStatic(st *elem.Static, blk *elem.Block) string {
 	}
 }
 
-func genStaticSingle(st *elem.Static, blk *elem.Block) string {
+func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 	var code string
 
 	switch a := st.Access.(type) {

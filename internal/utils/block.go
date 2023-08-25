@@ -1,18 +1,18 @@
 package utils
 
 import (
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"log"
 )
 
-// Block is a wrapper for elem.Block. It is needed, because in some languages
+// Block is a wrapper for fn.Block. It is needed, because in some languages
 // or implementations the hierarchy must be flattened. In such case, there
 // is a need to resolve name conflicts.
 type Block struct {
 	Name      string
 	NameLevel int
 	Path      []string
-	Block     *elem.Block
+	Block     *fn.Block
 }
 
 // Rename renames Block based on the NameLevel and Path.
@@ -31,7 +31,7 @@ func (b *Block) Rename() {
 	b.Name = name
 }
 
-func CollectBlocks(blk *elem.Block, blocks []Block, path []string) []Block {
+func CollectBlocks(blk *fn.Block, blocks []Block, path []string) []Block {
 	if blocks == nil {
 		blocks = []Block{Block{
 			Name: blk.Name, NameLevel: 1, Path: []string{blk.Name}, Block: blk},

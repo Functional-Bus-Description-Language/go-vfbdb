@@ -2,10 +2,10 @@ package python
 
 import (
 	"fmt"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genConsts(cc *elem.ConstContainer) string {
+func genConsts(cc *fn.ConstContainer) string {
 	s := ""
 
 	for name, b := range cc.BoolConsts {

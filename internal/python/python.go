@@ -6,7 +6,7 @@ import (
 	"os"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
 var busWidth int64
@@ -21,7 +21,7 @@ type pythonFormatters struct {
 	Code     string
 }
 
-func Generate(bus *elem.Block, pkgsConsts map[string]*elem.Package, cmdLineArgs map[string]string) {
+func Generate(bus *fn.Block, pkgsConsts map[string]*fn.Package, cmdLineArgs map[string]string) {
 	busWidth = bus.Width
 	outputPath = cmdLineArgs["-path"] + "/"
 

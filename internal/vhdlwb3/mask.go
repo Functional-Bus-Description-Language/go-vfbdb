@@ -4,10 +4,10 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genMask(mask *elem.Mask, fmts *BlockEntityFormatters) {
+func genMask(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	if mask.IsArray {
 		genMaskArray(mask, fmts)
 	} else {
@@ -15,11 +15,11 @@ func genMask(mask *elem.Mask, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genMaskArray(mask *elem.Mask, fmts *BlockEntityFormatters) {
+func genMaskArray(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	panic("not yet implemented")
 }
 
-func genMaskSingle(mask *elem.Mask, fmts *BlockEntityFormatters) {
+func genMaskSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	dflt := ""
 	if mask.InitValue != "" {
 		dflt = fmt.Sprintf(" := %s", mask.InitValue.Extend(mask.Width))
@@ -36,7 +36,7 @@ func genMaskSingle(mask *elem.Mask, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genMaskSingleSingle(mask *elem.Mask, fmts *BlockEntityFormatters) {
+func genMaskSingleSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	a := mask.Access.(access.SingleSingle)
 
 	code := fmt.Sprintf(`

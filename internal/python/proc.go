@@ -3,10 +3,10 @@ package python
 import (
 	"fmt"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
-func genProc(p *elem.Proc, blk *elem.Block) string {
+func genProc(p *fn.Proc, blk *fn.Block) string {
 	if len(p.Params) == 0 && len(p.Returns) == 0 {
 		return genEmptyProc(p, blk)
 	} else if len(p.Params) > 0 && len(p.Returns) == 0 {
@@ -17,7 +17,7 @@ func genProc(p *elem.Proc, blk *elem.Block) string {
 	panic("not yet implemented")
 }
 
-func genEmptyProc(p *elem.Proc, blk *elem.Block) string {
+func genEmptyProc(p *fn.Proc, blk *fn.Block) string {
 	delay, exitAddr := genDelayAndExitAddr(p, blk)
 	code := indent + fmt.Sprintf("self.%s = EmptyProc(iface, %d, %s, %s)\n",
 		p.Name, blk.StartAddr()+*p.CallAddr, delay, exitAddr,
@@ -26,7 +26,7 @@ func genEmptyProc(p *elem.Proc, blk *elem.Block) string {
 	return code
 }
 
-func genParamsProc(p *elem.Proc, blk *elem.Block) string {
+func genParamsProc(p *fn.Proc, blk *fn.Block) string {
 	code := indent + fmt.Sprintf("self.%s = ParamsProc(iface, %d, ",
 		p.Name, blk.StartAddr()+p.ParamsStartAddr(),
 	)
@@ -37,7 +37,7 @@ func genParamsProc(p *elem.Proc, blk *elem.Block) string {
 	return code
 }
 
-func genDelayAndCallAddr(p *elem.Proc, blk *elem.Block) (string, string) {
+func genDelayAndCallAddr(p *fn.Proc, blk *fn.Block) (string, string) {
 	delay := "None"
 	callAddr := "None"
 	if p.Delay != nil {
@@ -47,7 +47,7 @@ func genDelayAndCallAddr(p *elem.Proc, blk *elem.Block) (string, string) {
 	return delay, callAddr
 }
 
-func genDelayAndExitAddr(p *elem.Proc, blk *elem.Block) (string, string) {
+func genDelayAndExitAddr(p *fn.Proc, blk *fn.Block) (string, string) {
 	delay := "None"
 	exitAddr := "None"
 	if p.Delay != nil {
@@ -57,7 +57,7 @@ func genDelayAndExitAddr(p *elem.Proc, blk *elem.Block) (string, string) {
 	return delay, exitAddr
 }
 
-func genReturnsProc(p *elem.Proc, blk *elem.Block) string {
+func genReturnsProc(p *fn.Proc, blk *fn.Block) string {
 	code := indent + fmt.Sprintf("self.%s = ReturnsProc(iface, %d, ",
 		p.Name, blk.StartAddr()+p.ReturnsStartAddr(),
 	)

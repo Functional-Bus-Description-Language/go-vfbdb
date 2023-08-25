@@ -4,12 +4,12 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
-func genStatus(st *elem.Status, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStatus(st *fn.Status, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if st.IsArray {
 		panic("not yet implemented")
 	} else {
@@ -17,7 +17,7 @@ func genStatus(st *elem.Status, blk *elem.Block, hFmts *BlockHFormatters, cFmts 
 	}
 }
 
-func genStatusSingle(st *elem.Status, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStatusSingle(st *fn.Status, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch st.Access.(type) {
 	case access.SingleSingle:
 		genStatusSingleSingle(st, blk, hFmts, cFmts)
@@ -28,7 +28,7 @@ func genStatusSingle(st *elem.Status, blk *elem.Block, hFmts *BlockHFormatters, 
 	}
 }
 
-func genStatusSingleSingle(st *elem.Status, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStatusSingleSingle(st *fn.Status, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	typ := c.WidthToReadType(st.Width)
 	signature := fmt.Sprintf(
 		"int vfbdb_%s_%s_read(const vfbdb_iface_t * const iface, %s const data)",

@@ -5,12 +5,12 @@ import (
 	"strconv"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/access"
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/elem"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
 )
 
-func genStatic(st *elem.Static, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStatic(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if st.IsArray {
 		panic("not yet implemented")
 	} else {
@@ -18,7 +18,7 @@ func genStatic(st *elem.Static, blk *elem.Block, hFmts *BlockHFormatters, cFmts 
 	}
 }
 
-func genStaticSingle(st *elem.Static, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStaticSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch st.Access.(type) {
 	case access.SingleSingle:
 		genStaticSingleSingle(st, blk, hFmts, cFmts)
@@ -29,7 +29,7 @@ func genStaticSingle(st *elem.Static, blk *elem.Block, hFmts *BlockHFormatters, 
 	}
 }
 
-func genStaticSingleSingle(st *elem.Static, blk *elem.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStaticSingleSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	wTyp := c.WidthToWriteType(st.Width)
 	rTyp := c.WidthToReadType(st.Width)
 
