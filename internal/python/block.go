@@ -16,7 +16,7 @@ func genBlock(blk *fn.Block, main bool) string {
 	code := indent + fmt.Sprintf("class %s:\n", className)
 	increaseIndent(1)
 
-	code += genConsts(&blk.ConstContainer)
+	code += genConsts(&blk.Consts)
 
 	code += indent + "def __init__(self, iface):\n"
 	increaseIndent(1)

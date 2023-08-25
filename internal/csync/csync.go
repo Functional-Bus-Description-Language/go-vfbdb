@@ -4,12 +4,14 @@ import (
 	_ "embed"
 	"log"
 	"os"
+	"sync"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/c"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
-	"sync"
+
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/pkg"
 )
 
 var busWidth int64
@@ -29,7 +31,7 @@ type vfbdbHeaderFormatters struct {
 	WriteType string
 }
 
-func Generate(bus *fn.Block, pkgsConsts map[string]*fn.Package, cmdLineArgs map[string]string) {
+func Generate(bus *fn.Block, pkgsConsts map[string]*pkg.Package, cmdLineArgs map[string]string) {
 	busWidth = bus.Width
 	outputPath = cmdLineArgs["-path"] + "/"
 

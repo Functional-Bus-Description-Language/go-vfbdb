@@ -9,8 +9,10 @@ import (
 	"sync"
 	"text/template"
 
-	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 	"github.com/Functional-Bus-Description-Language/go-vfbdb/internal/utils"
+
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/cnst"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
 )
 
 //go:embed templates/blockEntity.vhd
@@ -77,7 +79,7 @@ func genBlock(b utils.Block, wg *sync.WaitGroup) {
 	}
 	fmts.MaskValues = fmt.Sprintf("0 => \"%032b\"", mask)
 
-	genConsts(&b.Block.ConstContainer, &fmts)
+	genConsts(&b.Block.Consts, &fmts)
 
 	for _, sb := range b.Block.Subblocks {
 		genSubblock(sb, b.Block.StartAddr(), addrBitsCount, &fmts)
@@ -169,13 +171,13 @@ func genSubblock(
 	}
 }
 
-func genConsts(c *fn.ConstContainer, fmts *BlockEntityFormatters) {
+func genConsts(c *cnst.Container, fmts *BlockEntityFormatters) {
 	s := ""
 
-	for name, b := range c.BoolConsts {
+	for name, b := range c.Bools {
 		s += fmt.Sprintf("constant %s : boolean := %t;\n", name, b)
 	}
-	for name, list := range c.BoolListConsts {
+	for name, list := range c.BoolLists {
 		s += fmt.Sprintf("constant %s : boolean_vector(0 to %d) := (", name, len(list)-1)
 		for i, b := range list {
 			s += fmt.Sprintf("%d => %t, ", i, b)
@@ -183,10 +185,10 @@ func genConsts(c *fn.ConstContainer, fmts *BlockEntityFormatters) {
 		s = s[:len(s)-2]
 		s += ");\n"
 	}
-	for name, i := range c.IntConsts {
+	for name, i := range c.Ints {
 		s += fmt.Sprintf("constant %s : int64 := signed'(x\"%016x\");\n", name, i)
 	}
-	for name, list := range c.IntListConsts {
+	for name, list := range c.IntLists {
 		s += fmt.Sprintf("constant %s : int64_vector(0 to %d) := (", name, len(list)-1)
 		for i, v := range list {
 			s += fmt.Sprintf("%d => signed'(x\"%016x\"), ", i, v)
@@ -194,7 +196,7 @@ func genConsts(c *fn.ConstContainer, fmts *BlockEntityFormatters) {
 		s = s[:len(s)-2]
 		s += ");\n"
 	}
-	for name, str := range c.StrConsts {
+	for name, str := range c.Strings {
 		s += fmt.Sprintf("constant %s : string := %q;\n", name, str)
 	}
 
