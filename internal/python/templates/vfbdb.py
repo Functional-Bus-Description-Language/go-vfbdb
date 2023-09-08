@@ -372,7 +372,7 @@ class StatusSingleContinuous(SingleContinuous):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
 
-class StatusArraySingle:
+class ArraySingle:
     def __init__(self, iface, addr, mask, item_count):
         self.iface = iface
         self.addr = addr
@@ -383,15 +383,22 @@ class StatusArraySingle:
     def read(self, idx=None):
         if idx is None:
             idx = tuple(range(0, self.item_count))
+            if self.item_count == 1:
+                return (self.iface.read(self.addr) >> self.shift) & self.mask
+            else:
+                buf = self.iface.readb(self.addr, self.item_count)
+                return [(data >> self.shift) & self.mask for data in buf]
         elif type(idx) == int:
             assert 0 <= idx < self.item_count
             return (self.iface.read(self.addr + idx) >> self.shift) & self.mask
         else:
             for i in idx:
                 assert 0 <= i < self.item_count
+            return [(self.iface.read(self.addr + i) >> self.shift) & self.mask for i in idx]
 
-        return [(self.iface.read(self.addr + i) >> self.shift) & self.mask for i in idx]
-
+class StatusArraySingle(ArraySingle):
+    def __init__(self, iface, addr, mask, item_count):
+        super().__init__(iface, addr, mask, item_count)
 
 class StatusArrayMultiple:
     def __init__(self, iface, addr, start_bit, width, item_count, items_per_access):

@@ -30,6 +30,7 @@ class Iface:
         self.read_count = 0
         self.cread_count = 0
         self.writeb_count = 0
+        self.readb_count = 0
         self.rmw_count = 0
 
     def _make_fifos(self):
@@ -120,6 +121,24 @@ class Iface:
 
         self.writeb_count += 1
 
+    def readb(self, addr, count):
+        """Block Read
+        addr - start address
+        count - count of addresses to be read
+        """
+        if self.delay:
+            self.wait(self.delay_function())
+
+        print("readb: addr 0x{:08x}, count {}".format(addr, count))
+
+        buf = []
+        for i in range(count):
+            buf.append(self.read(addr + i))
+
+        self.readb_count += 1
+
+        return buf
+
     def rmw(self, addr, data, mask):
         """Perform read-modify-write operation.
         New data is determined by following formula: X := (X & ~mask) | (data & mask).
@@ -179,5 +198,6 @@ class Iface:
             + f"  write:  {self.write_count}\n"
             + f"  cread:  {self.cread_count}\n"
             + f"  writeb: {self.writeb_count}\n"
+            + f"  readb:  {self.readb_count}\n"
             + f"  rmw:    {self.rmw_count}"
         )
