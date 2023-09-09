@@ -61,7 +61,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			a.StartBit(),
 			a.ItemWidth,
 			a.ItemCount,
-			a.ItemsPerAccess,
+			a.ItemsPerReg,
 		)
 	default:
 		panic("unimplemented")
