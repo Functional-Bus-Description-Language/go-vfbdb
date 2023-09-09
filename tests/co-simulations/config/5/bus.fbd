@@ -1,0 +1,3 @@
+Main bus
+	Cfgs [10]config; width = 17
+	Sts  [10]status; width = 17

@@ -16,7 +16,12 @@ func genConfig(cfg *fn.Config, fmts *BlockEntityFormatters) {
 }
 
 func genConfigArray(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	panic("not yet implemented")
+	switch cfg.Access.(type) {
+	case access.ArraySingle:
+		genConfigArraySingle(cfg, fmts)
+	default:
+		panic("unimplemented")
+	}
 }
 
 func genConfigSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
@@ -113,4 +118,24 @@ func genConfigSingleContinuousNonAtomic(cfg *fn.Config, fmts *BlockEntityFormatt
 
 		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
 	}
+}
+
+func genConfigArraySingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	a := cfg.Access.(access.ArraySingle)
+
+	port := fmt.Sprintf(";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)", cfg.Name, cfg.Count-1, cfg.Width-1)
+	fmts.EntityFunctionalPorts += port
+
+	code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o(addr - %[2]d) <= master_out.dat(%[3]d downto %[4]d);
+      end if;
+      master_in.dat(%[3]d downto %[4]d) <= %[1]s_o(addr - %[2]d);`,
+		cfg.Name, a.StartAddr(), a.EndBit(), a.StartBit(),
+	)
+
+	fmts.RegistersAccess.add(
+		[2]int64{a.StartAddr(), a.StartAddr() + a.RegCount() - 1},
+		code,
+	)
 }

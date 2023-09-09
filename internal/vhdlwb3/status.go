@@ -22,7 +22,7 @@ func genStatusArray(st *fn.Status, fmts *BlockEntityFormatters) {
 	case access.ArrayMultiple:
 		genStatusArrayMultiple(st, fmts)
 	default:
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 }
 

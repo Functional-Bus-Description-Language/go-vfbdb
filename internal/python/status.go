@@ -64,7 +64,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			a.ItemsPerAccess,
 		)
 	default:
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 
 	return code

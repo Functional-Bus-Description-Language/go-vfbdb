@@ -379,6 +379,10 @@ class ArraySingle:
         self.mask = calc_mask(mask)
         self.shift = mask[1]
         self.item_count = item_count
+        self.width = mask[0] - mask[1] + 1
+
+    def __len__(self):
+        return self.item_count
 
     def read(self, idx=None):
         if idx is None:
@@ -395,6 +399,32 @@ class ArraySingle:
             for i in idx:
                 assert 0 <= i < self.item_count
             return [(self.iface.read(self.addr + i) >> self.shift) & self.mask for i in idx]
+
+class ConfigArraySingle(ArraySingle):
+    def __init__(self, iface, addr, mask, item_count):
+        super().__init__(iface, addr, mask, item_count)
+
+    def write(self, data, offset=0):
+        """ offset - elements index offset, applied also when data is dictionary """
+        if len(data) == 0:
+            raise Exception("empty data")
+
+        if type(data) == list or type(data) == tuple:
+            assert len(data) + offset <= self.item_count
+
+            if len(data) == 1:
+                self.iface.write(self.addr + offset, data[0] << self.shift)
+            else:
+                buf = []
+                for d in data:
+                    buf.append(d << self.shift)
+                self.iface.writeb(self.addr + offset, buf)
+        elif type(data) == dict:
+            idxs = sorted(data.keys())
+            for idx in idxs:
+                self.iface.write(self.addr + offset + idx, data[idx] << self.shift)
+        else:
+            raise Exception("unsupported data type {}".format(type(data)))
 
 class StatusArraySingle(ArraySingle):
     def __init__(self, iface, addr, mask, item_count):
