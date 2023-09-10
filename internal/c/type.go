@@ -10,7 +10,7 @@ type ByteArray struct{}
 
 func (ba ByteArray) String() string  { return "uint8_t *" }
 func (ba ByteArray) Typ() string     { return "ByteArray" }
-func (ba ByteArray) Depointer() Type { panic("not yet implemented") }
+func (ba ByteArray) Depointer() Type { panic("unimplemented") }
 
 type Uint8 struct{}
 

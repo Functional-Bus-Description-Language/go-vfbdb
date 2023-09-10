@@ -21,10 +21,8 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFm
 	switch cfg.Access.(type) {
 	case access.SingleOneReg:
 		genConfigSingleOneReg(cfg, blk, hFmts, cFmts)
-	case access.SingleNRegs:
-		panic("unimplemented")
 	default:
-		panic("unknown single access strategy")
+		panic("unimplemented")
 	}
 }
 

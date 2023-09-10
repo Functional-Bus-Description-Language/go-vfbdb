@@ -104,7 +104,7 @@ static int cosim_iface_write(const uint8_t addr, const uint32_t data) {
 
 
 static int cosim_iface_writeb(const uint8_t addr, const uint32_t * buf, size_t count) {
-	fprintf(stderr, "cosim iface: cosim_iface_writeb not yet implemented");
+	fprintf(stderr, "cosim iface: cosim_iface_writeb unimplemented");
 	exit(EXIT_FAILURE);
 }
 
@@ -160,7 +160,7 @@ static int cosim_iface_read(const uint8_t addr, uint32_t * const data) {
 
 
 static int cosim_iface_readb(const uint8_t addr, uint32_t * buf, size_t count) {
-	fprintf(stderr, "cosim iface: cosim_iface_readb not yet implemented");
+	fprintf(stderr, "cosim iface: cosim_iface_readb unimplemented");
 	exit(EXIT_FAILURE);
 }
 

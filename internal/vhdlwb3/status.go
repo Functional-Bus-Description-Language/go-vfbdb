@@ -40,7 +40,7 @@ func genStatusSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	case access.SingleNRegs:
 		genStatusSingleNRegs(st, fmts)
 	default:
-		panic("unknown single access strategy")
+		panic("unimplemented")
 	}
 }
 

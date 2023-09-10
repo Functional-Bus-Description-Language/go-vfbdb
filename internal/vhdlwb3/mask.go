@@ -16,7 +16,7 @@ func genMask(mask *fn.Mask, fmts *BlockEntityFormatters) {
 }
 
 func genMaskArray(mask *fn.Mask, fmts *BlockEntityFormatters) {
-	panic("not yet implemented")
+	panic("unimplemented")
 }
 
 func genMaskSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
@@ -32,7 +32,7 @@ func genMaskSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	case access.SingleOneReg:
 		genMaskSingleOneReg(mask, fmts)
 	default:
-		panic("unknown single access strategy")
+		panic("unimplemented")
 	}
 }
 

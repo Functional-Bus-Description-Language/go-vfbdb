@@ -44,6 +44,15 @@ func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 	var code string
 
 	switch acs := cfg.Access.(type) {
+	case access.ArrayOneReg:
+		code += indent + fmt.Sprintf(
+			"self.%s = ConfigArrayOneReg(iface, %d, %d, %d, %d)\n",
+			cfg.Name,
+			blk.StartAddr()+acs.Addr,
+			acs.StartBit,
+			acs.ItemWidth,
+			acs.ItemCount,
+		)
 	case access.ArrayOneInReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigArrayOneInReg(iface, %d, (%d, %d), %d)\n",

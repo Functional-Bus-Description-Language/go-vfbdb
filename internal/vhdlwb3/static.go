@@ -9,7 +9,7 @@ import (
 
 func genStatic(st *fn.Static, fmts *BlockEntityFormatters) {
 	if st.IsArray {
-		panic("not implemented")
+		panic("unimplemented")
 	} else {
 		genStaticSingle(st, fmts)
 	}
@@ -25,10 +25,8 @@ func genStaticSingle(st *fn.Static, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case access.SingleOneReg:
 		genStaticSingleOneReg(st, fmts)
-	case access.SingleNRegs:
-		panic("unimplemented")
 	default:
-		panic("unknown single access strategy")
+		panic("unimplemented")
 	}
 }
 

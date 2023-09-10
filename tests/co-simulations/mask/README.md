@@ -1,7 +1,7 @@
 # Mask tests
 
 ## 0
-Test checking whether the single `mask` with `Single` access strategy is written and read correctly.
+Test checking whether the single `mask` with `SingleOneReg` access type is written and read correctly.
 It tests:
 - mask clearing,
 - setting single bit,

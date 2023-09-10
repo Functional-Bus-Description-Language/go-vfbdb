@@ -404,6 +404,43 @@ class StatusArrayOneReg:
 
         return data
 
+class ConfigArrayOneReg(StatusArrayOneReg):
+    def __init__(self, iface, addr, start_bit, width, item_count):
+        super().__init__(iface, addr, start_bit, width, item_count)
+
+    def write(self, data, offset=0):
+        """ offset - elements index offset, applied also when data is dictionary """
+        if len(data) == 0:
+            raise Exception("empty data")
+
+        val = 0
+        mask = 0
+
+        if type(data) == list or type(data) == tuple:
+            assert len(data) + offset <= self.item_count
+
+            for i, v in enumerate(data):
+                assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
+                shift = (start_bit + (i + offset) * self.width)
+                val |= v << shift
+                mask |= 2 ** self.width - 1  << shift
+        elif type(data) == dict:
+            for i, v in data.items():
+                assert type(i) == int, f'invalid index type {type(i)}'
+                assert i >= 0, f"negative index {i}"
+                assert i + offset < self.item_count, f"index overrange {i}"
+                assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
+                shift = (start_bit + (i + offset) * self.width)
+                val |= v << shift
+                mask |= 2 ** self.width - 1 << shift
+        else:
+            raise Exception("unsupported data type {}".format(type(data)))
+
+        if len(data) == self.item_count:
+            self.iface.write(self.addr, val)
+        else:
+            self.rmw(self.addr, val, mask)
+
 class ArrayOneInReg:
     def __init__(self, iface, addr, mask, item_count):
         self.iface = iface

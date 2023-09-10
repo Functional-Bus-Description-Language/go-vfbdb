@@ -22,10 +22,8 @@ func genStaticSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmt
 	switch st.Access.(type) {
 	case access.SingleOneReg:
 		genStaticSingleOneReg(st, blk, hFmts, cFmts)
-	case access.SingleNRegs:
-		panic("unimplemented")
 	default:
-		panic("unknown single access strategy")
+		panic("unimplemented")
 	}
 }
 

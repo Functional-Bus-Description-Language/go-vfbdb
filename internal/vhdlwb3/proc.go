@@ -189,7 +189,7 @@ func genProcReturnsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 
 			fmts.RegistersAccess.add(addr, code)
 		default:
-			panic("not yet implemented")
+			panic("unimplemented")
 		}
 	}
 	if (proc.IsEmpty() || proc.IsParam()) && proc.Delay != nil {

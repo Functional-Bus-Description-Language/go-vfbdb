@@ -45,7 +45,7 @@ func genConfigSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	case access.SingleNRegs:
 		genConfigSingleNRegs(cfg, fmts)
 	default:
-		panic("unknown single access strategy")
+		panic("unimplemented")
 	}
 }
 

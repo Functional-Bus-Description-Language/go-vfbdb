@@ -90,7 +90,7 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 				fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
 			}
 		default:
-			panic("not yet implemented")
+			panic("unimplemented")
 		}
 	}
 	if len(stream.Params) == 0 {
