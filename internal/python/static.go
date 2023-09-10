@@ -29,7 +29,7 @@ func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), 0b%s)\n",
 			st.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,

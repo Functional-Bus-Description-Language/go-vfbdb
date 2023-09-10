@@ -29,23 +29,23 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 
 	if strategy == Compact && a.StartRegWidth() == busWidth && a.EndRegWidth() == busWidth {
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.StartAddr(), a.EndAddr()},
+			addr: [2]int64{a.GetStartAddr(), a.GetEndAddr()},
 			range_: [2]string{
-				fmt.Sprintf("%d * (addr - %d + 1) - 1", busWidth, a.StartAddr()),
-				fmt.Sprintf("%d * (addr - %d)", busWidth, a.StartAddr()),
+				fmt.Sprintf("%d * (addr - %d + 1) - 1", busWidth, a.GetStartAddr()),
+				fmt.Sprintf("%d * (addr - %d)", busWidth, a.GetStartAddr()),
 			},
 			startBit: 0,
 			endBit:   busWidth - 1,
 		})
 	} else if a.GetRegCount() == 2 {
 		cs = append(cs, accessChunk{
-			addr:     [2]int64{a.StartAddr(), a.StartAddr()},
+			addr:     [2]int64{a.GetStartAddr(), a.GetStartAddr()},
 			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},
 			startBit: startBit,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.EndAddr(), a.EndAddr()},
+			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
 				fmt.Sprintf("%d", a.Width()-1),
 				fmt.Sprintf("%d", a.Width()-a.EndRegWidth()),
@@ -55,16 +55,16 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 		})
 	} else if strategy == SeparateLast && a.StartRegWidth() == busWidth {
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.StartAddr(), a.EndAddr() - 1},
+			addr: [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1},
 			range_: [2]string{
-				fmt.Sprintf("%d * (addr - %d + 1) - 1", busWidth, a.StartAddr()),
-				fmt.Sprintf("%d * (addr - %d)", busWidth, a.StartAddr()),
+				fmt.Sprintf("%d * (addr - %d + 1) - 1", busWidth, a.GetStartAddr()),
+				fmt.Sprintf("%d * (addr - %d)", busWidth, a.GetStartAddr()),
 			},
 			startBit: 0,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.EndAddr(), a.EndAddr()},
+			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
 				fmt.Sprintf("%d", a.Width()-1),
 				fmt.Sprintf("%d", a.Width()-a.EndRegWidth()),
@@ -74,38 +74,38 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 		})
 	} else if strategy == SeparateFirst && a.EndRegWidth() == busWidth {
 		cs = append(cs, accessChunk{
-			addr:     [2]int64{a.StartAddr(), a.StartAddr()},
+			addr:     [2]int64{a.GetStartAddr(), a.GetStartAddr()},
 			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},
 			startBit: startBit,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.StartAddr() + 1, a.EndAddr()},
+			addr: [2]int64{a.GetStartAddr() + 1, a.GetEndAddr()},
 			range_: [2]string{
-				fmt.Sprintf("%d * (addr - %d + 1) + %d", busWidth, a.StartAddr(), a.StartRegWidth()-1),
-				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.StartAddr(), a.StartRegWidth()),
+				fmt.Sprintf("%d * (addr - %d + 1) + %d", busWidth, a.GetStartAddr(), a.StartRegWidth()-1),
+				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr(), a.StartRegWidth()),
 			},
 			startBit: 0,
 			endBit:   busWidth - 1,
 		})
 	} else {
 		cs = append(cs, accessChunk{
-			addr:     [2]int64{a.StartAddr(), a.StartAddr()},
+			addr:     [2]int64{a.GetStartAddr(), a.GetStartAddr()},
 			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},
 			startBit: startBit,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.StartAddr() + 1, a.EndAddr() - 1},
+			addr: [2]int64{a.GetStartAddr() + 1, a.GetEndAddr() - 1},
 			range_: [2]string{
-				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.StartAddr(), a.StartRegWidth()-1),
-				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.StartAddr()+1, a.StartRegWidth()),
+				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr(), a.StartRegWidth()-1),
+				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr()+1, a.StartRegWidth()),
 			},
 			startBit: 0,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
-			addr: [2]int64{a.EndAddr(), a.EndAddr()},
+			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
 				fmt.Sprintf("%d", a.Width()-1),
 				fmt.Sprintf("%d", a.Width()-a.EndRegWidth()),

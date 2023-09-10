@@ -105,7 +105,7 @@ func genProcParamAccessSingleSingle(proc *fn.Proc, fmts *BlockEntityFormatters, 
       master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;`,
 		proc.Name, param.Name, a.EndBit(), a.StartBit(),
 	)
-	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.StartAddr()}, code)
+	fmts.RegistersAccess.add([2]int64{a.GetStartAddr(), a.GetStartAddr()}, code)
 }
 
 func genProcParamAccessSingleContinuous(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
@@ -136,9 +136,9 @@ func genProcParamAccessArrayContinuous(proc *fn.Proc, fmts *BlockEntityFormatter
       if master_out.we = '1' then
          %s_%s(addr - %d) <= master_out.dat;
       end if;`,
-		proc.Name, param.Name, a.StartAddr(),
+		proc.Name, param.Name, a.GetStartAddr(),
 	)
-	fmts.RegistersAccess.add([2]int64{a.StartAddr(), a.EndAddr()}, code)
+	fmts.RegistersAccess.add([2]int64{a.GetStartAddr(), a.GetEndAddr()}, code)
 
 	code = fmt.Sprintf(
 		`
@@ -184,7 +184,7 @@ func genProcReturnsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 		case access.SingleSingle:
 			access := r.Access.(access.SingleSingle)
 
-			addr := [2]int64{access.StartAddr(), access.StartAddr()}
+			addr := [2]int64{access.GetStartAddr(), access.GetStartAddr()}
 			code := fmt.Sprintf(
 				"      master_in.dat(%[1]d downto %[2]d) <= %[3]s_i.%[4]s;\n",
 				access.EndBit(), access.StartBit(), proc.Name, r.Name,

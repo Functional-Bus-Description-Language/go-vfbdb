@@ -28,7 +28,7 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
@@ -48,7 +48,7 @@ func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigArraySingle(iface, %d, (%d, %d), %d)\n",
 			cfg.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.EndBit(),
 			a.StartBit(),
 			a.GetRegCount(),

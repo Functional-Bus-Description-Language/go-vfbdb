@@ -135,11 +135,11 @@ func genConfigArraySingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
          %[1]s_o(addr - %[2]d) <= master_out.dat(%[3]d downto %[4]d);
       end if;
       master_in.dat(%[3]d downto %[4]d) <= %[1]s_o(addr - %[2]d);`,
-		cfg.Name, a.StartAddr(), a.EndBit(), a.StartBit(),
+		cfg.Name, a.GetStartAddr(), a.EndBit(), a.StartBit(),
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{a.StartAddr(), a.StartAddr() + a.GetRegCount() - 1},
+		[2]int64{a.GetStartAddr(), a.GetStartAddr() + a.GetRegCount() - 1},
 		code,
 	)
 }
@@ -153,7 +153,7 @@ func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	)
 	fmts.EntityFunctionalPorts += port
 
-	addr := [2]int64{a.StartAddr(), a.EndAddr()}
+	addr := [2]int64{a.GetStartAddr(), a.GetEndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -180,7 +180,7 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	var code string
 
 	if a.ItemsInLastReg() == a.ItemsPerReg {
-		addr = [2]int64{a.StartAddr(), a.EndAddr()}
+		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr()}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -188,10 +188,10 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
          end if;
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_o((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), cfg.Name, a.StartAddr(), a.ItemsPerReg,
+			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), cfg.Name, a.GetStartAddr(), a.ItemsPerReg,
 		)
 	} else {
-		addr = [2]int64{a.StartAddr(), a.EndAddr() - 1}
+		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -199,11 +199,11 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
          end if;
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_o((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), cfg.Name, a.StartAddr(), a.ItemsPerReg,
+			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), cfg.Name, a.GetStartAddr(), a.ItemsPerReg,
 		)
 		fmts.RegistersAccess.add(addr, code)
 
-		addr = [2]int64{a.EndAddr(), a.EndAddr()}
+		addr = [2]int64{a.GetEndAddr(), a.GetEndAddr()}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then

@@ -28,7 +28,7 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
@@ -48,7 +48,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.EndBit(),
 			a.StartBit(),
 			a.GetRegCount(),
@@ -57,7 +57,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayOneReg(iface, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.StartBit(),
 			a.ItemWidth,
 			a.ItemCount,
@@ -66,7 +66,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+a.StartAddr(),
+			blk.StartAddr()+a.GetStartAddr(),
 			a.StartBit(),
 			a.ItemWidth,
 			a.ItemCount,

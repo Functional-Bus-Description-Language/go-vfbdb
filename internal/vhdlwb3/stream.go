@@ -68,7 +68,7 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	for _, r := range stream.Returns {
 		switch a := r.Access.(type) {
 		case access.SingleSingle:
-			addr := [2]int64{a.StartAddr(), a.StartAddr()}
+			addr := [2]int64{a.GetStartAddr(), a.GetStartAddr()}
 			code := fmt.Sprintf(
 				"      master_in.dat(%d downto %d) <= %s_i.%s;\n",
 				a.EndBit(), a.StartBit(), stream.Name, r.Name,

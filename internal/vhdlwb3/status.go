@@ -113,11 +113,11 @@ func genStatusArraySingle(st *fn.Status, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
-		a.EndBit(), a.StartBit(), st.Name, a.StartAddr(),
+		a.EndBit(), a.StartBit(), st.Name, a.GetStartAddr(),
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{a.StartAddr(), a.StartAddr() + a.GetRegCount() - 1},
+		[2]int64{a.GetStartAddr(), a.GetStartAddr() + a.GetRegCount() - 1},
 		code,
 	)
 }
@@ -131,7 +131,7 @@ func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	)
 	fmts.EntityFunctionalPorts += port
 
-	addr := [2]int64{a.StartAddr(), a.EndAddr()}
+	addr := [2]int64{a.GetStartAddr(), a.GetEndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
@@ -155,24 +155,24 @@ func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
 	var code string
 
 	if a.ItemsInLastReg() == a.ItemsPerReg {
-		addr = [2]int64{a.StartAddr(), a.EndAddr()}
+		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr()}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), st.Name, a.StartAddr(), a.ItemsPerReg,
+			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
 		)
 	} else {
-		addr = [2]int64{a.StartAddr(), a.EndAddr() - 1}
+		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), st.Name, a.StartAddr(), a.ItemsPerReg,
+			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
 		)
 		fmts.RegistersAccess.add(addr, code)
 
-		addr = [2]int64{a.EndAddr(), a.EndAddr()}
+		addr = [2]int64{a.GetEndAddr(), a.GetEndAddr()}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);

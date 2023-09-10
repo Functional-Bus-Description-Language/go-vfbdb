@@ -12,7 +12,7 @@ func genAccess(acs access.Access, b *strings.Builder) {
 	b.WriteString(
 		fmt.Sprintf(
 			"{'StartAddr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': %d, 'Type': ",
-			acs.StartAddr(), acs.StartBit(), acs.EndBit(), acs.GetRegCount(),
+			acs.GetStartAddr(), acs.StartBit(), acs.EndBit(), acs.GetRegCount(),
 		),
 	)
 
