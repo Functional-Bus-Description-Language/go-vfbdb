@@ -17,6 +17,8 @@ func genConfig(cfg *fn.Config, fmts *BlockEntityFormatters) {
 
 func genConfigArray(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	switch cfg.Access.(type) {
+	case access.ArrayOneReg:
+		genConfigArrayOneReg(cfg, fmts)
 	case access.ArraySingle:
 		genConfigArraySingle(cfg, fmts)
 	case access.ArrayMultiple:
@@ -137,9 +139,32 @@ func genConfigArraySingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{a.StartAddr(), a.StartAddr() + a.RegCount() - 1},
+		[2]int64{a.StartAddr(), a.StartAddr() + a.GetRegCount() - 1},
 		code,
 	)
+}
+
+func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	a := cfg.Access.(access.ArrayOneReg)
+
+	port := fmt.Sprintf(
+		";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)",
+		cfg.Name, cfg.Count-1, cfg.Width-1,
+	)
+	fmts.EntityFunctionalPorts += port
+
+	addr := [2]int64{a.StartAddr(), a.EndAddr()}
+	code := fmt.Sprintf(`
+      for i in 0 to %[1]d loop
+         if master_out.we = '1' then
+            %[2]s_o(i) <= master_out.dat(%[3]d*(i+1)+%[4]d-1 downto %[3]d*i+%[4]d);
+         end if;
+         master_in.dat(%[3]d*(i+1)+%[4]d-1 downto %[3]d*i+%[4]d) <= %[2]s_o(i);
+      end loop;`,
+		cfg.Count-1, cfg.Name, a.ItemWidth, a.StartBit(),
+	)
+
+	fmts.RegistersAccess.add(addr, code)
 }
 
 func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
@@ -154,18 +179,7 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	var addr [2]int64
 	var code string
 
-	if a.ItemCount <= a.ItemsPerReg {
-		addr = [2]int64{a.StartAddr(), a.EndAddr()}
-		code = fmt.Sprintf(`
-      for i in 0 to %[1]d loop
-         if master_out.we = '1' then
-            %[2]s_o(i) <= master_out.dat(%[3]d*(i+1)+%[4]d-1 downto %[3]d*i+%[4]d);
-         end if;
-         master_in.dat(%[3]d*(i+1)+%[4]d-1 downto %[3]d*i+%[4]d) <= %[2]s_o(i);
-      end loop;`,
-			cfg.Count-1, cfg.Name, a.ItemWidth, a.StartBit(),
-		)
-	} else if a.ItemsInLastReg() == a.ItemsPerReg {
+	if a.ItemsInLastReg() == a.ItemsPerReg {
 		addr = [2]int64{a.StartAddr(), a.EndAddr()}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
@@ -197,7 +211,7 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
          end if;
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_o(%[5]d+i);
       end loop;`,
-			a.ItemsInLastReg()-1, a.ItemWidth, a.StartBit(), cfg.Name, (a.RegCount()-1)*a.ItemsPerReg,
+			a.ItemsInLastReg()-1, a.ItemWidth, a.StartBit(), cfg.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
 		)
 	}
 

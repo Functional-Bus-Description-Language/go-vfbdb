@@ -29,7 +29,7 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name,
 			blk.StartAddr()+a.StartAddr(),
-			a.RegCount(),
+			a.GetRegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
 		)
@@ -51,7 +51,7 @@ func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 			blk.StartAddr()+a.StartAddr(),
 			a.EndBit(),
 			a.StartBit(),
-			a.RegCount(),
+			a.GetRegCount(),
 		)
 	default:
 		panic("unimplemented")

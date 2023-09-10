@@ -129,7 +129,7 @@ func genProcParamAccessArrayContinuous(proc *fn.Proc, fmts *BlockEntityFormatter
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_%s : slv_vector(%d downto 0)(%d downto 0);\n",
-		proc.Name, param.Name, a.RegCount(), busWidth-1,
+		proc.Name, param.Name, a.GetRegCount(), busWidth-1,
 	)
 
 	code := fmt.Sprintf(`
@@ -172,7 +172,7 @@ begin
    end loop;
 end process;
 `,
-		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.StartBit(), a.RegCount()-1,
+		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.StartBit(), a.GetRegCount()-1,
 	)
 	fmts.CombinationalProcesses += code
 

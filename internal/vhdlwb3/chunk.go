@@ -37,7 +37,7 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 			startBit: 0,
 			endBit:   busWidth - 1,
 		})
-	} else if a.RegCount() == 2 {
+	} else if a.GetRegCount() == 2 {
 		cs = append(cs, accessChunk{
 			addr:     [2]int64{a.StartAddr(), a.StartAddr()},
 			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},

@@ -372,14 +372,46 @@ class StatusSingleContinuous(SingleContinuous):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
 
+class StatusArrayOneReg:
+    def __init__(self, iface, addr, start_bit, width, item_count):
+        self.iface = iface
+        self.addr = addr
+        self.start_bit = start_bit
+        self.width = width
+        self.item_count = item_count
+
+    def __len__(self):
+        return self.item_count
+
+    def read(self, idx=None):
+        reg = self.iface.read(self.addr)
+        mask = (1 << self.width) - 1
+
+        if type(idx) == int:
+            assert 0 <= idx < self.item_count
+            shift = self.start_bit + self.width * idx
+            return (reg >> shift) & mask
+        elif idx is None:
+            idx = tuple(range(0, self.item_count))
+
+        for i in idx:
+            assert 0 <= i < self.item_count
+
+        data = []
+        for i in idx:
+            shift = self.start_bit + self.width * i
+            data.append((reg >> shift) & mask)
+
+        return data
+
 class ArraySingle:
     def __init__(self, iface, addr, mask, item_count):
         self.iface = iface
         self.addr = addr
         self.mask = calc_mask(mask)
         self.shift = mask[1]
-        self.item_count = item_count
         self.width = mask[0] - mask[1] + 1
+        self.item_count = item_count
 
     def __len__(self):
         return self.item_count

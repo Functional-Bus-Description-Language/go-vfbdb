@@ -29,7 +29,7 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name,
 			blk.StartAddr()+a.StartAddr(),
-			a.RegCount(),
+			a.GetRegCount(),
 			busWidth-1, a.StartBit(),
 			a.EndBit(), 0,
 		)
@@ -51,7 +51,16 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			blk.StartAddr()+a.StartAddr(),
 			a.EndBit(),
 			a.StartBit(),
-			a.RegCount(),
+			a.GetRegCount(),
+		)
+	case access.ArrayOneReg:
+		code += indent + fmt.Sprintf(
+			"self.%s = StatusArrayOneReg(iface, %d, %d, %d, %d)\n",
+			st.Name,
+			blk.StartAddr()+a.StartAddr(),
+			a.StartBit(),
+			a.ItemWidth,
+			a.ItemCount,
 		)
 	case access.ArrayMultiple:
 		code += indent + fmt.Sprintf(
