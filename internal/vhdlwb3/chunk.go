@@ -27,7 +27,7 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 
 	cs := []accessChunk{}
 
-	if strategy == Compact && a.StartRegWidth() == busWidth && a.EndRegWidth() == busWidth {
+	if strategy == Compact && a.GetStartRegWidth() == busWidth && a.GetEndRegWidth() == busWidth {
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetStartAddr(), a.GetEndAddr()},
 			range_: [2]string{
@@ -40,7 +40,7 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 	} else if a.GetRegCount() == 2 {
 		cs = append(cs, accessChunk{
 			addr:     [2]int64{a.GetStartAddr(), a.GetStartAddr()},
-			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},
+			range_:   [2]string{fmt.Sprintf("%d", a.GetStartRegWidth()-1), "0"},
 			startBit: startBit,
 			endBit:   busWidth - 1,
 		})
@@ -48,12 +48,12 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
 				fmt.Sprintf("%d", a.GetWidth()-1),
-				fmt.Sprintf("%d", a.GetWidth()-a.EndRegWidth()),
+				fmt.Sprintf("%d", a.GetWidth()-a.GetEndRegWidth()),
 			},
 			startBit: 0,
 			endBit:   endBit,
 		})
-	} else if strategy == SeparateLast && a.StartRegWidth() == busWidth {
+	} else if strategy == SeparateLast && a.GetStartRegWidth() == busWidth {
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1},
 			range_: [2]string{
@@ -67,23 +67,23 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
 				fmt.Sprintf("%d", a.GetWidth()-1),
-				fmt.Sprintf("%d", a.GetWidth()-a.EndRegWidth()),
+				fmt.Sprintf("%d", a.GetWidth()-a.GetEndRegWidth()),
 			},
 			startBit: 0,
 			endBit:   endBit,
 		})
-	} else if strategy == SeparateFirst && a.EndRegWidth() == busWidth {
+	} else if strategy == SeparateFirst && a.GetEndRegWidth() == busWidth {
 		cs = append(cs, accessChunk{
 			addr:     [2]int64{a.GetStartAddr(), a.GetStartAddr()},
-			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},
+			range_:   [2]string{fmt.Sprintf("%d", a.GetStartRegWidth()-1), "0"},
 			startBit: startBit,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetStartAddr() + 1, a.GetEndAddr()},
 			range_: [2]string{
-				fmt.Sprintf("%d * (addr - %d + 1) + %d", busWidth, a.GetStartAddr(), a.StartRegWidth()-1),
-				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr(), a.StartRegWidth()),
+				fmt.Sprintf("%d * (addr - %d + 1) + %d", busWidth, a.GetStartAddr(), a.GetStartRegWidth()-1),
+				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr(), a.GetStartRegWidth()),
 			},
 			startBit: 0,
 			endBit:   busWidth - 1,
@@ -91,15 +91,15 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 	} else {
 		cs = append(cs, accessChunk{
 			addr:     [2]int64{a.GetStartAddr(), a.GetStartAddr()},
-			range_:   [2]string{fmt.Sprintf("%d", a.StartRegWidth()-1), "0"},
+			range_:   [2]string{fmt.Sprintf("%d", a.GetStartRegWidth()-1), "0"},
 			startBit: startBit,
 			endBit:   busWidth - 1,
 		})
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetStartAddr() + 1, a.GetEndAddr() - 1},
 			range_: [2]string{
-				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr(), a.StartRegWidth()-1),
-				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr()+1, a.StartRegWidth()),
+				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr(), a.GetStartRegWidth()-1),
+				fmt.Sprintf("%d * (addr - %d) + %d", busWidth, a.GetStartAddr()+1, a.GetStartRegWidth()),
 			},
 			startBit: 0,
 			endBit:   busWidth - 1,
@@ -108,7 +108,7 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
 				fmt.Sprintf("%d", a.GetWidth()-1),
-				fmt.Sprintf("%d", a.GetWidth()-a.EndRegWidth()),
+				fmt.Sprintf("%d", a.GetWidth()-a.GetEndRegWidth()),
 			},
 			startBit: 0,
 			endBit:   endBit,
