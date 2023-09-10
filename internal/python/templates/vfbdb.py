@@ -404,7 +404,7 @@ class StatusArrayOneReg:
 
         return data
 
-class ArraySingle:
+class ArrayOneInReg:
     def __init__(self, iface, addr, mask, item_count):
         self.iface = iface
         self.addr = addr
@@ -432,7 +432,7 @@ class ArraySingle:
                 assert 0 <= i < self.item_count
             return [(self.iface.read(self.addr + i) >> self.shift) & self.mask for i in idx]
 
-class ConfigArraySingle(ArraySingle):
+class ConfigArrayOneInReg(ArrayOneInReg):
     def __init__(self, iface, addr, mask, item_count):
         super().__init__(iface, addr, mask, item_count)
 
@@ -458,7 +458,7 @@ class ConfigArraySingle(ArraySingle):
         else:
             raise Exception("unsupported data type {}".format(type(data)))
 
-class StatusArraySingle(ArraySingle):
+class StatusArrayOneInReg(ArrayOneInReg):
     def __init__(self, iface, addr, mask, item_count):
         super().__init__(iface, addr, mask, item_count)
 

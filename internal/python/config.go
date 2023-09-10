@@ -43,15 +43,15 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 	var code string
 
-	switch a := cfg.Access.(type) {
-	case access.ArraySingle:
+	switch acs := cfg.Access.(type) {
+	case access.ArrayOneInReg:
 		code += indent + fmt.Sprintf(
-			"self.%s = ConfigArraySingle(iface, %d, (%d, %d), %d)\n",
+			"self.%s = ConfigArrayOneInReg(iface, %d, (%d, %d), %d)\n",
 			cfg.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetEndBit(),
-			a.GetStartBit(),
-			a.GetRegCount(),
+			blk.StartAddr()+acs.StartAddr,
+			acs.EndBit,
+			acs.StartBit,
+			acs.RegCount,
 		)
 	default:
 		panic("unimplemented")

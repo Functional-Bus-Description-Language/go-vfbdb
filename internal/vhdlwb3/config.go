@@ -19,8 +19,8 @@ func genConfigArray(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	switch cfg.Access.(type) {
 	case access.ArrayOneReg:
 		genConfigArrayOneReg(cfg, fmts)
-	case access.ArraySingle:
-		genConfigArraySingle(cfg, fmts)
+	case access.ArrayOneInReg:
+		genConfigArrayOneInReg(cfg, fmts)
 	case access.ArrayMultiple:
 		genConfigArrayMultiple(cfg, fmts)
 	default:
@@ -124,8 +124,8 @@ func genConfigSingleNRegsNonAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) 
 	}
 }
 
-func genConfigArraySingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.ArraySingle)
+func genConfigArrayOneInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	acs := cfg.Access.(access.ArrayOneInReg)
 
 	port := fmt.Sprintf(";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)", cfg.Name, cfg.Count-1, cfg.Width-1)
 	fmts.EntityFunctionalPorts += port
@@ -135,11 +135,11 @@ func genConfigArraySingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
          %[1]s_o(addr - %[2]d) <= master_out.dat(%[3]d downto %[4]d);
       end if;
       master_in.dat(%[3]d downto %[4]d) <= %[1]s_o(addr - %[2]d);`,
-		cfg.Name, a.GetStartAddr(), a.GetEndBit(), a.GetStartBit(),
+		cfg.Name, acs.StartAddr, acs.EndBit, acs.StartBit,
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{a.GetStartAddr(), a.GetStartAddr() + a.GetRegCount() - 1},
+		[2]int64{acs.StartAddr, acs.StartAddr + acs.RegCount - 1},
 		code,
 	)
 }

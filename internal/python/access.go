@@ -25,7 +25,7 @@ func genAccess(acs access.Access, b *strings.Builder) {
 		b.WriteString(fmt.Sprintf("'ArrayContinuous', 'ItemCount': %d", a.ItemCount))
 	case access.ArrayMultiple:
 		panic("unimplemented")
-	case access.ArraySingle:
+	case access.ArrayOneInReg:
 		panic("unimplemented")
 	default:
 		panic("should never happen")

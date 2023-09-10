@@ -44,14 +44,14 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 	var code string
 
 	switch acs := st.Access.(type) {
-	case access.ArraySingle:
+	case access.ArrayOneInReg:
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
+			"self.%s = StatusArrayOneInReg(iface, %d, (%d, %d), %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.GetStartAddr(),
-			acs.GetEndBit(),
-			acs.GetStartBit(),
-			acs.GetRegCount(),
+			blk.StartAddr()+acs.StartAddr,
+			acs.EndBit,
+			acs.StartBit,
+			acs.RegCount,
 		)
 	case access.ArrayOneReg:
 		code += indent + fmt.Sprintf(

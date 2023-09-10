@@ -19,8 +19,8 @@ func genStatusArray(st *fn.Status, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case access.ArrayOneReg:
 		genStatusArrayOneReg(st, fmts)
-	case access.ArraySingle:
-		genStatusArraySingle(st, fmts)
+	case access.ArrayOneInReg:
+		genStatusArrayOneInReg(st, fmts)
 	case access.ArrayMultiple:
 		genStatusArrayMultiple(st, fmts)
 	default:
@@ -105,19 +105,19 @@ func genStatusSingleNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusArraySingle(st *fn.Status, fmts *BlockEntityFormatters) {
-	a := st.Access.(access.ArraySingle)
+func genStatusArrayOneInReg(st *fn.Status, fmts *BlockEntityFormatters) {
+	acs := st.Access.(access.ArrayOneInReg)
 
 	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
 	fmts.EntityFunctionalPorts += port
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
-		a.GetEndBit(), a.GetStartBit(), st.Name, a.GetStartAddr(),
+		acs.EndBit, acs.StartBit, st.Name, acs.StartAddr,
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{a.GetStartAddr(), a.GetStartAddr() + a.GetRegCount() - 1},
+		[2]int64{acs.StartAddr, acs.StartAddr + acs.RegCount - 1},
 		code,
 	)
 }
