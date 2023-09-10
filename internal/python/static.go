@@ -18,21 +18,21 @@ func genStatic(st *fn.Static, blk *fn.Block) string {
 func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 	var code string
 
-	switch a := st.Access.(type) {
+	switch acs := st.Access.(type) {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleOneReg(iface, %d, (%d, %d), 0b0%s)\n",
-			st.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
+			st.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
 			st.InitValue.ToBin().ValueLiteral(),
 		)
 	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d), 0b%s)\n",
 			st.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetRegCount(),
-			busWidth-1, a.GetStartBit(),
-			a.GetEndBit(), 0,
+			blk.StartAddr()+acs.StartAddr,
+			acs.RegCount,
+			busWidth-1, acs.StartBit,
+			acs.EndBit, 0,
 			st.InitValue.ToBin().ValueLiteral(),
 		)
 	default:

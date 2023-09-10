@@ -72,10 +72,10 @@ func genConfigSingleNRegs(cfg *fn.Config, fmts *BlockEntityFormatters) {
 }
 
 func genConfigSingleNRegsAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.SingleNRegs)
+	acs := cfg.Access.(access.SingleNRegs)
 	strategy := SeparateLast
-	atomicShadowRange := [2]int64{cfg.Width - 1 - a.GetEndRegWidth(), 0}
-	chunks := makeAccessChunksContinuous(a, strategy)
+	atomicShadowRange := [2]int64{cfg.Width - 1 - acs.GetEndRegWidth(), 0}
+	chunks := makeAccessChunksContinuous(acs, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_atomic : std_logic_vector(%d downto %d);\n",

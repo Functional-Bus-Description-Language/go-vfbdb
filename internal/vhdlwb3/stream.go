@@ -66,17 +66,17 @@ func genStreamPorts(stream *fn.Stream, fmts *BlockEntityFormatters) {
 
 func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	for _, r := range stream.Returns {
-		switch a := r.Access.(type) {
+		switch acs := r.Access.(type) {
 		case access.SingleOneReg:
-			addr := [2]int64{a.GetStartAddr(), a.GetStartAddr()}
+			addr := [2]int64{acs.Addr, acs.Addr}
 			code := fmt.Sprintf(
 				"      master_in.dat(%d downto %d) <= %s_i.%s;\n",
-				a.GetEndBit(), a.GetStartBit(), stream.Name, r.Name,
+				acs.EndBit, acs.StartBit, stream.Name, r.Name,
 			)
 
 			fmts.RegistersAccess.add(addr, code)
 		case access.SingleNRegs:
-			chunks := makeAccessChunksContinuous(a, Compact)
+			chunks := makeAccessChunksContinuous(acs, Compact)
 
 			for _, c := range chunks {
 				code := fmt.Sprintf(`

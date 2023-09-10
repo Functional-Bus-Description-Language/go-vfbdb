@@ -18,20 +18,20 @@ func genConfig(cfg *fn.Config, blk *fn.Block) string {
 func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 	var code string
 
-	switch a := cfg.Access.(type) {
+	switch acs := cfg.Access.(type) {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleOneReg(iface, %d, (%d, %d))\n",
-			cfg.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
+			cfg.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
 		)
 	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetRegCount(),
-			busWidth-1, a.GetStartBit(),
-			a.GetEndBit(), 0,
+			blk.StartAddr()+acs.StartAddr,
+			acs.RegCount,
+			busWidth-1, acs.StartBit,
+			acs.EndBit, 0,
 		)
 	default:
 		panic("unimplemented")
