@@ -21,7 +21,7 @@ func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 	switch a := st.Access.(type) {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
-			"self.%s = StaticSingleSingle(iface, %d, (%d, %d), 0b0%s)\n",
+			"self.%s = StaticSingleOneReg(iface, %d, (%d, %d), 0b0%s)\n",
 			st.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
 			st.InitValue.ToBin().ValueLiteral(),
 		)

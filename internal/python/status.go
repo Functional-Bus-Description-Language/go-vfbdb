@@ -21,7 +21,7 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 	switch acs := st.Access.(type) {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
+			"self.%s = StatusSingleOneReg(iface, %d, (%d, %d))\n",
 			st.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
 		)
 	case access.SingleContinuous:

@@ -69,7 +69,7 @@ def pack_params(params, *args):
             data = 0
             addr = a['StartAddr']
 
-        if a['Type'] == 'SingleSingle':
+        if a['Type'] == 'SingleOneReg':
             data |= arg << a['StartBit']
         elif a['Type'] == 'SingleContinuous':
             for r in range(a['RegCount']):
@@ -123,8 +123,8 @@ def create_mock_returns(buf_iface, start_addr, returns):
         r['Name'] = ret['Name']
         # TODO: Add support for groups.
 
-        if a['Type'] == 'SingleSingle':
-            r['Status'] = StatusSingleSingle(
+        if a['Type'] == 'SingleOneReg':
+            r['Status'] = StatusSingleOneReg(
                 buf_iface, a['StartAddr'] - start_addr, (a['EndBit'], a['StartBit'])
             )
         elif a['Type'] == 'SingleContinuous':
@@ -206,7 +206,7 @@ class ReturnsProc():
         return tuple(tup)
 
 
-class SingleSingle:
+class SingleOneReg:
     def __init__(self, iface, addr, mask):
         self.iface = iface
         self.addr = addr
@@ -248,7 +248,7 @@ class SingleContinuous:
             data |= ((self.iface.read(a) >> self.reg_shifts[i]) & self.masks[i]) << self.data_shifts[i]
         return data
 
-class ConfigSingleSingle(SingleSingle):
+class ConfigSingleOneReg(SingleOneReg):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
@@ -265,7 +265,7 @@ class ConfigSingleContinuous(SingleContinuous):
         for i, a in enumerate(self.addrs):
             self.iface.write(a, ((data >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
 
-class MaskSingleSingle(SingleSingle):
+class MaskSingleOneReg(SingleOneReg):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
@@ -354,17 +354,17 @@ class Static:
     def value(self, v):
         raise Exception(f"cannot set value of static element")
 
-class StaticSingleSingle(Static, SingleSingle):
+class StaticSingleOneReg(Static, SingleOneReg):
     def __init__(self, iface, addr, mask, value):
         Static.__init__(self, value)
-        SingleSingle.__init__(self, iface, addr, mask)
+        SingleOneReg.__init__(self, iface, addr, mask)
 
 class StaticSingleContinuous(Static, SingleContinuous):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, value):
         Static.__init__(self, value)
         SingleContinuous.__init__(self, iface, start_addr, reg_count, start_mask, end_mask)
 
-class StatusSingleSingle(SingleSingle):
+class StatusSingleOneReg(SingleOneReg):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
