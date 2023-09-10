@@ -9,7 +9,7 @@ import (
 
 func genStatic(st *fn.Static, blk *fn.Block) string {
 	if st.IsArray {
-		panic("not yet implemented")
+		panic("unimplemented")
 	} else {
 		return genStaticSingle(st, blk)
 	}
@@ -25,9 +25,9 @@ func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 			st.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
 			st.InitValue.ToBin().ValueLiteral(),
 		)
-	case access.SingleContinuous:
+	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
-			"self.%s = StaticSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d), 0b%s)\n",
+			"self.%s = StaticSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d), 0b%s)\n",
 			st.Name,
 			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
@@ -36,7 +36,7 @@ func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 			st.InitValue.ToBin().ValueLiteral(),
 		)
 	default:
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 
 	return code

@@ -11,7 +11,7 @@ import (
 
 func genConfig(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if cfg.IsArray {
-		panic("not yet implemented")
+		panic("unimplemented")
 	} else {
 		genConfigSingle(cfg, blk, hFmts, cFmts)
 	}
@@ -21,8 +21,8 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFm
 	switch cfg.Access.(type) {
 	case access.SingleOneReg:
 		genConfigSingleOneReg(cfg, blk, hFmts, cFmts)
-	case access.SingleContinuous:
-		panic("not yet implemented")
+	case access.SingleNRegs:
+		panic("unimplemented")
 	default:
 		panic("unknown single access strategy")
 	}
@@ -62,7 +62,7 @@ func genConfigSingleOneReg(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 			)
 		}
 	} else {
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 
 	cFmts.Code += fmt.Sprintf("\n%s {\n", writeSignature)
@@ -77,6 +77,6 @@ func genConfigSingleOneReg(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 			)
 		}
 	} else {
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 }

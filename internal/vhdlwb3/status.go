@@ -35,8 +35,8 @@ func genStatusSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case access.SingleOneReg:
 		genStatusSingleOneReg(st, fmts)
-	case access.SingleContinuous:
-		genStatusSingleContinuous(st, fmts)
+	case access.SingleNRegs:
+		genStatusSingleNRegs(st, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
@@ -53,19 +53,19 @@ func genStatusSingleOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }
 
-func genStatusSingleContinuous(st *fn.Status, fmts *BlockEntityFormatters) {
+func genStatusSingleNRegs(st *fn.Status, fmts *BlockEntityFormatters) {
 	if st.Atomic {
-		genStatusSingleContinuousAtomic(st, fmts)
+		genStatusSingleNRegsAtomic(st, fmts)
 	} else {
-		genStatusSingleContinuousNonAtomic(st, fmts)
+		genStatusSingleNRegsNonAtomic(st, fmts)
 	}
 }
 
-func genStatusSingleContinuousAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
-	a := st.Access.(access.SingleContinuous)
+func genStatusSingleNRegsAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
+	acs := st.Access.(access.SingleNRegs)
 	strategy := SeparateFirst
-	atomicShadowRange := [2]int64{st.Width - 1, a.GetStartRegWidth()}
-	chunks := makeAccessChunksContinuous(a, strategy)
+	atomicShadowRange := [2]int64{st.Width - 1, acs.GetStartRegWidth()}
+	chunks := makeAccessChunksContinuous(acs, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_atomic : std_logic_vector(%d downto %d);\n",
@@ -92,8 +92,8 @@ func genStatusSingleContinuousAtomic(st *fn.Status, fmts *BlockEntityFormatters)
 	}
 }
 
-func genStatusSingleContinuousNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
-	chunks := makeAccessChunksContinuous(st.Access.(access.SingleContinuous), Compact)
+func genStatusSingleNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
+	chunks := makeAccessChunksContinuous(st.Access.(access.SingleNRegs), Compact)
 
 	for _, c := range chunks {
 		code := fmt.Sprintf(

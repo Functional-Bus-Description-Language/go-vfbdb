@@ -21,7 +21,7 @@ type accessChunk struct {
 	endBit   int64
 }
 
-func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrategy) []accessChunk {
+func makeAccessChunksContinuous(a access.SingleNRegs, strategy chunkStrategy) []accessChunk {
 	startBit := a.GetStartBit()
 	endBit := a.GetEndBit()
 

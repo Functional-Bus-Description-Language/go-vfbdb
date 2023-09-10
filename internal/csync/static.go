@@ -12,7 +12,7 @@ import (
 
 func genStatic(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	if st.IsArray {
-		panic("not yet implemented")
+		panic("unimplemented")
 	} else {
 		genStaticSingle(st, blk, hFmts, cFmts)
 	}
@@ -22,8 +22,8 @@ func genStaticSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmt
 	switch st.Access.(type) {
 	case access.SingleOneReg:
 		genStaticSingleOneReg(st, blk, hFmts, cFmts)
-	case access.SingleContinuous:
-		panic("not yet implemented")
+	case access.SingleNRegs:
+		panic("unimplemented")
 	default:
 		panic("unknown single access strategy")
 	}
@@ -71,6 +71,6 @@ func genStaticSingleOneReg(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters
 			)
 		}
 	} else {
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 }

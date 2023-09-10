@@ -24,9 +24,9 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 			"self.%s = ConfigSingleOneReg(iface, %d, (%d, %d))\n",
 			cfg.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
 		)
-	case access.SingleContinuous:
+	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
-			"self.%s = ConfigSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
+			"self.%s = ConfigSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			cfg.Name,
 			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
@@ -34,7 +34,7 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 			a.GetEndBit(), 0,
 		)
 	default:
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 
 	return code

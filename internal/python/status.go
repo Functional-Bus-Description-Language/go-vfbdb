@@ -24,9 +24,9 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 			"self.%s = StatusSingleOneReg(iface, %d, (%d, %d))\n",
 			st.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
 		)
-	case access.SingleContinuous:
+	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
-			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
+			"self.%s = StatusSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name,
 			blk.StartAddr()+acs.GetStartAddr(),
 			acs.GetRegCount(),
@@ -34,7 +34,7 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 			acs.GetEndBit(), 0,
 		)
 	default:
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 
 	return code

@@ -71,7 +71,7 @@ def pack_params(params, *args):
 
         if a['Type'] == 'SingleOneReg':
             data |= arg << a['StartBit']
-        elif a['Type'] == 'SingleContinuous':
+        elif a['Type'] == 'SingleNRegs':
             for r in range(a['RegCount']):
                 if r == 0:
                     data |= (arg & calc_mask((BUS_WIDTH - 1, a['StartBit']))) << a['StartBit']
@@ -127,12 +127,12 @@ def create_mock_returns(buf_iface, start_addr, returns):
             r['Status'] = StatusSingleOneReg(
                 buf_iface, a['StartAddr'] - start_addr, (a['EndBit'], a['StartBit'])
             )
-        elif a['Type'] == 'SingleContinuous':
-            r['Status'] = StatusSingleContinuous(
+        elif a['Type'] == 'SingleNRegs':
+            r['Status'] = StatusSingleNRegs(
                 buf_iface, a['StartAddr'] - start_addr, a['RegCount'], a['StartMask'], a['EndMask'], False,
             )
         else:
-            raise Exception("not yet implemented")
+            raise Exception("unimplemented")
 
         rets.append(r)
 
@@ -217,7 +217,7 @@ class SingleOneReg:
     def read(self):
         return (self.iface.read(self.addr) >> self.shift) & self.mask
 
-class SingleContinuous:
+class SingleNRegs:
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         self.iface = iface
         self.addrs = list(range(start_addr, start_addr + reg_count))
@@ -256,7 +256,7 @@ class ConfigSingleOneReg(SingleOneReg):
         assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
         self.iface.write(self.addr, data << self.shift)
 
-class ConfigSingleContinuous(SingleContinuous):
+class ConfigSingleNRegs(SingleNRegs):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
 
@@ -359,16 +359,16 @@ class StaticSingleOneReg(Static, SingleOneReg):
         Static.__init__(self, value)
         SingleOneReg.__init__(self, iface, addr, mask)
 
-class StaticSingleContinuous(Static, SingleContinuous):
+class StaticSingleNRegs(Static, SingleNRegs):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, value):
         Static.__init__(self, value)
-        SingleContinuous.__init__(self, iface, start_addr, reg_count, start_mask, end_mask)
+        SingleNRegs.__init__(self, iface, start_addr, reg_count, start_mask, end_mask)
 
 class StatusSingleOneReg(SingleOneReg):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
-class StatusSingleContinuous(SingleContinuous):
+class StatusSingleNRegs(SingleNRegs):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
 

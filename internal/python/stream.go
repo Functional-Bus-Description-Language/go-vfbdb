@@ -8,7 +8,7 @@ import (
 
 func genStream(stream *fn.Stream, blk *fn.Block) string {
 	if stream.IsDownstream() {
-		panic("downstream not yet supported")
+		panic("unimplemented")
 	}
 
 	streamType := "Downstream"

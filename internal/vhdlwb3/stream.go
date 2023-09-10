@@ -75,7 +75,7 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 			)
 
 			fmts.RegistersAccess.add(addr, code)
-		case access.SingleContinuous:
+		case access.SingleNRegs:
 			chunks := makeAccessChunksContinuous(a, Compact)
 
 			for _, c := range chunks {

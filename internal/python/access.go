@@ -19,14 +19,14 @@ func genAccess(acs access.Access, b *strings.Builder) {
 	switch a := acs.(type) {
 	case access.SingleOneReg:
 		b.WriteString("'SingleOneReg'")
-	case access.SingleContinuous:
-		b.WriteString("'SingleContinuous'")
+	case access.SingleNRegs:
+		b.WriteString("'SingleNRegs'")
 	case access.ArrayContinuous:
 		b.WriteString(fmt.Sprintf("'ArrayContinuous', 'ItemCount': %d", a.ItemCount))
 	case access.ArrayMultiple:
-		panic("not yet implemented")
+		panic("unimplemented")
 	case access.ArraySingle:
-		panic("not yet implemented")
+		panic("unimplemented")
 	default:
 		panic("should never happen")
 	}

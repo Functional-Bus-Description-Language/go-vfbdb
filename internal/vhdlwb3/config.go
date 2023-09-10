@@ -40,8 +40,8 @@ func genConfigSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	switch cfg.Access.(type) {
 	case access.SingleOneReg:
 		genConfigSingleOneReg(cfg, fmts)
-	case access.SingleContinuous:
-		genConfigSingleContinuous(cfg, fmts)
+	case access.SingleNRegs:
+		genConfigSingleNRegs(cfg, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
@@ -61,16 +61,16 @@ func genConfigSingleOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }
 
-func genConfigSingleContinuous(cfg *fn.Config, fmts *BlockEntityFormatters) {
+func genConfigSingleNRegs(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	if cfg.Atomic {
-		genConfigSingleContinuousAtomic(cfg, fmts)
+		genConfigSingleNRegsAtomic(cfg, fmts)
 	} else {
-		genConfigSingleContinuousNonAtomic(cfg, fmts)
+		genConfigSingleNRegsNonAtomic(cfg, fmts)
 	}
 }
 
-func genConfigSingleContinuousAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.SingleContinuous)
+func genConfigSingleNRegsAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	a := cfg.Access.(access.SingleNRegs)
 	strategy := SeparateLast
 	atomicShadowRange := [2]int64{cfg.Width - 1 - a.GetEndRegWidth(), 0}
 	chunks := makeAccessChunksContinuous(a, strategy)
@@ -107,9 +107,9 @@ func genConfigSingleContinuousAtomic(cfg *fn.Config, fmts *BlockEntityFormatters
 	}
 }
 
-func genConfigSingleContinuousNonAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.SingleContinuous)
-	chunks := makeAccessChunksContinuous(a, Compact)
+func genConfigSingleNRegsNonAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	acs := cfg.Access.(access.SingleNRegs)
+	chunks := makeAccessChunksContinuous(acs, Compact)
 
 	for _, c := range chunks {
 		code := fmt.Sprintf(`

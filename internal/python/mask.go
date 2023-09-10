@@ -25,12 +25,12 @@ func genMaskSingle(mask *fn.Mask, blk *fn.Block) string {
 			mask.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
 		)
 	default:
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 
 	return code
 }
 
 func genMaskArray(mask *fn.Mask, blk *fn.Block) string {
-	panic("not yet implemented")
+	panic("unimplemented")
 }

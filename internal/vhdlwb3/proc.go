@@ -79,8 +79,8 @@ func genProcParamsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 		switch param.Access.(type) {
 		case access.SingleOneReg:
 			genProcParamAccessSingleOneReg(proc, fmts, param)
-		case access.SingleContinuous:
-			genProcParamAccessSingleContinuous(proc, fmts, param)
+		case access.SingleNRegs:
+			genProcParamAccessSingleNRegs(proc, fmts, param)
 		case access.ArrayContinuous:
 			genProcParamAccessArrayContinuous(proc, fmts, param)
 		default:
@@ -108,10 +108,10 @@ func genProcParamAccessSingleOneReg(proc *fn.Proc, fmts *BlockEntityFormatters, 
 	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }
 
-func genProcParamAccessSingleContinuous(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
-	a := param.Access.(access.SingleContinuous)
+func genProcParamAccessSingleNRegs(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
+	acs := param.Access.(access.SingleNRegs)
 
-	chunks := makeAccessChunksContinuous(a, Compact)
+	chunks := makeAccessChunksContinuous(acs, Compact)
 	for _, c := range chunks {
 		code := fmt.Sprintf(`
       if master_out.we = '1' then

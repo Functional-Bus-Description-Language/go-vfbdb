@@ -14,7 +14,7 @@ func genProc(p *fn.Proc, blk *fn.Block) string {
 	} else if len(p.Params) == 0 && len(p.Returns) > 0 {
 		return genReturnsProc(p, blk)
 	}
-	panic("not yet implemented")
+	panic("unimplemented")
 }
 
 func genEmptyProc(p *fn.Proc, blk *fn.Block) string {

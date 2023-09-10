@@ -70,7 +70,7 @@ func genSubblock(sb *fn.Block, blk *fn.Block) string {
 }
 
 func genSublockArray(sb *fn.Block, blk *fn.Block) string {
-	panic("not yet implemented")
+	panic("unimplemented")
 }
 
 func genSublockSingle(sb *fn.Block, blk *fn.Block) string {

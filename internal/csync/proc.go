@@ -64,7 +64,7 @@ func genProcParamsAccessSingleWrite(p *fn.Proc, blk *fn.Block, cFmts *BlockCForm
 	if p.Delay == nil && len(p.Returns) == 0 {
 		genProcParamsAccessSingleWriteNoDelayNoReturns(p, blk, cFmts)
 	} else {
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 }
 
@@ -79,7 +79,7 @@ func genProcParamsAccessSingleWriteNoDelayNoReturns(p *fn.Proc, blk *fn.Block, c
 		case access.SingleOneReg:
 			cFmts.Code += fmt.Sprintf("%s << %d", p.Name, acs.StartBit)
 		default:
-			panic("not yet implemented")
+			panic("unimplemented")
 		}
 	}
 	cFmts.Code += ");\n"
@@ -89,7 +89,7 @@ func genProcParamsAccessBlockWrite(p *fn.Proc, blk *fn.Block, cFmts *BlockCForma
 	if p.Delay == nil && len(p.Returns) == 0 {
 		genProcParamsAccessBlockWriteNoDelayNoReturns(p, blk, cFmts)
 	} else {
-		panic("not yet implemented")
+		panic("unimplemented")
 	}
 }
 
@@ -104,7 +104,7 @@ func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *fn.Proc, blk *fn.Block,
 				acs.Addr-proc.ParamsStartAddr(), p.Name, acs.StartBit,
 			)
 		default:
-			panic("not yet implemented")
+			panic("unimplemented")
 		}
 	}
 
@@ -136,14 +136,14 @@ func genProcReturnsAccessSingleRead(p *fn.Proc, blk *fn.Block, cFmts *BlockCForm
 				r.Name, acs.StartBit, c.MaskToValue(acs.StartBit, acs.EndBit),
 			)
 		default:
-			panic("not yet implemented")
+			panic("unimplemented")
 		}
 	}
 	cFmts.Code += "\treturn 0;\n"
 }
 
 func genProcReturnsAccessBlockRead(p *fn.Proc, blk *fn.Block, cFmts *BlockCFormatters) {
-	panic("not yet implemented")
+	panic("unimplemented")
 	/*
 		cFmts.Code += fmt.Sprintf(
 			"\t%s _rbuff[%d];\n", c.WidthToWriteType(blk.Width), p.ReturnsBufSize(),

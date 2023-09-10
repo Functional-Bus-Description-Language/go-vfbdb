@@ -25,8 +25,8 @@ func genStaticSingle(st *fn.Static, fmts *BlockEntityFormatters) {
 	switch st.Access.(type) {
 	case access.SingleOneReg:
 		genStaticSingleOneReg(st, fmts)
-	case access.SingleContinuous:
-		panic("not implemented")
+	case access.SingleNRegs:
+		panic("unimplemented")
 	default:
 		panic("unknown single access strategy")
 	}
