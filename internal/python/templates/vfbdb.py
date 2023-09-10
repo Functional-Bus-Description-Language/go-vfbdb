@@ -476,6 +476,8 @@ class ArrayNInReg:
         return self.item_count
 
     def read(self, idx=None):
+        mask = (1 << self.width) - 1
+
         if idx is None:
             idx = tuple(range(0, self.item_count))
             reg_idx = tuple(range(self.reg_count))
@@ -483,7 +485,6 @@ class ArrayNInReg:
             assert 0 <= idx < self.item_count
             reg_idx = idx // self.items_in_reg
             shift = self.start_bit + self.width * (idx % self.items_in_reg)
-            mask = (1 << self.width) - 1
             return (self.iface.read(self.addr + reg_idx) >> shift) & mask
         else:
             reg_idx = set()
@@ -496,7 +497,6 @@ class ArrayNInReg:
         data = []
         for i in idx:
             shift = self.start_bit + self.width * (i % self.items_in_reg)
-            mask = (1 << self.width) - 1
             data.append((reg_data[i // self.items_in_reg] >> shift) & mask)
 
         return data
@@ -518,6 +518,15 @@ class ConfigArrayNInReg(ArrayNInReg):
             raise Exception("unsupported data type {}".format(type(data)))
 
 class StatusArrayNInReg(ArrayNInReg):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
+
+
+class ArrayNInRegMInEndReg(ArrayNInReg):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
+
+class StatusArrayNInRegMInEndReg(ArrayNInRegMInEndReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 

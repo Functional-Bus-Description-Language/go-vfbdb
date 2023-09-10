@@ -23,6 +23,8 @@ func genConfigArray(cfg *fn.Config, fmts *BlockEntityFormatters) {
 		genConfigArrayOneInReg(cfg, fmts)
 	case access.ArrayNInReg:
 		genConfigArrayNInReg(cfg, fmts)
+	case access.ArrayNInRegMInEndReg:
+		genConfigArrayNInRegMInEndReg(cfg, fmts)
 	default:
 		panic("unimplemented")
 	}
@@ -190,27 +192,37 @@ func genConfigArrayNInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add(addr, code)
 }
 
-/*
-		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
-		code = fmt.Sprintf(`
+func genConfigArrayNInRegMInEndReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	acs := cfg.Access.(access.ArrayNInRegMInEndReg)
+
+	port := fmt.Sprintf(
+		";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)",
+		cfg.Name, cfg.Count-1, cfg.Width-1,
+	)
+	fmts.EntityFunctionalPorts += port
+
+	addr := [2]int64{acs.StartAddr, acs.GetEndAddr() - 1}
+	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
             %[4]s_o((addr-%[5]d)*%[6]d+i) <= master_out.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d);
          end if;
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_o((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), cfg.Name, a.GetStartAddr(), a.ItemsPerReg,
-		)
-		fmts.RegistersAccess.add(addr, code)
+		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, cfg.Name, acs.StartAddr, acs.ItemsInReg,
+	)
+	fmts.RegistersAccess.add(addr, code)
 
-		addr = [2]int64{a.GetEndAddr(), a.GetEndAddr()}
-		code = fmt.Sprintf(`
+	addr = [2]int64{acs.GetEndAddr(), acs.GetEndAddr()}
+	code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
             %[4]s_o(%[5]d+i) <= master_out.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d);
          end if;
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_o(%[5]d+i);
       end loop;`,
-			a.ItemsInLastReg()-1, a.ItemWidth, a.GetStartBit(), cfg.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
-		)
-*/
+		acs.ItemsInEndReg-1, acs.ItemWidth, acs.GetStartBit(), cfg.Name, (acs.RegCount-1)*acs.ItemsInReg,
+	)
+
+	fmts.RegistersAccess.add(addr, code)
+}

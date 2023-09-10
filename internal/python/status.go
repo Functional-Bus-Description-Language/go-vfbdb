@@ -72,6 +72,16 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			acs.ItemCount,
 			acs.ItemsInReg,
 		)
+	case access.ArrayNInRegMInEndReg:
+		code += indent + fmt.Sprintf(
+			"self.%s = StatusArrayNInRegMInEndReg(iface, %d, %d, %d, %d, %d)\n",
+			st.Name,
+			blk.StartAddr()+acs.StartAddr,
+			acs.StartBit,
+			acs.ItemWidth,
+			acs.ItemCount,
+			acs.ItemsInReg,
+		)
 	default:
 		panic("unimplemented")
 	}
