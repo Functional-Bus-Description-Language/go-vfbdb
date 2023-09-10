@@ -43,34 +43,34 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 func genStatusArray(st *fn.Status, blk *fn.Block) string {
 	var code string
 
-	switch a := st.Access.(type) {
+	switch acs := st.Access.(type) {
 	case access.ArraySingle:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetEndBit(),
-			a.GetStartBit(),
-			a.GetRegCount(),
+			blk.StartAddr()+acs.GetStartAddr(),
+			acs.GetEndBit(),
+			acs.GetStartBit(),
+			acs.GetRegCount(),
 		)
 	case access.ArrayOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayOneReg(iface, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetStartBit(),
-			a.ItemWidth,
-			a.ItemCount,
+			blk.StartAddr()+acs.Addr,
+			acs.StartBit,
+			acs.ItemWidth,
+			acs.ItemCount,
 		)
 	case access.ArrayMultiple:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetStartBit(),
-			a.ItemWidth,
-			a.ItemCount,
-			a.ItemsPerReg,
+			blk.StartAddr()+acs.GetStartAddr(),
+			acs.GetStartBit(),
+			acs.ItemWidth,
+			acs.ItemCount,
+			acs.ItemsPerReg,
 		)
 	default:
 		panic("unimplemented")

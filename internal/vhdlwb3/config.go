@@ -145,7 +145,7 @@ func genConfigArraySingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 }
 
 func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.ArrayOneReg)
+	acs := cfg.Access.(access.ArrayOneReg)
 
 	port := fmt.Sprintf(
 		";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)",
@@ -153,7 +153,7 @@ func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	)
 	fmts.EntityFunctionalPorts += port
 
-	addr := [2]int64{a.GetStartAddr(), a.GetEndAddr()}
+	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -161,7 +161,7 @@ func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
          end if;
          master_in.dat(%[3]d*(i+1)+%[4]d-1 downto %[3]d*i+%[4]d) <= %[2]s_o(i);
       end loop;`,
-		cfg.Count-1, cfg.Name, a.ItemWidth, a.GetStartBit(),
+		cfg.Count-1, cfg.Name, acs.ItemWidth, acs.StartBit,
 	)
 
 	fmts.RegistersAccess.add(addr, code)

@@ -123,7 +123,7 @@ func genStatusArraySingle(st *fn.Status, fmts *BlockEntityFormatters) {
 }
 
 func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
-	a := st.Access.(access.ArrayOneReg)
+	acs := st.Access.(access.ArrayOneReg)
 
 	port := fmt.Sprintf(
 		";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)",
@@ -131,12 +131,12 @@ func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	)
 	fmts.EntityFunctionalPorts += port
 
-	addr := [2]int64{a.GetStartAddr(), a.GetEndAddr()}
+	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
       end loop;`,
-		st.Count-1, a.ItemWidth, a.GetStartBit(), st.Name,
+		st.Count-1, acs.ItemWidth, acs.StartBit, st.Name,
 	)
 
 	fmts.RegistersAccess.add(addr, code)
