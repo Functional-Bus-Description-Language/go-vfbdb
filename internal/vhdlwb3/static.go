@@ -37,7 +37,7 @@ func genStaticSingleSingle(st *fn.Static, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s; -- %s",
-		a.EndBit(), a.StartBit(), string(st.InitValue), st.Name,
+		a.GetEndBit(), a.GetStartBit(), string(st.InitValue), st.Name,
 	)
 
 	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)

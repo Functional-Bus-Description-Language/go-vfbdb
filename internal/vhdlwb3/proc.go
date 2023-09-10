@@ -103,7 +103,7 @@ func genProcParamAccessSingleSingle(proc *fn.Proc, fmts *BlockEntityFormatters, 
          %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);
       end if;
       master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;`,
-		proc.Name, param.Name, a.EndBit(), a.StartBit(),
+		proc.Name, param.Name, a.GetEndBit(), a.GetStartBit(),
 	)
 	fmts.RegistersAccess.add([2]int64{a.GetStartAddr(), a.GetStartAddr()}, code)
 }
@@ -172,7 +172,7 @@ begin
    end loop;
 end process;
 `,
-		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.StartBit(), a.GetRegCount()-1,
+		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.GetStartBit(), a.GetRegCount()-1,
 	)
 	fmts.CombinationalProcesses += code
 
@@ -182,12 +182,12 @@ func genProcReturnsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	for _, r := range proc.Returns {
 		switch r.Access.(type) {
 		case access.SingleSingle:
-			access := r.Access.(access.SingleSingle)
+			acs := r.Access.(access.SingleSingle)
 
-			addr := [2]int64{access.GetStartAddr(), access.GetStartAddr()}
+			addr := [2]int64{acs.GetStartAddr(), acs.GetStartAddr()}
 			code := fmt.Sprintf(
 				"      master_in.dat(%[1]d downto %[2]d) <= %[3]s_i.%[4]s;\n",
-				access.EndBit(), access.StartBit(), proc.Name, r.Name,
+				acs.GetEndBit(), acs.GetStartBit(), proc.Name, r.Name,
 			)
 
 			fmts.RegistersAccess.add(addr, code)

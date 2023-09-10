@@ -22,8 +22,8 @@ type accessChunk struct {
 }
 
 func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrategy) []accessChunk {
-	startBit := a.StartBit()
-	endBit := a.EndBit()
+	startBit := a.GetStartBit()
+	endBit := a.GetEndBit()
 
 	cs := []accessChunk{}
 
@@ -47,8 +47,8 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
-				fmt.Sprintf("%d", a.Width()-1),
-				fmt.Sprintf("%d", a.Width()-a.EndRegWidth()),
+				fmt.Sprintf("%d", a.GetWidth()-1),
+				fmt.Sprintf("%d", a.GetWidth()-a.EndRegWidth()),
 			},
 			startBit: 0,
 			endBit:   endBit,
@@ -66,8 +66,8 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
-				fmt.Sprintf("%d", a.Width()-1),
-				fmt.Sprintf("%d", a.Width()-a.EndRegWidth()),
+				fmt.Sprintf("%d", a.GetWidth()-1),
+				fmt.Sprintf("%d", a.GetWidth()-a.EndRegWidth()),
 			},
 			startBit: 0,
 			endBit:   endBit,
@@ -107,8 +107,8 @@ func makeAccessChunksContinuous(a access.SingleContinuous, strategy chunkStrateg
 		cs = append(cs, accessChunk{
 			addr: [2]int64{a.GetEndAddr(), a.GetEndAddr()},
 			range_: [2]string{
-				fmt.Sprintf("%d", a.Width()-1),
-				fmt.Sprintf("%d", a.Width()-a.EndRegWidth()),
+				fmt.Sprintf("%d", a.GetWidth()-1),
+				fmt.Sprintf("%d", a.GetWidth()-a.EndRegWidth()),
 			},
 			startBit: 0,
 			endBit:   endBit,

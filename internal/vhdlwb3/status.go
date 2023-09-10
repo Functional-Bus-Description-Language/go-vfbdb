@@ -47,7 +47,7 @@ func genStatusSingleSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i;\n",
-		a.EndBit(), a.StartBit(), st.Name,
+		a.GetEndBit(), a.GetStartBit(), st.Name,
 	)
 
 	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
@@ -113,7 +113,7 @@ func genStatusArraySingle(st *fn.Status, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
-		a.EndBit(), a.StartBit(), st.Name, a.GetStartAddr(),
+		a.GetEndBit(), a.GetStartBit(), st.Name, a.GetStartAddr(),
 	)
 
 	fmts.RegistersAccess.add(
@@ -136,7 +136,7 @@ func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
       end loop;`,
-		st.Count-1, a.ItemWidth, a.StartBit(), st.Name,
+		st.Count-1, a.ItemWidth, a.GetStartBit(), st.Name,
 	)
 
 	fmts.RegistersAccess.add(addr, code)
@@ -160,7 +160,7 @@ func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
+			a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
 		)
 	} else {
 		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
@@ -168,7 +168,7 @@ func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.StartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
+			a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
 		)
 		fmts.RegistersAccess.add(addr, code)
 
@@ -177,7 +177,7 @@ func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
       end loop;`,
-			a.ItemsInLastReg()-1, a.ItemWidth, a.StartBit(), st.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
+			a.ItemsInLastReg()-1, a.ItemWidth, a.GetStartBit(), st.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
 		)
 	}
 

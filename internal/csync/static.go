@@ -67,7 +67,7 @@ func genStaticSingleSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.GetStartBit(), utils.Uint64Mask(a.GetStartBit(), a.GetEndBit()),
 			)
 		}
 	} else {

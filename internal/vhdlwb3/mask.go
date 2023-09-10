@@ -44,7 +44,7 @@ func genMaskSingleSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
          %[1]s_o <= master_out.dat(%[2]d downto %[3]d);
       end if;
       master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;`,
-		mask.Name, a.EndBit(), a.StartBit(),
+		mask.Name, a.GetEndBit(), a.GetStartBit(),
 	)
 
 	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)

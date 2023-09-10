@@ -22,7 +22,7 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 	case access.SingleSingle:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
-			cfg.Name, blk.StartAddr()+a.Addr, a.EndBit(), a.StartBit(),
+			cfg.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
 		)
 	case access.SingleContinuous:
 		code += indent + fmt.Sprintf(
@@ -30,8 +30,8 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 			cfg.Name,
 			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
-			busWidth-1, a.StartBit(),
-			a.EndBit(), 0,
+			busWidth-1, a.GetStartBit(),
+			a.GetEndBit(), 0,
 		)
 	default:
 		panic("not yet implemented")
@@ -49,8 +49,8 @@ func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 			"self.%s = ConfigArraySingle(iface, %d, (%d, %d), %d)\n",
 			cfg.Name,
 			blk.StartAddr()+a.GetStartAddr(),
-			a.EndBit(),
-			a.StartBit(),
+			a.GetEndBit(),
+			a.GetStartBit(),
 			a.GetRegCount(),
 		)
 	default:

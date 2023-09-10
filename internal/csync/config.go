@@ -58,7 +58,7 @@ func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.StartBit(), utils.Uint64Mask(a.StartBit(), a.EndBit()),
+`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.GetStartBit(), utils.Uint64Mask(a.GetStartBit(), a.GetEndBit()),
 			)
 		}
 	} else {
@@ -73,7 +73,7 @@ func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(
-				"	return iface->write(%d, (data << %d));\n };", blk.StartAddr()+a.Addr, a.StartBit(),
+				"	return iface->write(%d, (data << %d));\n };", blk.StartAddr()+a.Addr, a.GetStartBit(),
 			)
 		}
 	} else {

@@ -22,7 +22,7 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 	case access.SingleSingle:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
-			st.Name, blk.StartAddr()+a.Addr, a.EndBit(), a.StartBit(),
+			st.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
 		)
 	case access.SingleContinuous:
 		code += indent + fmt.Sprintf(
@@ -30,8 +30,8 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 			st.Name,
 			blk.StartAddr()+a.GetStartAddr(),
 			a.GetRegCount(),
-			busWidth-1, a.StartBit(),
-			a.EndBit(), 0,
+			busWidth-1, a.GetStartBit(),
+			a.GetEndBit(), 0,
 		)
 	default:
 		panic("not yet implemented")
@@ -49,8 +49,8 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			"self.%s = StatusArraySingle(iface, %d, (%d, %d), %d)\n",
 			st.Name,
 			blk.StartAddr()+a.GetStartAddr(),
-			a.EndBit(),
-			a.StartBit(),
+			a.GetEndBit(),
+			a.GetStartBit(),
 			a.GetRegCount(),
 		)
 	case access.ArrayOneReg:
@@ -58,7 +58,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			"self.%s = StatusArrayOneReg(iface, %d, %d, %d, %d)\n",
 			st.Name,
 			blk.StartAddr()+a.GetStartAddr(),
-			a.StartBit(),
+			a.GetStartBit(),
 			a.ItemWidth,
 			a.ItemCount,
 		)
@@ -67,7 +67,7 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 			"self.%s = StatusArrayMultiple(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
 			blk.StartAddr()+a.GetStartAddr(),
-			a.StartBit(),
+			a.GetStartBit(),
 			a.ItemWidth,
 			a.ItemCount,
 			a.ItemsPerReg,
