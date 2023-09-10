@@ -430,15 +430,18 @@ class StatusArraySingle(ArraySingle):
     def __init__(self, iface, addr, mask, item_count):
         super().__init__(iface, addr, mask, item_count)
 
-class StatusArrayMultiple:
-    def __init__(self, iface, addr, start_bit, width, item_count, items_per_access):
+class ArrayMultiple:
+    def __init__(self, iface, addr, start_bit, width, item_count, items_per_reg):
         self.iface = iface
         self.addr = addr
         self.start_bit = start_bit
         self.width = width
         self.item_count = item_count
-        self.items_per_access = items_per_access
-        self.reg_count = math.ceil(item_count / self.items_per_access)
+        self.items_per_reg = items_per_reg
+        self.reg_count = math.ceil(item_count / self.items_per_reg)
+
+    def __len__(self):
+        return self.item_count
 
     def read(self, idx=None):
         if idx is None:
@@ -446,26 +449,45 @@ class StatusArrayMultiple:
             reg_idx = tuple(range(self.reg_count))
         elif type(idx) == int:
             assert 0 <= idx < self.item_count
-            reg_idx = idx // self.items_per_access
-            shift = self.start_bit + self.width * (idx % self.items_per_access)
+            reg_idx = idx // self.items_per_reg
+            shift = self.start_bit + self.width * (idx % self.items_per_reg)
             mask = (1 << self.width) - 1
             return (self.iface.read(self.addr + reg_idx) >> shift) & mask
         else:
             reg_idx = set()
             for i in idx:
                 assert 0 <= i < self.item_count
-                reg_idx.add(i // self.items_per_access)
+                reg_idx.add(i // self.items_per_reg)
 
         reg_data = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
 
         data = []
         for i in idx:
-            shift = self.start_bit + self.width * (i % self.items_per_access)
+            shift = self.start_bit + self.width * (i % self.items_per_reg)
             mask = (1 << self.width) - 1
-            data.append((reg_data[i // self.items_per_access] >> shift) & mask)
+            data.append((reg_data[i // self.items_per_reg] >> shift) & mask)
 
         return data
 
+class ConfigArrayMultiple(ArrayMultiple):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_per_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_per_reg)
+
+    def write(self, data, offset=0):
+        """ offset - elements index offset, applied also when data is dictionary """
+        if len(data) == 0:
+            raise Exception("empty data")
+
+        if type(data) == list or type(data) == tuple:
+            pass
+        elif type(data) == dict:
+            pass
+        else:
+            raise Exception("unsupported data type {}".format(type(data)))
+
+class StatusArrayMultiple(ArrayMultiple):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_per_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_per_reg)
 
 class Upstream():
     def __init__(self, iface, addr, returns):
