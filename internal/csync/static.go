@@ -20,8 +20,8 @@ func genStatic(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *Blo
 
 func genStaticSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch st.Access.(type) {
-	case access.SingleSingle:
-		genStaticSingleSingle(st, blk, hFmts, cFmts)
+	case access.SingleOneReg:
+		genStaticSingleOneReg(st, blk, hFmts, cFmts)
 	case access.SingleContinuous:
 		panic("not yet implemented")
 	default:
@@ -29,7 +29,7 @@ func genStaticSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmt
 	}
 }
 
-func genStaticSingleSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genStaticSingleOneReg(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	wTyp := c.WidthToWriteType(st.Width)
 	rTyp := c.WidthToReadType(st.Width)
 
@@ -52,12 +52,12 @@ func genStaticSingleSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters
 		fmt.Sprintf("0x%s", strconv.FormatUint(st.InitValue.Uint64(), 16)),
 	)
 
-	a := st.Access.(access.SingleSingle)
+	acs := st.Access.(access.SingleOneReg)
 	cFmts.Code += fmt.Sprintf("%s {\n", signature)
 	if readType.Typ() != "ByteArray" && rTyp.Typ() != "ByteArray" {
 		if busWidth == st.Width {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};\n", blk.StartAddr()+a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", blk.StartAddr()+acs.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -67,7 +67,7 @@ func genStaticSingleSingle(st *fn.Static, blk *fn.Block, hFmts *BlockHFormatters
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.GetStartBit(), utils.Uint64Mask(a.GetStartBit(), a.GetEndBit()),
+`, readType.Depointer().String(), blk.StartAddr()+acs.Addr, acs.StartBit, utils.Uint64Mask(acs.StartBit, acs.EndBit),
 			)
 		}
 	} else {

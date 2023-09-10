@@ -38,8 +38,8 @@ func genConfigSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 
 	switch cfg.Access.(type) {
-	case access.SingleSingle:
-		genConfigSingleSingle(cfg, fmts)
+	case access.SingleOneReg:
+		genConfigSingleOneReg(cfg, fmts)
 	case access.SingleContinuous:
 		genConfigSingleContinuous(cfg, fmts)
 	default:
@@ -47,18 +47,18 @@ func genConfigSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genConfigSingleSingle(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.SingleSingle)
+func genConfigSingleOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	acs := cfg.Access.(access.SingleOneReg)
 
 	code := fmt.Sprintf(`
       if master_out.we = '1' then
          %[1]s_o <= master_out.dat(%[2]d downto %[3]d);
       end if;
       master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;`,
-		cfg.Name, a.GetEndBit(), a.GetStartBit(),
+		cfg.Name, acs.EndBit, acs.StartBit,
 	)
 
-	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
+	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }
 
 func genConfigSingleContinuous(cfg *fn.Config, fmts *BlockEntityFormatters) {

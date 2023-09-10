@@ -33,8 +33,8 @@ func genStatusSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 
 	switch st.Access.(type) {
-	case access.SingleSingle:
-		genStatusSingleSingle(st, fmts)
+	case access.SingleOneReg:
+		genStatusSingleOneReg(st, fmts)
 	case access.SingleContinuous:
 		genStatusSingleContinuous(st, fmts)
 	default:
@@ -42,15 +42,15 @@ func genStatusSingle(st *fn.Status, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStatusSingleSingle(st *fn.Status, fmts *BlockEntityFormatters) {
-	a := st.Access.(access.SingleSingle)
+func genStatusSingleOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
+	acs := st.Access.(access.SingleOneReg)
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i;\n",
-		a.GetEndBit(), a.GetStartBit(), st.Name,
+		acs.EndBit, acs.StartBit, st.Name,
 	)
 
-	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
+	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }
 
 func genStatusSingleContinuous(st *fn.Status, fmts *BlockEntityFormatters) {

@@ -29,23 +29,23 @@ func genMaskSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 
 	switch mask.Access.(type) {
-	case access.SingleSingle:
-		genMaskSingleSingle(mask, fmts)
+	case access.SingleOneReg:
+		genMaskSingleOneReg(mask, fmts)
 	default:
 		panic("unknown single access strategy")
 	}
 }
 
-func genMaskSingleSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
-	a := mask.Access.(access.SingleSingle)
+func genMaskSingleOneReg(mask *fn.Mask, fmts *BlockEntityFormatters) {
+	acs := mask.Access.(access.SingleOneReg)
 
 	code := fmt.Sprintf(`
       if master_out.we = '1' then
          %[1]s_o <= master_out.dat(%[2]d downto %[3]d);
       end if;
       master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;`,
-		mask.Name, a.GetEndBit(), a.GetStartBit(),
+		mask.Name, acs.EndBit, acs.StartBit,
 	)
 
-	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
+	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }

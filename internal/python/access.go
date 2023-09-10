@@ -17,7 +17,7 @@ func genAccess(acs access.Access, b *strings.Builder) {
 	)
 
 	switch a := acs.(type) {
-	case access.SingleSingle:
+	case access.SingleOneReg:
 		b.WriteString("'SingleSingle'")
 	case access.SingleContinuous:
 		b.WriteString("'SingleContinuous'")

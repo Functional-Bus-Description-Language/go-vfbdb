@@ -75,9 +75,9 @@ func genProcParamsAccessSingleWriteNoDelayNoReturns(p *fn.Proc, blk *fn.Block, c
 			cFmts.Code += " | "
 		}
 
-		switch a := p.Access.(type) {
-		case access.SingleSingle:
-			cFmts.Code += fmt.Sprintf("%s << %d", p.Name, a.GetStartBit())
+		switch acs := p.Access.(type) {
+		case access.SingleOneReg:
+			cFmts.Code += fmt.Sprintf("%s << %d", p.Name, acs.StartBit)
 		default:
 			panic("not yet implemented")
 		}
@@ -97,11 +97,11 @@ func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *fn.Proc, blk *fn.Block,
 	cFmts.Code += fmt.Sprintf("\t%s buf[%d] = {0};\n\n", c.WidthToWriteType(blk.Width), proc.ParamsBufSize())
 
 	for _, p := range proc.Params {
-		switch a := p.Access.(type) {
-		case access.SingleSingle:
+		switch acs := p.Access.(type) {
+		case access.SingleOneReg:
 			cFmts.Code += fmt.Sprintf(
 				"\tbuf[%d] |= %s << %d;\n",
-				a.Addr-proc.ParamsStartAddr(), p.Name, a.GetStartBit(),
+				acs.Addr-proc.ParamsStartAddr(), p.Name, acs.StartBit,
 			)
 		default:
 			panic("not yet implemented")
@@ -129,11 +129,11 @@ func genProcReturnsAccessSingleRead(p *fn.Proc, blk *fn.Block, cFmts *BlockCForm
 	cFmts.Code += "\tif (err)\n\t\t return err;\n"
 
 	for _, r := range p.Returns {
-		switch a := r.Access.(type) {
-		case access.SingleSingle:
+		switch acs := r.Access.(type) {
+		case access.SingleOneReg:
 			cFmts.Code += fmt.Sprintf(
 				"\t*%s = (_rdata >> %d) & 0x%X;\n",
-				r.Name, a.GetStartBit(), c.MaskToValue(a.GetStartBit(), a.GetEndBit()),
+				r.Name, acs.StartBit, c.MaskToValue(acs.StartBit, acs.EndBit),
 			)
 		default:
 			panic("not yet implemented")

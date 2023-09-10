@@ -18,20 +18,20 @@ func genStatus(st *fn.Status, blk *fn.Block) string {
 func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 	var code string
 
-	switch a := st.Access.(type) {
-	case access.SingleSingle:
+	switch acs := st.Access.(type) {
+	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleSingle(iface, %d, (%d, %d))\n",
-			st.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
+			st.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
 		)
 	case access.SingleContinuous:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleContinuous(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name,
-			blk.StartAddr()+a.GetStartAddr(),
-			a.GetRegCount(),
-			busWidth-1, a.GetStartBit(),
-			a.GetEndBit(), 0,
+			blk.StartAddr()+acs.GetStartAddr(),
+			acs.GetRegCount(),
+			busWidth-1, acs.GetStartBit(),
+			acs.GetEndBit(), 0,
 		)
 	default:
 		panic("not yet implemented")

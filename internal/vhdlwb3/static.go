@@ -23,8 +23,8 @@ func genStaticSingle(st *fn.Static, fmts *BlockEntityFormatters) {
 	fmts.EntityFunctionalPorts += s
 
 	switch st.Access.(type) {
-	case access.SingleSingle:
-		genStaticSingleSingle(st, fmts)
+	case access.SingleOneReg:
+		genStaticSingleOneReg(st, fmts)
 	case access.SingleContinuous:
 		panic("not implemented")
 	default:
@@ -32,13 +32,13 @@ func genStaticSingle(st *fn.Static, fmts *BlockEntityFormatters) {
 	}
 }
 
-func genStaticSingleSingle(st *fn.Static, fmts *BlockEntityFormatters) {
-	a := st.Access.(access.SingleSingle)
+func genStaticSingleOneReg(st *fn.Static, fmts *BlockEntityFormatters) {
+	acs := st.Access.(access.SingleOneReg)
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s; -- %s",
-		a.GetEndBit(), a.GetStartBit(), string(st.InitValue), st.Name,
+		acs.EndBit, acs.StartBit, string(st.InitValue), st.Name,
 	)
 
-	fmts.RegistersAccess.add([2]int64{a.Addr, a.Addr}, code)
+	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
 }

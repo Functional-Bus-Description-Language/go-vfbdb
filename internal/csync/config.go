@@ -19,8 +19,8 @@ func genConfig(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *Bl
 
 func genConfigSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	switch cfg.Access.(type) {
-	case access.SingleSingle:
-		genConfigSingleSingle(cfg, blk, hFmts, cFmts)
+	case access.SingleOneReg:
+		genConfigSingleOneReg(cfg, blk, hFmts, cFmts)
 	case access.SingleContinuous:
 		panic("not yet implemented")
 	default:
@@ -28,7 +28,7 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFm
 	}
 }
 
-func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
+func genConfigSingleOneReg(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatters, cFmts *BlockCFormatters) {
 	rType := c.WidthToReadType(cfg.Width)
 	wType := c.WidthToWriteType(cfg.Width)
 
@@ -43,12 +43,12 @@ func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 
 	hFmts.Code += fmt.Sprintf("\n%s;\n%s;\n", readSignature, writeSignature)
 
-	a := cfg.Access.(access.SingleSingle)
+	acs := cfg.Access.(access.SingleOneReg)
 	cFmts.Code += fmt.Sprintf("\n%s {\n", readSignature)
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->read(%d, data);\n};\n", blk.StartAddr()+a.Addr,
+				"\treturn iface->read(%d, data);\n};\n", blk.StartAddr()+acs.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(`	%s aux;
@@ -58,7 +58,7 @@ func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 	*data = (aux >> %d) & 0x%x;
 	return 0;
 };
-`, readType.Depointer().String(), blk.StartAddr()+a.Addr, a.GetStartBit(), utils.Uint64Mask(a.GetStartBit(), a.GetEndBit()),
+`, readType.Depointer().String(), blk.StartAddr()+acs.Addr, acs.StartBit, utils.Uint64Mask(acs.StartBit, acs.EndBit),
 			)
 		}
 	} else {
@@ -69,11 +69,11 @@ func genConfigSingleSingle(cfg *fn.Config, blk *fn.Block, hFmts *BlockHFormatter
 	if readType.Typ() != "ByteArray" && rType.Typ() != "ByteArray" {
 		if busWidth == cfg.Width {
 			cFmts.Code += fmt.Sprintf(
-				"\treturn iface->write(%d, data);\n};\n", blk.StartAddr()+a.Addr,
+				"\treturn iface->write(%d, data);\n};\n", blk.StartAddr()+acs.Addr,
 			)
 		} else {
 			cFmts.Code += fmt.Sprintf(
-				"	return iface->write(%d, (data << %d));\n };", blk.StartAddr()+a.Addr, a.GetStartBit(),
+				"	return iface->write(%d, (data << %d));\n };", blk.StartAddr()+acs.Addr, acs.StartBit,
 			)
 		}
 	} else {

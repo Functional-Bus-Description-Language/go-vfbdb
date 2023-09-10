@@ -19,7 +19,7 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 	var code string
 
 	switch a := cfg.Access.(type) {
-	case access.SingleSingle:
+	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = ConfigSingleSingle(iface, %d, (%d, %d))\n",
 			cfg.Name, blk.StartAddr()+a.Addr, a.GetEndBit(), a.GetStartBit(),
