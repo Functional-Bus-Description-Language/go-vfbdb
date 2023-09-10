@@ -84,7 +84,7 @@ def pack_params(params, *args):
                     if r < a['RegCount'] - 1:
                         buf.append(data)
                         data = 0
-        elif a['Type'] == 'ArrayContinuous':
+        elif a['Type'] == 'ArrayNRegs':
             start_bit = a['StartBit']
             for i, v in  enumerate(arg):
                 width = param['Width']

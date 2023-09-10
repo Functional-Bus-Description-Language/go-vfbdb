@@ -81,8 +81,8 @@ func genProcParamsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 			genProcParamAccessSingleOneReg(proc, fmts, param)
 		case access.SingleNRegs:
 			genProcParamAccessSingleNRegs(proc, fmts, param)
-		case access.ArrayContinuous:
-			genProcParamAccessArrayContinuous(proc, fmts, param)
+		case access.ArrayNRegs:
+			genProcParamAccessArrayNRegs(proc, fmts, param)
 		default:
 			panic("should never happen")
 		}
@@ -124,21 +124,21 @@ func genProcParamAccessSingleNRegs(proc *fn.Proc, fmts *BlockEntityFormatters, p
 	}
 }
 
-func genProcParamAccessArrayContinuous(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
-	a := param.Access.(access.ArrayContinuous)
+func genProcParamAccessArrayNRegs(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
+	acs := param.Access.(access.ArrayNRegs)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_%s : slv_vector(%d downto 0)(%d downto 0);\n",
-		proc.Name, param.Name, a.GetRegCount(), busWidth-1,
+		proc.Name, param.Name, acs.RegCount, busWidth-1,
 	)
 
 	code := fmt.Sprintf(`
       if master_out.we = '1' then
          %s_%s(addr - %d) <= master_out.dat;
       end if;`,
-		proc.Name, param.Name, a.GetStartAddr(),
+		proc.Name, param.Name, acs.StartAddr,
 	)
-	fmts.RegistersAccess.add([2]int64{a.GetStartAddr(), a.GetEndAddr()}, code)
+	fmts.RegistersAccess.add([2]int64{acs.StartAddr, acs.GetEndAddr()}, code)
 
 	code = fmt.Sprintf(
 		`
@@ -172,10 +172,9 @@ begin
    end loop;
 end process;
 `,
-		proc.Name, param.Name, busWidth, a.ItemWidth, a.ItemCount, a.GetStartBit(), a.GetRegCount()-1,
+		proc.Name, param.Name, busWidth, acs.ItemWidth, acs.ItemCount, acs.StartBit, acs.RegCount-1,
 	)
 	fmts.CombinationalProcesses += code
-
 }
 
 func genProcReturnsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
