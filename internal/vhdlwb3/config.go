@@ -21,8 +21,8 @@ func genConfigArray(cfg *fn.Config, fmts *BlockEntityFormatters) {
 		genConfigArrayOneReg(cfg, fmts)
 	case access.ArrayOneInReg:
 		genConfigArrayOneInReg(cfg, fmts)
-	case access.ArrayMultiple:
-		genConfigArrayMultiple(cfg, fmts)
+	case access.ArrayNInReg:
+		genConfigArrayNInReg(cfg, fmts)
 	default:
 		panic("unimplemented")
 	}
@@ -167,8 +167,8 @@ func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add(addr, code)
 }
 
-func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
-	a := cfg.Access.(access.ArrayMultiple)
+func genConfigArrayNInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
+	acs := cfg.Access.(access.ArrayNInReg)
 
 	port := fmt.Sprintf(
 		";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)",
@@ -176,21 +176,21 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	)
 	fmts.EntityFunctionalPorts += port
 
-	var addr [2]int64
-	var code string
-
-	if a.ItemsInLastReg() == a.ItemsPerReg {
-		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr()}
-		code = fmt.Sprintf(`
+	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
+	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
             %[4]s_o((addr-%[5]d)*%[6]d+i) <= master_out.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d);
          end if;
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_o((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), cfg.Name, a.GetStartAddr(), a.ItemsPerReg,
-		)
-	} else {
+		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, cfg.Name, acs.StartAddr, acs.ItemsInReg,
+	)
+
+	fmts.RegistersAccess.add(addr, code)
+}
+
+/*
 		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
 		code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
@@ -213,7 +213,4 @@ func genConfigArrayMultiple(cfg *fn.Config, fmts *BlockEntityFormatters) {
       end loop;`,
 			a.ItemsInLastReg()-1, a.ItemWidth, a.GetStartBit(), cfg.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
 		)
-	}
-
-	fmts.RegistersAccess.add(addr, code)
-}
+*/

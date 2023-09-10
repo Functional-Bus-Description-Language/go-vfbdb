@@ -23,7 +23,7 @@ func genAccess(acs access.Access, b *strings.Builder) {
 		b.WriteString("'SingleNRegs'")
 	case access.ArrayNRegs:
 		b.WriteString(fmt.Sprintf("'ArrayNRegs', 'ItemCount': %d", a.ItemCount))
-	case access.ArrayMultiple:
+	case access.ArrayNInReg:
 		panic("unimplemented")
 	case access.ArrayOneInReg:
 		panic("unimplemented")

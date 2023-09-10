@@ -21,8 +21,8 @@ func genStatusArray(st *fn.Status, fmts *BlockEntityFormatters) {
 		genStatusArrayOneReg(st, fmts)
 	case access.ArrayOneInReg:
 		genStatusArrayOneInReg(st, fmts)
-	case access.ArrayMultiple:
-		genStatusArrayMultiple(st, fmts)
+	case access.ArrayNInReg:
+		genStatusArrayNInReg(st, fmts)
 	default:
 		panic("unimplemented")
 	}
@@ -142,6 +142,27 @@ func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	fmts.RegistersAccess.add(addr, code)
 }
 
+func genStatusArrayNInReg(st *fn.Status, fmts *BlockEntityFormatters) {
+	acs := st.Access.(access.ArrayNInReg)
+
+	port := fmt.Sprintf(
+		";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)",
+		st.Name, st.Count-1, st.Width-1,
+	)
+	fmts.EntityFunctionalPorts += port
+
+	addr := [2]int64{acs.StartAddr, acs.GetEndAddr()}
+	code := fmt.Sprintf(`
+      for i in 0 to %[1]d loop
+         master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
+      end loop;`,
+		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, st.Name, acs.StartAddr, acs.ItemsInReg,
+	)
+
+	fmts.RegistersAccess.add(addr, code)
+}
+
+/*
 func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
 	a := st.Access.(access.ArrayMultiple)
 
@@ -154,32 +175,23 @@ func genStatusArrayMultiple(st *fn.Status, fmts *BlockEntityFormatters) {
 	var addr [2]int64
 	var code string
 
-	if a.ItemsInLastReg() == a.ItemsPerReg {
-		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr()}
-		code = fmt.Sprintf(`
-      for i in 0 to %[1]d loop
-         master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
-      end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
-		)
-	} else {
-		addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
-		code = fmt.Sprintf(`
+	addr = [2]int64{a.GetStartAddr(), a.GetEndAddr() - 1}
+	code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-			a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
-		)
-		fmts.RegistersAccess.add(addr, code)
+		a.ItemsPerReg-1, a.ItemWidth, a.GetStartBit(), st.Name, a.GetStartAddr(), a.ItemsPerReg,
+	)
+	fmts.RegistersAccess.add(addr, code)
 
-		addr = [2]int64{a.GetEndAddr(), a.GetEndAddr()}
-		code = fmt.Sprintf(`
+	addr = [2]int64{a.GetEndAddr(), a.GetEndAddr()}
+	code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
       end loop;`,
-			a.ItemsInLastReg()-1, a.ItemWidth, a.GetStartBit(), st.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
-		)
-	}
+		a.ItemsInLastReg()-1, a.ItemWidth, a.GetStartBit(), st.Name, (a.GetRegCount()-1)*a.ItemsPerReg,
+	)
 
 	fmts.RegistersAccess.add(addr, code)
 }
+*/

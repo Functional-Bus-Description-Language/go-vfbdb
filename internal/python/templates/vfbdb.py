@@ -462,15 +462,15 @@ class StatusArrayOneInReg(ArrayOneInReg):
     def __init__(self, iface, addr, mask, item_count):
         super().__init__(iface, addr, mask, item_count)
 
-class ArrayMultiple:
-    def __init__(self, iface, addr, start_bit, width, item_count, items_per_reg):
+class ArrayNInReg:
+    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         self.iface = iface
         self.addr = addr
         self.start_bit = start_bit
         self.width = width
         self.item_count = item_count
-        self.items_per_reg = items_per_reg
-        self.reg_count = math.ceil(item_count / self.items_per_reg)
+        self.items_in_reg = items_in_reg
+        self.reg_count = math.ceil(item_count / self.items_in_reg)
 
     def __len__(self):
         return self.item_count
@@ -481,29 +481,29 @@ class ArrayMultiple:
             reg_idx = tuple(range(self.reg_count))
         elif type(idx) == int:
             assert 0 <= idx < self.item_count
-            reg_idx = idx // self.items_per_reg
-            shift = self.start_bit + self.width * (idx % self.items_per_reg)
+            reg_idx = idx // self.items_in_reg
+            shift = self.start_bit + self.width * (idx % self.items_in_reg)
             mask = (1 << self.width) - 1
             return (self.iface.read(self.addr + reg_idx) >> shift) & mask
         else:
             reg_idx = set()
             for i in idx:
                 assert 0 <= i < self.item_count
-                reg_idx.add(i // self.items_per_reg)
+                reg_idx.add(i // self.items_in_reg)
 
         reg_data = {reg_i : self.iface.read(self.addr + reg_i) for reg_i in reg_idx}
 
         data = []
         for i in idx:
-            shift = self.start_bit + self.width * (i % self.items_per_reg)
+            shift = self.start_bit + self.width * (i % self.items_in_reg)
             mask = (1 << self.width) - 1
-            data.append((reg_data[i // self.items_per_reg] >> shift) & mask)
+            data.append((reg_data[i // self.items_in_reg] >> shift) & mask)
 
         return data
 
-class ConfigArrayMultiple(ArrayMultiple):
-    def __init__(self, iface, addr, start_bit, width, item_count, items_per_reg):
-        super().__init__(iface, addr, start_bit, width, item_count, items_per_reg)
+class ConfigArrayNInReg(ArrayNInReg):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 
     def write(self, data, offset=0):
         """ offset - elements index offset, applied also when data is dictionary """
@@ -517,9 +517,9 @@ class ConfigArrayMultiple(ArrayMultiple):
         else:
             raise Exception("unsupported data type {}".format(type(data)))
 
-class StatusArrayMultiple(ArrayMultiple):
-    def __init__(self, iface, addr, start_bit, width, item_count, items_per_reg):
-        super().__init__(iface, addr, start_bit, width, item_count, items_per_reg)
+class StatusArrayNInReg(ArrayNInReg):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 
 class Upstream():
     def __init__(self, iface, addr, returns):
