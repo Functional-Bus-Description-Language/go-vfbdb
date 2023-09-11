@@ -16,6 +16,8 @@ help:
 	@echo "  test  Run go test."
 	@echo "Other targets:"
 	@echo "  help  Print help message."
+	@echo "  go-update-deps "
+	@echo "       Update go dependencies."
 
 # Build targets
 all: lint fmt build
@@ -43,3 +45,7 @@ install:
 
 uninstall:
 	rm /usr/bin/$(PROJECT_NAME)
+
+# Other targets:
+go-update-deps:
+	go get -u ./...
