@@ -1,5 +1,29 @@
 # Config tests
 
+## Test table
+
+```
+-----------------------------------------------|
+|----------------------|       Atomicity       |
+-----------------------------------------------|
+|     Access Type      |  Atomic  | Non-atomic |
+-----------------------------------------------|
+|     SingleOneReg     |    0     |     NA     |
+-----------------------------------------------|
+|     SingleNRegs      | 2, 3, 4  |     1      |
+-----------------------------------------------|
+|     ArrayOneReg      |    -     |     NA     |
+-----------------------------------------------|
+|     ArrayOneInReg    |    5     |     NA     |
+-----------------------------------------------|
+|     ArrayNInReg      |    -     |     NA     |
+-----------------------------------------------|
+| ArrayNInRegMInEndReg |    -     |     -      |
+-----------------------------------------------|
+|     ArrayNRegs       |    -     |     -      |
+-----------------------------------------------|
+```
+
 ## 0
 Test checking whether the single `config` with `SingleOneReg` access type is correctly written and read.
 It also checks whether the value change is visible in the HDL.
