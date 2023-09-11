@@ -410,21 +410,12 @@ class ConfigArrayOneReg(StatusArrayOneReg):
 
     def write(self, data, offset=0):
         """ offset - elements index offset, applied also when data is dictionary """
-        if len(data) == 0:
-            raise Exception("empty data")
+        assert 0 <= len(data) <= self.item_count, f"invalid data len {len(data)}"
 
         val = 0
         mask = 0
 
-        if type(data) == list or type(data) == tuple:
-            assert len(data) + offset <= self.item_count
-
-            for i, v in enumerate(data):
-                assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
-                shift = (self.start_bit + (i + offset) * self.width)
-                val |= v << shift
-                mask |= 2 ** self.width - 1  << shift
-        elif type(data) == dict:
+        if type(data) == dict:
             for i, v in data.items():
                 assert type(i) == int, f'invalid index type {type(i)}'
                 assert i >= 0, f"negative index {i}"
@@ -434,7 +425,13 @@ class ConfigArrayOneReg(StatusArrayOneReg):
                 val |= v << shift
                 mask |= 2 ** self.width - 1 << shift
         else:
-            raise Exception("unsupported data type {}".format(type(data)))
+            assert len(data) + offset <= self.item_count
+
+            for i, v in enumerate(data):
+                assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
+                shift = (self.start_bit + (i + offset) * self.width)
+                val |= v << shift
+                mask |= 2 ** self.width - 1  << shift
 
         if len(data) == self.item_count:
             self.iface.write(self.addr, val)
@@ -475,10 +472,13 @@ class ConfigArrayOneInReg(ArrayOneInReg):
 
     def write(self, data, offset=0):
         """ offset - elements index offset, applied also when data is dictionary """
-        if len(data) == 0:
-            raise Exception("empty data")
+        assert 0 <= len(data) <= self.item_count, f"invalid data len {len(data)}"
 
-        if type(data) == list or type(data) == tuple:
+        if type(data) == dict:
+            idxs = sorted(data.keys())
+            for idx in idxs:
+                self.iface.write(self.addr + offset + idx, data[idx] << self.shift)
+        else:
             assert len(data) + offset <= self.item_count
 
             if len(data) == 1:
@@ -488,12 +488,6 @@ class ConfigArrayOneInReg(ArrayOneInReg):
                 for d in data:
                     buf.append(d << self.shift)
                 self.iface.writeb(self.addr + offset, buf)
-        elif type(data) == dict:
-            idxs = sorted(data.keys())
-            for idx in idxs:
-                self.iface.write(self.addr + offset + idx, data[idx] << self.shift)
-        else:
-            raise Exception("unsupported data type {}".format(type(data)))
 
 class StatusArrayOneInReg(ArrayOneInReg):
     def __init__(self, iface, addr, mask, item_count):
@@ -544,15 +538,12 @@ class ConfigArrayNInReg(ArrayNInReg):
 
     def write(self, data, offset=0):
         """ offset - elements index offset, applied also when data is dictionary """
-        if len(data) == 0:
-            raise Exception("empty data")
+        assert 0 <= len(data) <= self.item_count, f"invalid data len {len(data)}"
 
-        if type(data) == list or type(data) == tuple:
-            pass
-        elif type(data) == dict:
+        if type(data) == dict:
             pass
         else:
-            raise Exception("unsupported data type {}".format(type(data)))
+            pass
 
 class StatusArrayNInReg(ArrayNInReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
