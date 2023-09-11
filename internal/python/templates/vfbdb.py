@@ -421,7 +421,7 @@ class ConfigArrayOneReg(StatusArrayOneReg):
 
             for i, v in enumerate(data):
                 assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
-                shift = (start_bit + (i + offset) * self.width)
+                shift = (self.start_bit + (i + offset) * self.width)
                 val |= v << shift
                 mask |= 2 ** self.width - 1  << shift
         elif type(data) == dict:
@@ -430,7 +430,7 @@ class ConfigArrayOneReg(StatusArrayOneReg):
                 assert i >= 0, f"negative index {i}"
                 assert i + offset < self.item_count, f"index overrange {i}"
                 assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
-                shift = (start_bit + (i + offset) * self.width)
+                shift = (self.start_bit + (i + offset) * self.width)
                 val |= v << shift
                 mask |= 2 ** self.width - 1 << shift
         else:
@@ -439,7 +439,7 @@ class ConfigArrayOneReg(StatusArrayOneReg):
         if len(data) == self.item_count:
             self.iface.write(self.addr, val)
         else:
-            self.rmw(self.addr, val, mask)
+            self.iface.rmw(self.addr, val, mask)
 
 class ArrayOneInReg:
     def __init__(self, iface, addr, mask, item_count):
