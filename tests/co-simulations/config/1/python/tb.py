@@ -11,8 +11,6 @@ READ_FIFO_PATH = sys.argv[2]
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation")
-
     Main = vfbdb.Main(iface)
 
     val = random.randint(2 ** 33, 2 ** 48  - 1)
@@ -27,7 +25,6 @@ try:
     if read_val != val:
         raise Exception(f"Read wrong value form Cfg {read_val}")
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

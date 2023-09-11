@@ -10,8 +10,6 @@ READ_FIFO_PATH = sys.argv[2]
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation")
-
     Main = vfbdb.Main(iface)
 
     print(f"Writing VALID_VALUE ({vfbdb.mainPkg.VALID_VALUE}) to Cfg register")
@@ -22,7 +20,6 @@ try:
     if read_val != vfbdb.mainPkg.VALID_VALUE:
         raise Exception(f"Read wrong value form Cfg {read_val}")
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

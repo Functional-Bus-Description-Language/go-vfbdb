@@ -11,8 +11,6 @@ READ_FIFO_PATH = sys.argv[2]
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation")
-
     Main = vfbdb.Main(iface)
 
 
@@ -31,7 +29,6 @@ try:
         ), f"read value {read[i]} differs from constant value {v}"
 
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

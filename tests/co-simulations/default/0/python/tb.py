@@ -10,8 +10,6 @@ READ_FIFO_PATH = sys.argv[2]
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation")
-
     Main = vfbdb.Main(iface)
 
     expected0 = 0b010101
@@ -41,7 +39,6 @@ try:
     if read_val != expected1:
         raise Exception(f"Read wrong value form St1 {read_val}")
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

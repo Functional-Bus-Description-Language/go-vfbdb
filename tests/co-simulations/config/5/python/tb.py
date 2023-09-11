@@ -12,8 +12,6 @@ READ_FIFO_PATH = sys.argv[2]
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation")
-
     Main = vfbdb.Main(iface)
 
     print("\n\nlist test")
@@ -57,7 +55,6 @@ try:
         else:
             assert rdata[i] == data[i - offset], f"got {rdata[i]}, want data[i - offset]"
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

@@ -7,8 +7,6 @@ WRITE_FIFO_PATH = sys.argv[1]
 READ_FIFO_PATH = sys.argv[2]
 
 try:
-    print("\nstarting cosimulation")
-
     iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
     Main = vfbdb.Main(iface)
@@ -26,7 +24,6 @@ try:
     value = Main.Status_array.read(5)
     assert value == 5
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

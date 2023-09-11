@@ -36,14 +36,12 @@ class Iface:
     def _make_fifos(self):
         """Create named pipes needed for inter-process communication."""
         self._remove_fifos()
-        print("CosimIface: making FIFOs")
         os.mkfifo(self.write_fifo_path)
         os.mkfifo(self.read_fifo_path)
 
     def _remove_fifos(self):
         """Remove named pipes."""
         try:
-            print("CosimIface: removing FIFOs")
             os.remove(self.write_fifo_path)
             os.remove(self.read_fifo_path)
         except:
@@ -178,7 +176,7 @@ class Iface:
         """End a co-simulation with a given status.
         status - status to be returned by the simulation process
         """
-        print("CosimIface: ending with status %d" % status)
+        print("\n\nCosimIface: ending with status %d" % status)
 
         cmd = "E" + ("%.8x" % status) + "\n"
         self.write_fifo.write(cmd)
@@ -193,7 +191,7 @@ class Iface:
 
     def print_stats(self):
         print(
-            f"\nCosimIface: transactions statistics:\n"
+            f"CosimIface: transactions statistics:\n"
             + f"  read:   {self.read_count}\n"
             + f"  write:  {self.write_count}\n"
             + f"  cread:  {self.cread_count}\n"

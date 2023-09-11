@@ -10,8 +10,6 @@ READ_FIFO_PATH = sys.argv[2]
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation")
-
     Main = vfbdb.Main(iface)
 
     max_val = 2 ** vfbdb.Main.WIDTH - 1
@@ -70,7 +68,6 @@ try:
     read = Main.St.read()
     assert read == 5, f"read {read}, expecting 5"
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

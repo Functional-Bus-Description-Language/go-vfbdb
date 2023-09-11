@@ -13,8 +13,6 @@ CLK_PERIOD = 10
 iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
 try:
-    print("\nstarting cosimulation\n")
-
     Main = vfbdb.Main(iface)
 
     id = Main.ID.read()
@@ -25,7 +23,6 @@ try:
     assert ts == Main.TIMESTAMP.value, f"Read wrong TIMESTAMP {ts}, expecting {Main.TIMESTAMP.value}"
     print(f"Timestamp: {ts}\n")
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:

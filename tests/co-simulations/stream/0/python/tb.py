@@ -10,8 +10,6 @@ READ_FIFO_PATH = sys.argv[2]
 
 
 try:
-    print("\nstarting cosimulation")
-
     iface = cosim.Iface(WRITE_FIFO_PATH, READ_FIFO_PATH)
 
     Main = vfbdb.Main(iface)
@@ -23,7 +21,6 @@ try:
     for i, v in enumerate(vals):
         assert i == v[0], f"read {v(0)}, expecting {i}"
 
-    print("\nending cosimulation")
     iface.end(0)
 
 except Exception as E:
