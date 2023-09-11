@@ -421,9 +421,9 @@ class ConfigArrayOneReg(StatusArrayOneReg):
                 assert i >= 0, f"negative index {i}"
                 assert i + offset < self.item_count, f"index overrange {i}"
                 assert 0 <= v < 2 ** self.width, f"data out of range, index {i}, value {v}"
-                shift = (self.start_bit + (i + offset) * self.width)
+                shift = self.start_bit + (i + offset) * self.width
                 val |= v << shift
-                mask |= 2 ** self.width - 1 << shift
+                mask |= (2 ** self.width - 1) << shift
         else:
             assert len(data) + offset <= self.item_count
 
@@ -540,10 +540,29 @@ class ConfigArrayNInReg(ArrayNInReg):
         """ offset - elements index offset, applied also when data is dictionary """
         assert 0 <= len(data) <= self.item_count, f"invalid data len {len(data)}"
 
+        regs = dict()
+        def add_to_regs(idx, val):
+            idx = idx + offset
+            assert idx <= self.item_count, f"index overrange {idx + offset}"
+            reg_idx = idx // self.items_in_reg
+            if reg_idx not in regs:
+                regs[reg_idx] = [0, 0] # [value, mask]
+            shift = self.start_bit + (idx % self.items_in_reg) * self.width
+            regs[reg_idx][0] |= val << shift
+            regs[reg_idx][1] |= (2 ** self.width - 1)  << shift
+
         if type(data) == dict:
-            pass
+            for idx, val in data.items():
+                add_to_regs(idx, val)
         else:
-            pass
+            for idx, val in enumerate(data):
+                add_to_regs(idx, val)
+
+        reg_idxs = sorted(regs.keys())
+        print(reg_idxs)
+        for idx in reg_idxs:
+            self.iface.rmw(self.addr + idx, regs[idx][0], regs[idx][1])
+
 
 class StatusArrayNInReg(ArrayNInReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):

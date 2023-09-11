@@ -53,7 +53,7 @@ try:
         if i < offset:
             assert rdata[i] == 0, f"got {rdata[i]}, want 0"
         else:
-            assert rdata[i] == data[i - offset], f"got {rdata[i]}, want data[i - offset]"
+            assert rdata[i] == data[i - offset], f"got {rdata[i]}, want {data[i - offset]}"
 
     iface.end(0)
 

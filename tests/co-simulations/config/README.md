@@ -12,13 +12,13 @@
 |----------------------------------------------|
 |     SingleNRegs      | 2, 3, 4  |     1      |
 |----------------------------------------------|
-|     ArrayOneReg      |    -     |     NA     |
+|     ArrayOneReg      |    6     |     NA     |
 |----------------------------------------------|
 |     ArrayOneInReg    |    5     |     NA     |
 |----------------------------------------------|
-|     ArrayNInReg      |    -     |     NA     |
+|     ArrayNInReg      |    7     |     NA     |
 |----------------------------------------------|
-| ArrayNInRegMInEndReg |    -     |     -      |
+| ArrayNInRegMInEndReg |    -     |     NA     |
 |----------------------------------------------|
 |     ArrayNRegs       |    -     |     -      |
 ------------------------------------------------
@@ -47,3 +47,9 @@ It also checks whether the value change is visible in the HDL.
 
 ## 5
 Test checking whether the array `config` with `ArrayOneInReg` access type and atomic access is correctly written and read.
+
+## 6
+Test checking whether the array `config` with `ArrayOneReg` access type and atomic access is correctly written and read.
+
+## 7
+Test checking whether the array `config` with `ArrayNInReg` access type and atomic access is correctly written and read.
