@@ -1,0 +1,3 @@
+Main bus
+	Cfgs [9]config; width = 7; init-value = 0
+	Sts  [9]status; width = 7

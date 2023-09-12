@@ -72,6 +72,16 @@ func genConfigArray(cfg *fn.Config, blk *fn.Block) string {
 			acs.ItemCount,
 			acs.ItemsInReg,
 		)
+	case access.ArrayNInRegMInEndReg:
+		code += indent + fmt.Sprintf(
+			"self.%s = ConfigArrayNInReg(iface, %d, %d, %d, %d, %d)\n",
+			cfg.Name,
+			blk.StartAddr()+acs.StartAddr,
+			acs.StartBit,
+			acs.ItemWidth,
+			acs.ItemCount,
+			acs.ItemsInReg,
+		)
 	default:
 		panic("unimplemented")
 	}

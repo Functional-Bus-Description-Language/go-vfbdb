@@ -577,6 +577,10 @@ class StatusArrayNInRegMInEndReg(ArrayNInRegMInEndReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 
+class ConfigArrayNInRegMInEndReg(ConfigArrayNInReg):
+    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
+        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
+
 class Upstream():
     def __init__(self, iface, addr, returns):
         self.iface = iface

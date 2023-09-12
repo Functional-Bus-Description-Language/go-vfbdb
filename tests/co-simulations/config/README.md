@@ -18,7 +18,7 @@
 |----------------------------------------------|
 |     ArrayNInReg      |    7     |     NA     |
 |----------------------------------------------|
-| ArrayNInRegMInEndReg |    -     |     NA     |
+| ArrayNInRegMInEndReg |    8     |     NA     |
 |----------------------------------------------|
 |     ArrayNRegs       |    -     |     -      |
 ------------------------------------------------
@@ -53,3 +53,6 @@ Test checking whether the array `config` with `ArrayOneReg` access type and atom
 
 ## 7
 Test checking whether the array `config` with `ArrayNInReg` access type and atomic access is correctly written and read.
+
+## 8
+Test checking whether the array `config` with `ArrayNInRegMInEnd` access type and atomic access is correctly written and read.

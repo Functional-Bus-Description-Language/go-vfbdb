@@ -189,12 +189,6 @@ func genConfigArrayNInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 func genConfigArrayNInRegMInEndReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	acs := cfg.Access.(access.ArrayNInRegMInEndReg)
 
-	port := fmt.Sprintf(
-		";\n   %s_o : buffer slv_vector(%d downto 0)(%d downto 0)",
-		cfg.Name, cfg.Count-1, cfg.Width-1,
-	)
-	fmts.EntityFunctionalPorts += port
-
 	addr := [2]int64{acs.StartAddr, acs.GetEndAddr() - 1}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
