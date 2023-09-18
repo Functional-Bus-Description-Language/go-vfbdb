@@ -16,6 +16,11 @@ func genStatus(st *fn.Status, fmts *BlockEntityFormatters) {
 }
 
 func genStatusArray(st *fn.Status, fmts *BlockEntityFormatters) {
+	fmts.EntityFunctionalPorts += fmt.Sprintf(
+		";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)",
+		st.Name, st.Count-1, st.Width-1,
+	)
+
 	switch st.Access.(type) {
 	case access.ArrayOneReg:
 		genStatusArrayOneReg(st, fmts)
@@ -25,14 +30,18 @@ func genStatusArray(st *fn.Status, fmts *BlockEntityFormatters) {
 		genStatusArrayNInReg(st, fmts)
 	case access.ArrayNInRegMInEndReg:
 		genStatusArrayNInRegMInEndReg(st, fmts)
+	case access.ArrayOneInNRegs:
+		genStatusArrayOneInNRegs(st, fmts)
 	default:
 		panic("unimplemented")
 	}
 }
 
 func genStatusSingle(st *fn.Status, fmts *BlockEntityFormatters) {
-	s := fmt.Sprintf(";\n   %s_i : in std_logic_vector(%d downto 0)", st.Name, st.Width-1)
-	fmts.EntityFunctionalPorts += s
+	fmts.EntityFunctionalPorts += fmt.Sprintf(
+		";\n   %s_i : in std_logic_vector(%d downto 0)",
+		st.Name, st.Width-1,
+	)
 
 	switch st.Access.(type) {
 	case access.SingleOneReg:
@@ -110,9 +119,6 @@ func genStatusSingleNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusArrayOneInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayOneInReg)
 
-	port := fmt.Sprintf(";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)", st.Name, st.Count-1, st.Width-1)
-	fmts.EntityFunctionalPorts += port
-
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
 		acs.EndBit, acs.StartBit, st.Name, acs.StartAddr,
@@ -126,12 +132,6 @@ func genStatusArrayOneInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 
 func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayOneReg)
-
-	port := fmt.Sprintf(
-		";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)",
-		st.Name, st.Count-1, st.Width-1,
-	)
-	fmts.EntityFunctionalPorts += port
 
 	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
 	code := fmt.Sprintf(`
@@ -147,12 +147,6 @@ func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusArrayNInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayNInReg)
 
-	port := fmt.Sprintf(
-		";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)",
-		st.Name, st.Count-1, st.Width-1,
-	)
-	fmts.EntityFunctionalPorts += port
-
 	addr := [2]int64{acs.StartAddr, acs.GetEndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
@@ -166,12 +160,6 @@ func genStatusArrayNInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 
 func genStatusArrayNInRegMInEndReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayNInRegMInEndReg)
-
-	port := fmt.Sprintf(
-		";\n   %s_i : in slv_vector(%d downto 0)(%d downto 0)",
-		st.Name, st.Count-1, st.Width-1,
-	)
-	fmts.EntityFunctionalPorts += port
 
 	addr := [2]int64{acs.StartAddr, acs.GetEndAddr() - 1}
 	code := fmt.Sprintf(`
@@ -191,4 +179,17 @@ func genStatusArrayNInRegMInEndReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	)
 
 	fmts.RegistersAccess.add(addr, code)
+}
+
+func genStatusArrayOneInNRegs(st *fn.Status, fmts *BlockEntityFormatters) {
+	if st.Atomic {
+		//genStatusArrayOneInNRegsAtomic(st, fmts)
+		panic("unimplemented")
+	} else {
+		genStatusArrayOneInNRegsNonAtomic(st, fmts)
+	}
+}
+
+func genStatusArrayOneInNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
+	panic("unimplemented")
 }
