@@ -22,7 +22,10 @@ func genStaticSingle(st *fn.Static, blk *fn.Block) string {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StaticSingleOneReg(iface, %d, (%d, %d), 0b0%s)\n",
-			st.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
+			st.Name,
+			blk.StartAddr()+acs.Addr,
+			acs.EndBit,
+			acs.StartBit,
 			st.InitValue.ToBin().ValueLiteral(),
 		)
 	case access.SingleNRegs:

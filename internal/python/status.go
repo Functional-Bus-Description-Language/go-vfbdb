@@ -22,7 +22,10 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleOneReg(iface, %d, (%d, %d))\n",
-			st.Name, blk.StartAddr()+acs.Addr, acs.EndBit, acs.StartBit,
+			st.Name,
+			blk.StartAddr()+acs.Addr,
+			acs.EndBit,
+			acs.StartBit,
 		)
 	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
