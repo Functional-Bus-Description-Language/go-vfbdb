@@ -206,7 +206,18 @@ class ReturnsProc():
         return tuple(tup)
 
 
-class SingleOneReg:
+class Static:
+    def __init__(self, value):
+        self._value = value
+    @property
+    def value(self):
+        return self._value
+    @value.setter
+    def value(self, v):
+        raise Exception(f"cannot set value of static element")
+
+
+class StatusSingleOneReg:
     def __init__(self, iface, addr, mask):
         self.iface = iface
         self.addr = addr
@@ -217,38 +228,12 @@ class SingleOneReg:
     def read(self):
         return (self.iface.read(self.addr) >> self.shift) & self.mask
 
-class SingleNRegs:
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
-        self.iface = iface
-        self.addrs = list(range(start_addr, start_addr + reg_count))
-        self.width = 0
-        self.masks = []
-        self.reg_shifts = []
-        self.data_shifts = []
+class StaticSingleOneReg(Static, StatusSingleOneReg):
+    def __init__(self, iface, addr, mask, value):
+        Static.__init__(self, value)
+        StatusSingleOneReg.__init__(self, iface, addr, mask)
 
-        for i in range(reg_count):
-            if i == 0:
-                self.masks.append(calc_mask(start_mask))
-                self.reg_shifts.append(start_mask[1])
-                self.data_shifts.append(0)
-                self.width += start_mask[0] - start_mask[1] + 1
-            else:
-                self.reg_shifts.append(0)
-                self.data_shifts.append(self.width)
-                if i == reg_count - 1:
-                    self.masks.append(calc_mask(end_mask))
-                    self.width += end_mask[0] - end_mask[1] + 1
-                else:
-                    self.masks.append(calc_mask((BUS_WIDTH - 1, 0)))
-                    self.width += BUS_WIDTH
-
-    def read(self):
-        data = 0
-        for i, a in enumerate(self.addrs):
-            data |= ((self.iface.read(a) >> self.reg_shifts[i]) & self.masks[i]) << self.data_shifts[i]
-        return data
-
-class ConfigSingleOneReg(SingleOneReg):
+class ConfigSingleOneReg(StatusSingleOneReg):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
@@ -256,16 +241,7 @@ class ConfigSingleOneReg(SingleOneReg):
         assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
         self.iface.write(self.addr, data << self.shift)
 
-class ConfigSingleNRegs(SingleNRegs):
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
-        super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
-
-    def write(self, data):
-        assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
-        for i, a in enumerate(self.addrs):
-            self.iface.write(a, ((data >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
-
-class MaskSingleOneReg(SingleOneReg):
+class MaskSingleOneReg(StatusSingleOneReg):
     def __init__(self, iface, addr, mask):
         super().__init__(iface, addr, mask)
 
@@ -344,33 +320,52 @@ class MaskSingleOneReg(SingleOneReg):
         mask = self.iface.read(self.addr) & (mask << self.shift)
         self.iface.write(self.addr, mask)
 
-class Static:
-    def __init__(self, value):
-        self._value = value
-    @property
-    def value(self):
-        return self._value
-    @value.setter
-    def value(self, v):
-        raise Exception(f"cannot set value of static element")
 
-class StaticSingleOneReg(Static, SingleOneReg):
-    def __init__(self, iface, addr, mask, value):
-        Static.__init__(self, value)
-        SingleOneReg.__init__(self, iface, addr, mask)
+class StatusSingleNRegs:
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
+        self.iface = iface
+        self.addrs = list(range(start_addr, start_addr + reg_count))
+        self.width = 0
+        self.masks = []
+        self.reg_shifts = []
+        self.data_shifts = []
 
-class StaticSingleNRegs(Static, SingleNRegs):
-    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, value):
-        Static.__init__(self, value)
-        SingleNRegs.__init__(self, iface, start_addr, reg_count, start_mask, end_mask)
+        for i in range(reg_count):
+            if i == 0:
+                self.masks.append(calc_mask(start_mask))
+                self.reg_shifts.append(start_mask[1])
+                self.data_shifts.append(0)
+                self.width += start_mask[0] - start_mask[1] + 1
+            else:
+                self.reg_shifts.append(0)
+                self.data_shifts.append(self.width)
+                if i == reg_count - 1:
+                    self.masks.append(calc_mask(end_mask))
+                    self.width += end_mask[0] - end_mask[1] + 1
+                else:
+                    self.masks.append(calc_mask((BUS_WIDTH - 1, 0)))
+                    self.width += BUS_WIDTH
 
-class StatusSingleOneReg(SingleOneReg):
-    def __init__(self, iface, addr, mask):
-        super().__init__(iface, addr, mask)
+    def read(self):
+        data = 0
+        for i, a in enumerate(self.addrs):
+            data |= ((self.iface.read(a) >> self.reg_shifts[i]) & self.masks[i]) << self.data_shifts[i]
+        return data
 
-class StatusSingleNRegs(SingleNRegs):
+class ConfigSingleNRegs(StatusSingleNRegs):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
         super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
+
+    def write(self, data):
+        assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
+        for i, a in enumerate(self.addrs):
+            self.iface.write(a, ((data >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+
+class StaticSingleNRegs(Static, StatusSingleNRegs):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, value):
+        Static.__init__(self, value)
+        StatusSingleNRegs.__init__(self, iface, start_addr, reg_count, start_mask, end_mask)
+
 
 class StatusArrayOneReg:
     def __init__(self, iface, addr, start_bit, width, item_count):
@@ -438,7 +433,8 @@ class ConfigArrayOneReg(StatusArrayOneReg):
         else:
             self.iface.rmw(self.addr, val, mask)
 
-class ArrayOneInReg:
+
+class StatusArrayOneInReg:
     def __init__(self, iface, addr, mask, item_count):
         self.iface = iface
         self.addr = addr
@@ -466,7 +462,7 @@ class ArrayOneInReg:
                 assert 0 <= i < self.item_count
             return [(self.iface.read(self.addr + i) >> self.shift) & self.mask for i in idx]
 
-class ConfigArrayOneInReg(ArrayOneInReg):
+class ConfigArrayOneInReg(StatusArrayOneInReg):
     def __init__(self, iface, addr, mask, item_count):
         super().__init__(iface, addr, mask, item_count)
 
@@ -489,11 +485,8 @@ class ConfigArrayOneInReg(ArrayOneInReg):
                     buf.append(d << self.shift)
                 self.iface.writeb(self.addr + offset, buf)
 
-class StatusArrayOneInReg(ArrayOneInReg):
-    def __init__(self, iface, addr, mask, item_count):
-        super().__init__(iface, addr, mask, item_count)
 
-class ArrayNInReg:
+class StatusArrayNInReg:
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         self.iface = iface
         self.addr = addr
@@ -532,7 +525,7 @@ class ArrayNInReg:
 
         return data
 
-class ConfigArrayNInReg(ArrayNInReg):
+class ConfigArrayNInReg(StatusArrayNInReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 
@@ -559,27 +552,18 @@ class ConfigArrayNInReg(ArrayNInReg):
                 add_to_regs(idx, val)
 
         reg_idxs = sorted(regs.keys())
-        print(reg_idxs)
         for idx in reg_idxs:
             self.iface.rmw(self.addr + idx, regs[idx][0], regs[idx][1])
 
 
-class StatusArrayNInReg(ArrayNInReg):
-    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
-        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
-
-
-class ArrayNInRegMInEndReg(ArrayNInReg):
-    def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
-        super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
-
-class StatusArrayNInRegMInEndReg(ArrayNInRegMInEndReg):
+class StatusArrayNInRegMInEndReg(StatusArrayNInReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 
 class ConfigArrayNInRegMInEndReg(ConfigArrayNInReg):
     def __init__(self, iface, addr, start_bit, width, item_count, items_in_reg):
         super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
+
 
 class Upstream():
     def __init__(self, iface, addr, returns):
