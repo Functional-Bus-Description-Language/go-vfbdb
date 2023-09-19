@@ -1,0 +1,54 @@
+CAPI=2:
+
+name: vfbdb:vhdl-wb3:status_6
+
+filesets:
+  tb_cosim:
+    files:
+      - tb.vhd
+    file_type: vhdlSource-2008
+    depend:
+      - vhdl-wb3::cosim
+
+  vfbdb_dep:
+    depend:
+      - fbdl::vfbdb
+
+targets:
+  tb_python:
+    default_tool: ghdl
+    toplevel: tb_cosim
+    generate:
+      - vfbdb_regs
+    filesets:
+      - vfbdb_dep
+      - tb_cosim
+    hooks:
+      pre_run: [tb_python]
+    parameters:
+      - G_SW_GW_FIFO_PATH=/tmp/go-vfbdb/status/6/python_vhdl-wb3
+      - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/status/6/vhdl-wb3_python
+
+generate:
+  vfbdb_regs:
+    generator: vfbdb
+    parameters:
+      python: [-path, ../../../../../build/vfbdb/status/6/python/vhdl-wb3]
+      vhdl-wb3: []
+      main: ../bus.fbd
+
+parameters:
+  G_SW_GW_FIFO_PATH:
+    datatype: str
+    paramtype: generic
+  G_GW_SW_FIFO_PATH:
+    datatype: str
+    paramtype: generic
+
+scripts:
+  tb_python:
+    cmd:
+      - ../../../tests/co-simulations/common/python/tb_cosim.sh
+      - status
+      - 6
+      - vhdl-wb3

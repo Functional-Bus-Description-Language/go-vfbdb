@@ -191,5 +191,22 @@ func genStatusArrayOneInNRegs(st *fn.Status, fmts *BlockEntityFormatters) {
 }
 
 func genStatusArrayOneInNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
-	panic("unimplemented")
+	acs := st.Access.(access.ArrayOneInNRegs)
+
+	addr := [2]int64{acs.StartAddr, acs.GetEndAddr()}
+
+	idx := fmt.Sprintf("(addr - %d) / %d", acs.StartAddr, acs.GetRegsPerItem())
+	bite := fmt.Sprintf("(addr - %d) mod %d", acs.StartAddr, acs.GetRegsPerItem())
+	lowerBound := fmt.Sprintf("(%s) * %d", bite, busWidth)
+	upperBound := fmt.Sprintf("(%s) + %d", bite, busWidth-1)
+	code := fmt.Sprintf(`
+      if %[1]s = %[2]d then
+          master_in.dat(%[3]d downto 0) <= %[4]s_i(%[5]s)(%[6]d downto %[7]s);
+      else
+          master_in.dat <= %[4]s_i(%[5]s)(%[8]s downto %[7]s);
+      end if;`,
+		bite, acs.GetRegsPerItem()-1, acs.GetEndBit(), st.Name, idx, st.Width-1, lowerBound, upperBound,
+	)
+
+	fmts.RegistersAccess.add(addr, code)
 }

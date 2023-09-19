@@ -565,6 +565,51 @@ class ConfigArrayNInRegMInEndReg(ConfigArrayNInReg):
         super().__init__(iface, addr, start_bit, width, item_count, items_in_reg)
 
 
+class StatusArrayOneInNRegs:
+    def __init__(self, iface, addr, width, item_count, regs_per_item, reg_count, end_bit):
+        self.iface = iface
+
+        self.addr = addr
+        self.width = width
+        self.item_count = item_count
+
+        self.regs_per_item = regs_per_item
+        self.reg_count = reg_count
+        self.last_reg_mask = calc_mask((end_bit, 0))
+
+    def __len__(self):
+        return self.item_count
+
+    def _regs_to_data(self, buf):
+        assert len(buf) == self.regs_per_item
+        data = 0
+        for i, bite in enumerate(buf):
+            if i == len(buf) - 1:
+                data |= (bite & self.last_reg_mask) << (i * BUS_WIDTH)
+            else:
+                data |= bite << (i * BUS_WIDTH)
+        return data
+
+    def read(self, idx=None):
+        if idx is None:
+            buf = self.iface.readb(self.addr, self.reg_count)
+            data = []
+            for i in range(self.item_count):
+                data.append(self._regs_to_data(buf[i*self.regs_per_item:(i+1)*self.regs_per_item]))
+            return data
+        elif type(idx) == int:
+            assert 0 <= idx < self.item_count
+            buf = self.iface.readb(self.addr + idx * self.regs_per_item, self.regs_per_item)
+            return self._regs_to_data(buf)
+        else:
+            data = []
+            for i in idx:
+                assert 0 <= i < self.item_count
+                buf = self.iface.readb(self.addr + i * self.regs_per_item, self.regs_per_item)
+                data.append(self._regs_to_data(buf))
+            return data
+
+
 class Upstream():
     def __init__(self, iface, addr, returns):
         self.iface = iface
