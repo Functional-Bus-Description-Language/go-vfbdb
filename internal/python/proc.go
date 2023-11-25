@@ -13,8 +13,9 @@ func genProc(p *fn.Proc, blk *fn.Block) string {
 		return genParamsProc(p, blk)
 	} else if len(p.Params) == 0 && len(p.Returns) > 0 {
 		return genReturnsProc(p, blk)
+	} else {
+		return genParamsAndReturnsProc(p, blk)
 	}
-	panic("unimplemented")
 }
 
 func genEmptyProc(p *fn.Proc, blk *fn.Block) string {
@@ -30,11 +31,19 @@ func genParamsProc(p *fn.Proc, blk *fn.Block) string {
 	code := indent + fmt.Sprintf("self.%s = ParamsProc(iface, %d, ",
 		p.Name, blk.StartAddr()+p.ParamsStartAddr(),
 	)
-	code += genParamList(p.Params)
+	code += genParamList(p.Params, blk)
 	delay, exitAddr := genDelayAndExitAddr(p, blk)
 	code += fmt.Sprintf(", %s, %s)\n", delay, exitAddr)
 
 	return code
+}
+
+func genDelay(p *fn.Proc) string {
+	delay := "None"
+	if p.Delay != nil {
+		delay = fmt.Sprintf("%d + %d * 1e-9", p.Delay.S, p.Delay.Ns)
+	}
+	return delay
 }
 
 func genDelayAndCallAddr(p *fn.Proc, blk *fn.Block) (string, string) {
@@ -61,9 +70,21 @@ func genReturnsProc(p *fn.Proc, blk *fn.Block) string {
 	code := indent + fmt.Sprintf("self.%s = ReturnsProc(iface, %d, ",
 		p.Name, blk.StartAddr()+p.ReturnsStartAddr(),
 	)
-	code += genReturnList(p.Returns)
+	code += genReturnList(p.Returns, blk)
 	delay, callAddr := genDelayAndCallAddr(p, blk)
 	code += fmt.Sprintf(", %s, %s)\n", delay, callAddr)
+
+	return code
+}
+
+func genParamsAndReturnsProc(p *fn.Proc, blk *fn.Block) string {
+	code := indent + fmt.Sprintf(
+		"self.%s = ParamsAndReturnsProc(iface, %d, %s, %d, %s, %s)\n",
+		p.Name,
+		blk.StartAddr()+p.ParamsStartAddr(), genParamList(p.Params, blk),
+		blk.StartAddr()+p.ReturnsStartAddr(), genReturnList(p.Returns, blk),
+		genDelay(p),
+	)
 
 	return code
 }

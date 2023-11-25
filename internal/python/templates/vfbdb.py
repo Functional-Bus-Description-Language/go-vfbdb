@@ -125,7 +125,7 @@ def create_mock_returns(buf_iface, start_addr, returns):
 
         if a['Type'] == 'SingleOneReg':
             r['Status'] = StatusSingleOneReg(
-                buf_iface, a['StartAddr'] - start_addr, (a['EndBit'], a['StartBit'])
+                buf_iface, a['StartAddr'] - start_addr, a['StartBit'], a['EndBit']
             )
         elif a['Type'] == 'SingleNRegs':
             r['Status'] = StatusSingleNRegs(
@@ -185,7 +185,7 @@ class ReturnsProc():
         self.buf_iface = _BufferIface()
         self.buf_size, self.returns = create_mock_returns(self.buf_iface, returns_start_addr, returns)
 
-    def __call__(self, *args):
+    def __call__(self):
         if self.delay is not None:
             self.iface.write(self.call_addr, 0)
             if self.delay != 0:
@@ -205,6 +205,45 @@ class ReturnsProc():
 
         return tuple(tup)
 
+class ParamsAndReturnsProc():
+    def __init__(self, iface, params_start_addr, params, returns_start_addr, returns, delay):
+        self.iface = iface
+
+        self.params_start_addr = params_start_addr
+        self.params = params
+
+        self.returns_start_addr = returns_start_addr
+        self.returns_buf_iface = _BufferIface()
+        self.returns_buf_size, self.returns = create_mock_returns(self.returns_buf_iface, returns_start_addr, returns)
+
+        self.delay = delay
+
+    def __call__(self, *args):
+        assert len(args) == len(self.params), \
+            "{}() takes {} arguments but {} were given".format(self.__name__, len(self.params), len(args))
+
+        params_buf = pack_params(self.params, *args)
+        if len(params_buf) == 1:
+            self.iface.write(self.params_start_addr, params_buf[0])
+        else:
+            self.iface.writeb(self.params_start_addr, params_buf)
+
+        if self.delay is not None:
+            if self.delay != 0:
+                time.sleep(self.delay)
+
+        if self.returns_buf_size == 1:
+                returns_buf = [self.iface.read(self.returns_start_addr)]
+        else:
+            returns_buf = self.iface.readb(self.returns_start_addr, self.returns_buf_size)
+        self.returns_buf_iface.set_buf(returns_buf)
+        tup = [] # List to allow append but must be cast to tuple.
+        for ret in self.returns:
+            # NOTE: Groups are not yet supported so it is safe to immediately append.
+            tup.append(ret['Status'].read())
+
+        return tuple(tup)
+
 
 class Static:
     def __init__(self, value):
@@ -218,32 +257,34 @@ class Static:
 
 
 class StatusSingleOneReg:
-    def __init__(self, iface, addr, mask):
+    def __init__(self, iface, addr, start_bit, end_bit):
         self.iface = iface
+
         self.addr = addr
-        self.mask = calc_mask(mask)
-        self.width = mask[0] - mask[1] + 1
-        self.shift = mask[1]
+        self.start_bit = start_bit
+
+        self.mask = calc_mask((end_bit, start_bit))
+        self.width = end_bit - start_bit + 1
 
     def read(self):
-        return (self.iface.read(self.addr) >> self.shift) & self.mask
+        return (self.iface.read(self.addr) >> self.start_bit) & self.mask
 
 class StaticSingleOneReg(Static, StatusSingleOneReg):
-    def __init__(self, iface, addr, mask, value):
+    def __init__(self, iface, addr, start_bit, end_bit, value):
         Static.__init__(self, value)
-        StatusSingleOneReg.__init__(self, iface, addr, mask)
+        StatusSingleOneReg.__init__(self, iface, addr, start_bit, end_bit)
 
 class ConfigSingleOneReg(StatusSingleOneReg):
-    def __init__(self, iface, addr, mask):
-        super().__init__(iface, addr, mask)
+    def __init__(self, iface, addr, start_bit, end_bit):
+        super().__init__(iface, addr, start_bit, end_bit)
 
     def write(self, data):
         assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
-        self.iface.write(self.addr, data << self.shift)
+        self.iface.write(self.addr, data << self.start_bit)
 
 class MaskSingleOneReg(StatusSingleOneReg):
-    def __init__(self, iface, addr, mask):
-        super().__init__(iface, addr, mask)
+    def __init__(self, iface, addr, start_bit, end_bit):
+        super().__init__(iface, addr, start_bit, end_bit)
 
     def _bits_to_iterable(self, bits):
         if bits == None:
@@ -270,7 +311,7 @@ class MaskSingleOneReg(StatusSingleOneReg):
         for b in bits:
             mask |= 1 << b
 
-        self.iface.write(self.addr, mask << self.shift)
+        self.iface.write(self.addr, mask << self.start_bit)
 
     def clear(self, bits=None):
         bits = self._bits_to_iterable(bits)
@@ -280,7 +321,7 @@ class MaskSingleOneReg(StatusSingleOneReg):
         for b in bits:
             mask ^= 1 << b
 
-        self.iface.write(self.addr, mask << self.shift)
+        self.iface.write(self.addr, mask << self.start_bit)
 
     def toggle(self, bits=None):
         bits = self._bits_to_iterable(bits)
@@ -289,7 +330,7 @@ class MaskSingleOneReg(StatusSingleOneReg):
         xor_mask = 0
         for b in bits:
             xor_mask |= 1 << b
-        xor_mask <<= self.shift
+        xor_mask <<= self.start_bit
 
         mask = self.iface.read(self.addr) ^ xor_mask
         self.iface.write(self.addr, mask)
@@ -304,7 +345,7 @@ class MaskSingleOneReg(StatusSingleOneReg):
         for b in bits:
             mask |= 1 << b
 
-        mask = self.iface.read(self.addr) | (mask << self.shift)
+        mask = self.iface.read(self.addr) | (mask << self.start_bit)
         self.iface.write(self.addr, mask)
 
     def update_clear(self, bits):
@@ -317,7 +358,7 @@ class MaskSingleOneReg(StatusSingleOneReg):
         for b in bits:
             mask ^= 1 << b
 
-        mask = self.iface.read(self.addr) & (mask << self.shift)
+        mask = self.iface.read(self.addr) & (mask << self.start_bit)
         self.iface.write(self.addr, mask)
 
 

@@ -8,11 +8,11 @@ import (
 	"strings"
 )
 
-func genAccess(acs access.Access, b *strings.Builder) {
+func genAccess(acs access.Access, blkAddr int64, b *strings.Builder) {
 	b.WriteString(
 		fmt.Sprintf(
 			"{'StartAddr': %d, 'StartBit': %d, 'EndBit': %d, 'RegCount': %d, 'Type': ",
-			acs.GetStartAddr(), acs.GetStartBit(), acs.GetEndBit(), acs.GetRegCount(),
+			blkAddr+acs.GetStartAddr(), acs.GetStartBit(), acs.GetEndBit(), acs.GetRegCount(),
 		),
 	)
 

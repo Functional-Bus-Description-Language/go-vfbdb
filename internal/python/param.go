@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func genParamList(params []*fn.Param) string {
+func genParamList(params []*fn.Param, blk *fn.Block) string {
 	if len(params) == 0 {
 		return "None"
 	}
@@ -22,7 +22,7 @@ func genParamList(params []*fn.Param) string {
 		b.WriteString(
 			fmt.Sprintf("%s{'Name': '%s', 'Width': %d, 'Access': ", indent, p.Name, p.Width),
 		)
-		genAccess(p.Access, &b)
+		genAccess(p.Access, blk.StartAddr(), &b)
 		b.WriteString("},\n")
 	}
 

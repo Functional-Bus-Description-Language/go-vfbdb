@@ -21,9 +21,9 @@ func genStream(stream *fn.Stream, blk *fn.Block) string {
 	)
 
 	if stream.IsDownstream() {
-		code += genParamList(stream.Params)
+		code += genParamList(stream.Params, blk)
 	} else {
-		code += genReturnList(stream.Returns)
+		code += genReturnList(stream.Returns, blk)
 	}
 
 	code += ")\n"

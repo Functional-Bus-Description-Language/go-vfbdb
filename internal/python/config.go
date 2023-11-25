@@ -21,11 +21,11 @@ func genConfigSingle(cfg *fn.Config, blk *fn.Block) string {
 	switch acs := cfg.Access.(type) {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
-			"self.%s = ConfigSingleOneReg(iface, %d, (%d, %d))\n",
+			"self.%s = ConfigSingleOneReg(iface, %d, %d, %d)\n",
 			cfg.Name,
 			blk.StartAddr()+acs.Addr,
-			acs.EndBit,
 			acs.StartBit,
+			acs.EndBit,
 		)
 	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(

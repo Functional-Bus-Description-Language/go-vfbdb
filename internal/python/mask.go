@@ -21,11 +21,11 @@ func genMaskSingle(mask *fn.Mask, blk *fn.Block) string {
 	switch acs := mask.Access.(type) {
 	case access.SingleOneReg:
 		code += indent + fmt.Sprintf(
-			"self.%s = MaskSingleOneReg(iface, %d, (%d, %d))\n",
+			"self.%s = MaskSingleOneReg(iface, %d, %d, %d)\n",
 			mask.Name,
 			blk.StartAddr()+acs.Addr,
-			acs.EndBit,
 			acs.StartBit,
+			acs.EndBit,
 		)
 	default:
 		panic("unimplemented")

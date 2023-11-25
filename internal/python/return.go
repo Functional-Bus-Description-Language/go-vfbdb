@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func genReturnList(returns []*fn.Return) string {
+func genReturnList(returns []*fn.Return, blk *fn.Block) string {
 	if len(returns) == 0 {
 		return "None"
 	}
@@ -18,7 +18,7 @@ func genReturnList(returns []*fn.Return) string {
 
 	for _, r := range returns {
 		b.WriteString(fmt.Sprintf("%s{'Name': '%s', 'Access': ", indent, r.Name))
-		genAccess(r.Access, &b)
+		genAccess(r.Access, blk.StartAddr(), &b)
 		b.WriteString("},\n")
 	}
 
