@@ -1,0 +1,8 @@
+namespace eval vhdl-wb3::cosim {
+	proc src {} {
+		hbs::AddDep vhdl-types::src
+		hbs::AddDep cern::general-cores::wishbone-pkg::src
+		hbs::AddFile src/*.vhd
+	}
+	hbs::Register
+}

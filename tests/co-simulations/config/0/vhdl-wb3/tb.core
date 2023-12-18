@@ -19,7 +19,7 @@ targets:
     default_tool: ghdl
     toplevel: tb_cosim
     generate:
-      - vfbdb_regs
+      - python
     filesets:
       - vfbdb_dep
       - tb_cosim
@@ -43,7 +43,7 @@ targets:
       - G_GW_SW_FIFO_PATH=/tmp/go-vfbdb/config/0/vhdl-wb3_c-sync
 
 generate:
-  vfbdb_regs:
+  python:
     generator: vfbdb
     parameters:
       python: [-path, ../../../../../build/vfbdb/config/0/python/vhdl-wb3]

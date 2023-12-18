@@ -2,5 +2,6 @@
 vfbdb
 output/
 build/
+autogen/
 _fsva/
 *.pyc

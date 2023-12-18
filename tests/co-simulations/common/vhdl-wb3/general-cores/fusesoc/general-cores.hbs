@@ -1,0 +1,54 @@
+namespace eval cern::general-cores {
+	namespace eval gencores-pkg {
+		proc src {} {
+			hbs::SetLib "general_cores"
+			hbs::AddFile ../modules/common/gencores_pkg.vhd
+		}
+		hbs::Register
+	}
+
+	namespace eval genram-pkg {
+		proc src {} {
+			hbs::AddDep cern::general-cores::gencores-pkg::src
+			hbs::SetLib "general_cores"
+			hbs::AddFile ../modules/genrams/genram_pkg.vhd
+		}
+		hbs::Register
+	}
+
+	namespace eval wb-skidpad {
+		proc src {} {
+			hbs::SetLib "general_cores"
+			hbs::AddFile ../modules/wishbone/wb_register/wb_skidpad.vhd
+		}
+		hbs::Register
+	}
+
+	namespace eval wishbone-pkg {
+		proc src {} {
+			hbs::AddDep cern::general-cores::genram-pkg::src
+			hbs::SetLib "general_cores"
+			hbs::AddFile ../modules/wishbone/wishbone_pkg.vhd
+		}
+		hbs::Register
+	}
+
+	namespace eval xwb-crossbar {
+		proc src {} {
+			hbs::AddDep cern::general-cores::wishbone-pkg::src
+			hbs::SetLib "general_cores"
+			hbs::AddFile ../modules/wishbone/wb_crossbar/xwb_crossbar.vhd
+		}
+		hbs::Register
+	}
+
+	namespace eval xwb-register {
+		proc src {} {
+			hbs::AddDep cern::general-cores::wishbone-pkg
+			hbs::AddDep cern::general-cores::wb-skidpad::src
+			hbs::SetLib "general_cores"
+			hbs::AddFile ../modules/wishbone/wb_register/xwb_register.vhd
+		}
+		hbs::Register
+	}
+}

@@ -1,0 +1,46 @@
+namespace eval vfbdb {
+	proc _getVhdlFilesDir {args} {
+		set dir ""
+		set target ""
+		set isPath 0
+
+		foreach arg $args {
+			if {$isPath} {
+				set dir $arg
+				set isPath 0
+				continue
+			}
+
+			switch $arg {
+				"c-sync" -
+				"json" -
+				"python" -
+				"vhdl-wb3" {
+					set target $arg
+				}
+				"-path" {
+					if {$target == "" || $target == "vhdl-wb3"} {
+						set isPath 1
+					}
+				}
+			}
+		}
+
+		return [pwd]/$dir
+	}
+
+	proc gen {args} {
+		exec vfbdb {*}$args
+
+		set vhdlFilesDir [_getVhdlFilesDir {*}$args]
+		if {$vhdlFilesDir != ""} {
+			hbs::AddDep vhdl-types::src
+			hbs::AddDep cern::general-cores::wishbone-pkg::src
+			hbs::AddDep cern::general-cores::xwb-crossbar::src
+
+			hbs::SetLib "vfbdb"
+			hbs::AddFile "$vhdlFilesDir/*.vhd"
+		}
+	}
+	hbs::Register
+}

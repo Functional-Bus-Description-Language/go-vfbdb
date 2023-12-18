@@ -1,0 +1,36 @@
+namespace eval vfbdb::vhdl-wb3::config-0 {
+	proc _tb {lang swGwFifo gwSwFifo logDir} {
+		hbs::SetTool "ghdl"
+		hbs::SetTop "tb_cosim"
+
+		hbs::AddDep vfbdb::gen \
+			vhdl-wb3 -path autogen/config/0/tb-$lang \
+			python -path autogen/config/0/tb-$lang \
+			[hbs::CoreDir]/../bus.fbd
+
+		hbs::AddDep vhdl-wb3::cosim::src
+		hbs::AddFile tb.vhd
+
+		hbs::SetGeneric G_SW_GW_FIFO_PATH $swGwFifo
+		hbs::SetGeneric G_GW_SW_FIFO_PATH $gwSwFifo
+
+		if {[file exist $logDir] eq 0} {
+			file mkdir $logDir
+		}
+	}
+
+	proc tb-python {} {
+		set swGwFifo "/tmp/go-vfbdb/config/0/python-to-vhdl-wb3"
+		set gwSwFifo "/tmp/go-vfbdb/config/0/vhdl-wb3-to-python"
+		set logDir /tmp/go-vfbdb/config/0/tb-python
+
+		_tb "python" $swGwFifo $gwSwFifo $logDir
+
+		set ::env(PYTHONPATH) $::env(PYTHONPATH):[pwd]/autogen/config/0/tb-python
+		hbs::Exec python3 ../python/tb.py $swGwFifo $gwSwFifo > $logDir/vhdl-wb3.log 2>&1 &
+
+		hbs::Run
+	}
+
+	hbs::Register
+}
