@@ -1,4 +1,14 @@
 namespace eval vfbdb {
+	# ns is the namespace name from which hdl name will be extracted.
+	proc _hdlName {ns} {
+		return [lindex [split $ns ::] end-2]
+	}
+
+	# ns is the namespace name from which hdl name will be extracted.
+	proc _ctxName {ns} {
+		return [regsub {\-} [lindex [split $ns ::] end] /]
+	}
+
 	proc _getVhdlFilesDir {args} {
 		set dir ""
 		set target ""

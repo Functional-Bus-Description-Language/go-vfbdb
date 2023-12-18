@@ -1,15 +1,21 @@
 namespace eval vfbdb::vhdl-wb3::config-0 {
+	variable ctx [hbs::vfbdb::_ctxName [namespace current]]
+	variable hdl [hbs::vfbdb::_hdlName [namespace current]]
+
 	proc _tb {lang swGwFifo gwSwFifo logDir} {
+		variable ctx
+		variable hdl
+
 		hbs::SetTool "ghdl"
 		hbs::SetTop "tb_cosim"
 
 		hbs::AddDep vfbdb::gen \
-			vhdl-wb3 -path autogen/config/0/tb-$lang \
-			python -path autogen/config/0/tb-$lang \
+			$hdl -path autogen/$ctx/tb-$lang \
+			$lang -path autogen/$ctx/tb-$lang \
 			[hbs::CoreDir]/../bus.fbd
 
-		hbs::AddDep vhdl-wb3::cosim::src
-		hbs::AddFile tb.vhd
+		hbs::AddDep $hdl\::cosim::src
+		hbs::AddFile *.vhd
 
 		hbs::SetGeneric G_SW_GW_FIFO_PATH $swGwFifo
 		hbs::SetGeneric G_GW_SW_FIFO_PATH $gwSwFifo
@@ -20,14 +26,19 @@ namespace eval vfbdb::vhdl-wb3::config-0 {
 	}
 
 	proc tb-python {} {
-		set swGwFifo "/tmp/go-vfbdb/config/0/python-to-vhdl-wb3"
-		set gwSwFifo "/tmp/go-vfbdb/config/0/vhdl-wb3-to-python"
-		set logDir /tmp/go-vfbdb/config/0/tb-python
+		variable ctx
 
-		_tb "python" $swGwFifo $gwSwFifo $logDir
+		set lang "python"
+		set hdl [hbs::vfbdb::_hdlName [namespace current]]
 
-		set ::env(PYTHONPATH) $::env(PYTHONPATH):[pwd]/autogen/config/0/tb-python
-		hbs::Exec python3 ../python/tb.py $swGwFifo $gwSwFifo > $logDir/vhdl-wb3.log 2>&1 &
+		set swGwFifo "/tmp/go-vfbdb/$ctx/$lang-to-$hdl"
+		set gwSwFifo "/tmp/go-vfbdb/$ctx/$hdl-to-$lang"
+		set logDir /tmp/go-vfbdb/$ctx/tb-$lang
+
+		_tb $lang $swGwFifo $gwSwFifo $logDir
+
+		set ::env(PYTHONPATH) $::env(PYTHONPATH):[pwd]/autogen/$ctx/tb-$lang
+		hbs::Exec python3 ../$lang/tb.py $swGwFifo $gwSwFifo > $logDir/$hdl.log &
 
 		hbs::Run
 	}
