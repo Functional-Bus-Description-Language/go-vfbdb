@@ -39,16 +39,16 @@ namespace eval vfbdb {
 			hbs::AddDep cern::general-cores::xwb-crossbar::src
 
 			hbs::SetLib "vfbdb"
-			hbs::AddFile "$vhdlFilesDir/*.vhd"
+
 			# wb3.vhd must analyzed as the first one
-			#hbs::AddFile "$vhdlFilesDir/wb3.vhd"
-			#set files [glob "$vhdlFilesDir/*.vhd"]
-			#foreach file $files {
-			#	if {[file tail $file] == "wb3.vhd"} {
-			#		continue
-			#	}
-			#	hbs::AddFile $file
-			#}
+			hbs::AddFile "$vhdlFilesDir/wb3.vhd"
+			set files [glob "$vhdlFilesDir/*.vhd"]
+			foreach file $files {
+				if {[file tail $file] == "wb3.vhd"} {
+					continue
+				}
+				hbs::AddFile $file
+			}
 		}
 	}
 	hbs::Register

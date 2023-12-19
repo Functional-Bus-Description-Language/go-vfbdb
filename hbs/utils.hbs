@@ -35,7 +35,13 @@ namespace eval utils {
 		set gwSwFifo "/tmp/go-vfbdb/$ctx/$hdl-to-$sw"
 		set logDir "/tmp/go-vfbdb/$ctx/tb-$sw"
 
-		set ::env(PYTHONPATH) $::env(PYTHONPATH):[pwd]/autogen/$ctx/tb-$sw
+		set pythonPaths "[pwd]/tests/co-simulations/common/python:[pwd]/autogen/$ctx/tb-$sw"
+		if {[info exists env(PYTHONPATH)]} {
+			set ::env(PYTHONPATH) $::env(PYTHONPATH):$pythonPaths
+		} else {
+			set ::env(PYTHONPATH) $pythonPaths
+		}
+
 		hbs::Exec python3 ../$sw/tb.py $swGwFifo $gwSwFifo > $logDir/$hdl.log &
 	}
 
