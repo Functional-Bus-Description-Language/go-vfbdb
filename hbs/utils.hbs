@@ -1,0 +1,61 @@
+namespace eval utils {
+	# ns is the namespace name from which hdl name will be extracted.
+	proc hdlName {ns} {
+		return [lindex [split $ns ::] end-2]
+	}
+
+	# ns is the namespace name from which hdl name will be extracted.
+	proc ctxName {ns} {
+		return [regsub {\-} [lindex [split $ns ::] end] /]
+	}
+
+	proc setupHdl {ctx hdl sw} {
+		hbs::SetTool "ghdl"
+		hbs::SetTop "tb_cosim"
+
+		hbs::AddDep vfbdb::gen \
+			$hdl -path autogen/$ctx/tb-$sw \
+			$sw -path autogen/$ctx/tb-$sw \
+			[hbs::CoreDir]/../bus.fbd
+
+		hbs::AddDep $hdl\::cosim::src
+		hbs::AddFile *.vhd
+
+		hbs::SetGeneric G_SW_GW_FIFO_PATH "/tmp/go-vfbdb/$ctx/$sw-to-$hdl"
+		hbs::SetGeneric G_GW_SW_FIFO_PATH "/tmp/go-vfbdb/$ctx/$hdl-to-$sw"
+
+		set logDir "/tmp/go-vfbdb/$ctx/tb-$sw"
+		if {[file exist $logDir] eq 0} {
+			file mkdir $logDir
+		}
+	}
+
+	proc runPython {ctx hdl sw} {
+		set swGwFifo "/tmp/go-vfbdb/$ctx/$sw-to-$hdl"
+		set gwSwFifo "/tmp/go-vfbdb/$ctx/$hdl-to-$sw"
+		set logDir "/tmp/go-vfbdb/$ctx/tb-$sw"
+
+		set ::env(PYTHONPATH) $::env(PYTHONPATH):[pwd]/autogen/$ctx/tb-$sw
+		hbs::Exec python3 ../$sw/tb.py $swGwFifo $gwSwFifo > $logDir/$hdl.log &
+	}
+
+	proc compileAndRunC {ctx hdl sw} {
+		set dir autogen/$ctx/tb-$sw
+
+		file copy -force {*}[glob tests/co-simulations/common/$sw/*] $dir
+		file copy -force {*}[glob tests/co-simulations/$ctx/$sw/*] $dir
+
+		set pwd [pwd]
+		cd $dir
+
+		exec gcc -Wall {*}[glob *.c] -o tb >@ stdout
+
+		set swGwFifo "/tmp/go-vfbdb/$ctx/$sw-to-$hdl"
+		set gwSwFifo "/tmp/go-vfbdb/$ctx/$hdl-to-$sw"
+		set logDir "/tmp/go-vfbdb/$ctx/tb-$sw"
+
+		exec ./tb $swGwFifo $gwSwFifo > $logDir/$hdl.log &
+
+		cd $pwd
+	}
+}

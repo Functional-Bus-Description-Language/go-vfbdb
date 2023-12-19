@@ -3,7 +3,7 @@
 
 #include <stdint.h>
 
-#include "vfbdb/vfbdb.h"
+#include "vfbdb.h"
 
 typedef uint32_t (*delay_function_t)(void);
 

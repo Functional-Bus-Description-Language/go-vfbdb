@@ -1,4 +1,4 @@
-namespace eval vfbdb::vhdl-wb3::config-0 {
+namespace eval vfbdb::vhdl-wb3::proc-3 {
 	variable ctx [hbs::utils::ctxName [namespace current]]
 	variable hdl [hbs::utils::hdlName [namespace current]]
 
@@ -9,17 +9,6 @@ namespace eval vfbdb::vhdl-wb3::config-0 {
 
 		hbs::utils::setupHdl $ctx $hdl $sw
 		hbs::utils::runPython $ctx $hdl $sw
-
-		hbs::Run
-	}
-
-	proc tb-c-sync {} {
-		variable ctx
-		variable hdl
-		set sw "c-sync"
-
-		hbs::utils::setupHdl $ctx $hdl $sw
-		hbs::utils::compileAndRunC $ctx $hdl $sw
 
 		hbs::Run
 	}

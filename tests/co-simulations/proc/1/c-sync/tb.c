@@ -5,8 +5,8 @@
 
 #include "cosim_iface.h"
 
-#include "vfbdb/vfbdb.h"
-#include "vfbdb/Main.h"
+#include "vfbdb.h"
+#include "Main.h"
 #define VFBDB_IFACE &iface
 
 

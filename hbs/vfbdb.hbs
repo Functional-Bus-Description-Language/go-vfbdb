@@ -1,14 +1,4 @@
 namespace eval vfbdb {
-	# ns is the namespace name from which hdl name will be extracted.
-	proc _hdlName {ns} {
-		return [lindex [split $ns ::] end-2]
-	}
-
-	# ns is the namespace name from which hdl name will be extracted.
-	proc _ctxName {ns} {
-		return [regsub {\-} [lindex [split $ns ::] end] /]
-	}
-
 	proc _getVhdlFilesDir {args} {
 		set dir ""
 		set target ""
@@ -50,6 +40,15 @@ namespace eval vfbdb {
 
 			hbs::SetLib "vfbdb"
 			hbs::AddFile "$vhdlFilesDir/*.vhd"
+			# wb3.vhd must analyzed as the first one
+			#hbs::AddFile "$vhdlFilesDir/wb3.vhd"
+			#set files [glob "$vhdlFilesDir/*.vhd"]
+			#foreach file $files {
+			#	if {[file tail $file] == "wb3.vhd"} {
+			#		continue
+			#	}
+			#	hbs::AddFile $file
+			#}
 		}
 	}
 	hbs::Register
