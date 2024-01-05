@@ -13,6 +13,8 @@ func genStream(stream *fn.Stream, fmts *BlockEntityFormatters) {
 
 	if stream.IsUpstream() {
 		genUpstreamAccess(stream, fmts)
+	} else {
+		genDownstreamAccess(stream, fmts)
 	}
 
 	genStreamStrobe(stream, fmts)
@@ -59,7 +61,7 @@ func genStreamPorts(stream *fn.Stream, fmts *BlockEntityFormatters) {
 
 	s := fmt.Sprintf(";\n   %s_%s : %s %[1]s_t;\n", stream.Name, suffix, dir)
 
-	s += fmt.Sprintf("   %s_stb_o : out std_logic\n", stream.Name)
+	s += fmt.Sprintf("   %s_stb_o : out std_logic", stream.Name)
 
 	fmts.EntityFunctionalPorts += s
 }
@@ -79,11 +81,8 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 			chunks := makeAccessChunksContinuous(acs, Compact)
 
 			for _, c := range chunks {
-				code := fmt.Sprintf(`
-      if master_out.we = '1' then
-         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);
-      end if;
-      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);`,
+				code := fmt.Sprintf(
+					"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);",
 					stream.Name, r.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 				)
 
@@ -93,8 +92,39 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 			panic("unimplemented")
 		}
 	}
-	if len(stream.Params) == 0 {
-		fmts.RegistersAccess.add([2]int64{stream.StbAddr, stream.StbAddr}, "")
+}
+
+func genDownstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
+	for _, p := range stream.Params {
+		switch acs := p.Access.(type) {
+		case access.SingleOneReg:
+			addr := [2]int64{acs.Addr, acs.Addr}
+			code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %s_i.%s <= master_out.dat(%d downto %d);
+      end if;
+`,
+				stream.Name, p.Name, acs.EndBit, acs.StartBit,
+			)
+
+			fmts.RegistersAccess.add(addr, code)
+		case access.SingleNRegs:
+			chunks := makeAccessChunksContinuous(acs, Compact)
+
+			for _, c := range chunks {
+				code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o.%[2]s(%[3]s downto %[4]s) <= master_out.dat(%[5]d downto %[6]d);
+      end if;
+`,
+					stream.Name, p.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
+				)
+
+				fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+			}
+		default:
+			panic("unimplemented")
+		}
 	}
 }
 
