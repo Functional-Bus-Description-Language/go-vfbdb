@@ -1,0 +1,17 @@
+namespace eval vfbdb::vhdl-wb3::stream-1 {
+	variable ctx [hbs::utils::ctxName [namespace current]]
+	variable hdl [hbs::utils::hdlName [namespace current]]
+
+	proc tb-python {} {
+		variable ctx
+		variable hdl
+		set sw "python"
+
+		hbs::utils::setupHdl $ctx $hdl $sw
+		hbs::utils::runPython $ctx $hdl $sw
+
+		hbs::Run
+	}
+
+	hbs::Register
+}

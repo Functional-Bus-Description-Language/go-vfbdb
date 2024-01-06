@@ -7,17 +7,16 @@ import (
 )
 
 func genStream(stream *fn.Stream, blk *fn.Block) string {
-	if stream.IsDownstream() {
-		panic("unimplemented")
-	}
-
 	streamType := "Downstream"
 	if stream.IsUpstream() {
 		streamType = "Upstream"
 	}
 
-	code := indent + fmt.Sprintf("self.%s = %s(iface, %d, ",
-		stream.Name, streamType, blk.StartAddr()+stream.StartAddr(),
+	code := indent + fmt.Sprintf("self.%s = %s(iface, %d, %s, ",
+		stream.Name,
+		streamType,
+		blk.StartAddr()+stream.StartAddr(),
+		genDelay(stream.Delay),
 	)
 
 	if stream.IsDownstream() {

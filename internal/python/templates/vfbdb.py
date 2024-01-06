@@ -129,7 +129,11 @@ def create_mock_returns(buf_iface, start_addr, returns):
             )
         elif a['Type'] == 'SingleNRegs':
             r['Status'] = StatusSingleNRegs(
-                buf_iface, a['StartAddr'] - start_addr, a['RegCount'], a['StartMask'], a['EndMask'], False,
+                buf_iface,
+                a['StartAddr'] - start_addr,
+                a['RegCount'],
+                (BUS_WIDTH - 1, a['StartBit']),
+                (a['EndBit'], 0),
             )
         else:
             raise Exception("unimplemented")
@@ -138,7 +142,7 @@ def create_mock_returns(buf_iface, start_addr, returns):
 
     return buf_size, rets
 
-class EmptyProc():
+class EmptyProc:
     def __init__(self, iface, call_addr, delay, exit_addr):
         self.iface = iface
         self.call_addr = call_addr
@@ -151,7 +155,7 @@ class EmptyProc():
                 time.sleep(self.delay)
             self.iface.read(self.exit_addr)
 
-class ParamsProc():
+class ParamsProc:
     def __init__(self, iface, params_start_addr, params, delay, exit_addr):
         self.iface = iface
         self.params_start_addr = params_start_addr
@@ -175,7 +179,7 @@ class ParamsProc():
                 time.sleep(self.delay)
             self.iface.read(self.exit_addr)
 
-class ReturnsProc():
+class ReturnsProc:
     def __init__(self, iface, returns_start_addr, returns, delay, call_addr):
         self.iface = iface
         self.returns_start_addr = returns_start_addr
@@ -205,7 +209,7 @@ class ReturnsProc():
 
         return tuple(tup)
 
-class ParamsAndReturnsProc():
+class ParamsAndReturnsProc:
     def __init__(self, iface, params_start_addr, params, returns_start_addr, returns, delay):
         self.iface = iface
 
@@ -651,10 +655,11 @@ class StatusArrayOneInNRegs:
             return data
 
 
-class Upstream():
-    def __init__(self, iface, addr, returns):
+class Upstream:
+    def __init__(self, iface, addr, delay, returns):
         self.iface = iface
         self.addr = addr
+        self.delay = delay
         self.buf_iface = _BufferIface()
         self.buf_size, self.returns = create_mock_returns(self.buf_iface, addr, returns)
 
@@ -681,5 +686,41 @@ class Upstream():
             data.append(tuple(tup))
 
         return tuple(data)
+
+class Downstream:
+    def __init__(self, iface, addr, delay, params):
+        self.iface = iface
+        self.addr = addr
+        self.params = params
+        self.delay = delay
+
+    def write(self, data):
+        wbuf = [] # Write buffer
+        args_in_one_reg = False # All arguments occupy one register
+
+        for args in data:
+            assert len(args) == len(self.params), f"invalid number of arguments {len(args)}, want {len(self.params)}"
+
+            buf = pack_params(self.params, *args)
+            if len(buf) == 1:
+                args_in_one_reg = True
+                wbuf.append(buf[0])
+            else:
+                wbuf.append(buf)
+
+        if self.delay is None:
+            if args_in_one_reg:
+                self.iface.cwrite(self.addr, wbuf)
+            else:
+                self.iface.cwriteb(self.addr, wbuf)
+        else:
+            for i, val in enumerate(wbuf):
+                if args_in_one_reg:
+                    self.iface.write(self.addr, val)
+                else:
+                    self.iface.writeb(self.addr, buf)
+
+                if i < len(wbuf) - 1:
+                    time.sleep(self.delay)
 
 {{.Code}}

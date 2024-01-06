@@ -28,8 +28,11 @@ class Iface:
         # Attributes related with statistics collection.
         self.write_count = 0
         self.read_count = 0
+        self.cwrite_count = 0
         self.cread_count = 0
         self.writeb_count = 0
+        self.cwriteb_count = 0
+        self.creadb_count = 0
         self.readb_count = 0
         self.rmw_count = 0
 
@@ -93,6 +96,15 @@ class Iface:
 
         return data
 
+    def cwrite(self, addr, data):
+        """Cyclic Read
+        addr - register address
+        data - data
+        """
+        for d in data:
+            self.write(addr, d)
+        self.cwrite_count += 1
+
     def cread(self, addr, n):
         """Cyclic Read
         addr - register address
@@ -119,21 +131,52 @@ class Iface:
 
         self.writeb_count += 1
 
-    def readb(self, addr, count):
+    def readb(self, addr, block_size):
         """Block Read
         addr - start address
-        count - count of addresses to be read
+        block_size - block size to be read (in words, not bytes)
         """
         if self.delay:
             self.wait(self.delay_function())
 
-        print("readb: addr 0x{:08x}, count {}".format(addr, count))
+        print("readb: addr 0x{:08x}, block size {}".format(addr, block_size))
 
         buf = []
-        for i in range(count):
+        for i in range(block_size):
             buf.append(self.read(addr + i))
 
         self.readb_count += 1
+
+        return buf
+
+    def cwriteb(self, addr, data):
+        """Cyclic Block Write
+        addr - start address
+        data - buffer with buffers with data to be written
+        """
+        print(
+            "cwriteb: addr 0x{:08x}, count {}".format(addr, len(data))
+        )
+
+        for dataset in data:
+            self.writeb(addr, dataset)
+
+        self.cwriteb_count += 1
+
+    def creadb(self, addr, block_size, count):
+        """Cyclic Block Read
+        addr - start address
+        block_size - block size to read
+        count - number of block reads
+        """
+        print("creadb: addr 0x{:08x}, block size {}, count {}".format(addr, block_size, count))
+
+        buf = []
+
+        for i in range(count):
+            buf.append(self.readb(addr, block_size))
+
+        self.creadb_count += 1
 
         return buf
 
@@ -192,10 +235,13 @@ class Iface:
     def print_stats(self):
         print(
             f"CosimIface: transactions statistics:\n"
-            + f"  read:   {self.read_count}\n"
-            + f"  write:  {self.write_count}\n"
-            + f"  cread:  {self.cread_count}\n"
-            + f"  writeb: {self.writeb_count}\n"
-            + f"  readb:  {self.readb_count}\n"
-            + f"  rmw:    {self.rmw_count}"
+            + f"  read:    {self.read_count}\n"
+            + f"  write:   {self.write_count}\n"
+            + f"  cread:   {self.cread_count}\n"
+            + f"  cwrite:  {self.cwrite_count}\n"
+            + f"  readb:   {self.readb_count}\n"
+            + f"  writeb:  {self.writeb_count}\n"
+            + f"  creadb:  {self.creadb_count}\n"
+            + f"  cwriteb: {self.cwriteb_count}\n"
+            + f"  rmw:     {self.rmw_count}"
         )

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/fn"
+	"github.com/Functional-Bus-Description-Language/go-fbdl/pkg/fbdl/val"
 )
 
 func genProc(p *fn.Proc, blk *fn.Block) string {
@@ -38,10 +39,10 @@ func genParamsProc(p *fn.Proc, blk *fn.Block) string {
 	return code
 }
 
-func genDelay(p *fn.Proc) string {
+func genDelay(d *val.Time) string {
 	delay := "None"
-	if p.Delay != nil {
-		delay = fmt.Sprintf("%d + %d * 1e-9", p.Delay.S, p.Delay.Ns)
+	if d != nil {
+		delay = fmt.Sprintf("%d + %d * 1e-9", d.S, d.Ns)
 	}
 	return delay
 }
@@ -83,7 +84,7 @@ func genParamsAndReturnsProc(p *fn.Proc, blk *fn.Block) string {
 		p.Name,
 		blk.StartAddr()+p.ParamsStartAddr(), genParamList(p.Params, blk),
 		blk.StartAddr()+p.ReturnsStartAddr(), genReturnList(p.Returns, blk),
-		genDelay(p),
+		genDelay(p.Delay),
 	)
 
 	return code

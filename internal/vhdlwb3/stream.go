@@ -82,7 +82,7 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 
 			for _, c := range chunks {
 				code := fmt.Sprintf(
-					"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_o.%[2]s(%[3]s downto %[4]s);",
+					"      master_in.dat(%[5]d downto %[6]d) <= %[1]s_i.%[2]s(%[3]s downto %[4]s);",
 					stream.Name, r.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
 				)
 
@@ -101,7 +101,7 @@ func genDownstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 			addr := [2]int64{acs.Addr, acs.Addr}
 			code := fmt.Sprintf(`
       if master_out.we = '1' then
-         %s_i.%s <= master_out.dat(%d downto %d);
+         %s_o.%s <= master_out.dat(%d downto %d);
       end if;
 `,
 				stream.Name, p.Name, acs.EndBit, acs.StartBit,
