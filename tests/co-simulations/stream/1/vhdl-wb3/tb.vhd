@@ -35,8 +35,6 @@ architecture test of tb_cosim is
    signal result : result_t;
    signal result_stb : std_logic;
 
-   signal val : unsigned(13 downto 0) := (others => '0');
-
    signal buff : slv_vector(0 to to_integer(wb3.main_pkg.DEPTH) - 1)(40 downto 0);
    signal buff_write_ptr, buff_read_ptr : natural := 0;
 
