@@ -1,5 +1,5 @@
 Main bus
-	Add proc
-		c param; width = 40
-		s param; width = 16
-	Result status; width = 56; atomic = false
+  Add proc
+    c param; width = 40
+    s param; width = 16
+  Result status; width = 56; atomic = false

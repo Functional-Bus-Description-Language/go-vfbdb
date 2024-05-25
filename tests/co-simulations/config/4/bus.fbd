@@ -1,4 +1,4 @@
 const WIDTH = 100
 
 Main bus
-	Cfg config; width = WIDTH; init-value = 0
+  Cfg config; width = WIDTH; init-value = 0

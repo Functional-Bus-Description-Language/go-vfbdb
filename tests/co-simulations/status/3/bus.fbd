@@ -1,9 +1,9 @@
 Main bus
-	Status_array0 [8]status
-		width = 8
+  Status_array0 [8]status
+    width = 8
 
-	Status_array1 [4]status
-		width = 5
+  Status_array1 [4]status
+    width = 5
 
-	Status_array2 [6]status
-		width = 7
+  Status_array2 [6]status
+    width = 7

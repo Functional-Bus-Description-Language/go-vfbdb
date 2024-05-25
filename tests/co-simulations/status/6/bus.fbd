@@ -1,6 +1,6 @@
 Main bus
-	const
-		S0 = 2**34 - 1
-		S1 = 2**34 - 2
-		S2 = 0
-	Sts [3]status; width = 34; atomic = false
+  const
+    S0 = 2**34 - 1
+    S1 = 2**34 - 2
+    S2 = 0
+  Sts [3]status; width = 34; atomic = false

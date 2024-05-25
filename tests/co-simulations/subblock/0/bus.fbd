@@ -1,8 +1,8 @@
 type blk block
-	Cfg config
-	St status
+  Cfg config
+  St status
 
 Main bus
-	Blk0 blk
-	Blk1 blk
-		Blk2 blk
+  Blk0 blk
+  Blk1 blk
+    Blk2 blk
