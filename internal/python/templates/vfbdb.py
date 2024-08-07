@@ -286,10 +286,7 @@ class ConfigSingleOneReg(StatusSingleOneReg):
         assert 0 <= data < 2 ** self.width, "value overrange ({})".format(data)
         self.iface.write(self.addr, data << self.start_bit)
 
-class MaskSingleOneReg(StatusSingleOneReg):
-    def __init__(self, iface, addr, start_bit, end_bit):
-        super().__init__(iface, addr, start_bit, end_bit)
-
+class Mask:
     def _bits_to_iterable(self, bits):
         if bits == None:
             return range(self.width)
@@ -306,6 +303,11 @@ class MaskSingleOneReg(StatusSingleOneReg):
             raise Exception("bits to update cannot have None value")
         if type(bits).__name__ in ["list", "tuple", "range", "set"] and len(bits) == 0:
             raise Exception("empty " + type(bits) + " of bits to update")
+
+
+class MaskSingleOneReg(Mask, StatusSingleOneReg):
+    def __init__(self, iface, addr, start_bit, end_bit):
+        super().__init__(iface, addr, start_bit, end_bit)
 
     def set(self, bits=None):
         bits = self._bits_to_iterable(bits)
