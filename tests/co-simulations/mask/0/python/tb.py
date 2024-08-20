@@ -1,4 +1,5 @@
 import sys
+import traceback
 
 import cosim
 import vfbdb
