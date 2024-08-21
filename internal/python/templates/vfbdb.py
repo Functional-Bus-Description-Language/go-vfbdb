@@ -408,6 +408,73 @@ class ConfigSingleNRegs(StatusSingleNRegs):
         for i, a in enumerate(self.addrs):
             self.iface.write(a, ((data >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
 
+class MaskSingleNRegs(StatusSingleNRegs, Mask):
+    def __init__(self, iface, start_addr, reg_count, start_mask, end_mask):
+        super().__init__(iface, start_addr, reg_count, start_mask, end_mask)
+
+    def set(self, bits=None):
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = 0
+        for b in bits:
+            mask |= 1 << b
+
+        for i, a in enumerate(self.addrs):
+            self.iface.write(a, ((mask >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+
+    def clear(self, bits=None):
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = self.mask
+        for b in bits:
+            mask ^= 1 << b
+
+        for i, a in enumerate(self.addrs):
+            self.iface.write(a, ((mask >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+
+    def update_set(self, bits):
+        self._assert_bits_to_update(bits)
+
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = 0
+        for b in bits:
+            mask |= 1 << b
+
+        mask |= self.read()
+        for i, a in enumerate(self.addrs):
+            self.iface.write(a, ((mask >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+
+    def update_clear(self, bits):
+        self._assert_bits_to_update(bits)
+
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = 2**self.width - 1
+        for b in bits:
+            mask ^= 1 << b
+
+        mask &= self.read()
+        for i, a in enumerate(self.addrs):
+            self.iface.write(a, ((mask >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+
+    def toggle(self, bits=None):
+        bits = self._bits_to_iterable(bits)
+        self._assert_bits_in_range(bits)
+
+        mask = 0
+        for b in bits:
+            mask |= 1 << b
+
+        mask ^= self.read()
+        for i, a in enumerate(self.addrs):
+            self.iface.write(a, ((mask >> self.data_shifts[i]) & self.masks[i]) << self.reg_shifts[i])
+
+
 class StaticSingleNRegs(Static, StatusSingleNRegs):
     def __init__(self, iface, start_addr, reg_count, start_mask, end_mask, value):
         Static.__init__(self, value)

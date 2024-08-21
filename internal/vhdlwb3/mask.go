@@ -31,6 +31,8 @@ func genMaskSingle(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	switch mask.Access.(type) {
 	case access.SingleOneReg:
 		genMaskSingleOneReg(mask, fmts)
+	case access.SingleNRegs:
+		genMaskSingleNRegs(mask, fmts)
 	default:
 		panic("unimplemented")
 	}
@@ -48,4 +50,67 @@ func genMaskSingleOneReg(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	)
 
 	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
+}
+
+func genMaskSingleNRegs(mask *fn.Mask, fmts *BlockEntityFormatters) {
+	if mask.Atomic {
+		genMaskSingleNRegsAtomic(mask, fmts)
+	} else {
+		genMaskSingleNRegsNonAtomic(mask, fmts)
+	}
+}
+
+func genMaskSingleNRegsAtomic(mask *fn.Mask, fmts *BlockEntityFormatters) {
+	acs := mask.Access.(access.SingleNRegs)
+	strategy := SeparateLast
+	atomicShadowRange := [2]int64{mask.Width - 1 - acs.GetEndRegWidth(), 0}
+	chunks := makeAccessChunksContinuous(acs, strategy)
+
+	fmts.SignalDeclarations += fmt.Sprintf(
+		"signal %s_atomic : std_logic_vector(%d downto %d);\n",
+		mask.Name, atomicShadowRange[0], atomicShadowRange[1],
+	)
+
+	for i, c := range chunks {
+		var code string
+		if (strategy == SeparateFirst && i == 0) || (strategy == SeparateLast && i == len(chunks)-1) {
+			code = fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);
+         %[1]s_o(%[6]d downto %[7]d) <= %[1]s_atomic(%[6]d downto %[7]d);
+      end if;
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);`,
+				mask.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
+				atomicShadowRange[0], atomicShadowRange[1],
+			)
+		} else {
+			code = fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_atomic(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);
+      end if;
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);
+`,
+				mask.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
+			)
+		}
+
+		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+	}
+}
+
+func genMaskSingleNRegsNonAtomic(mask *fn.Mask, fmts *BlockEntityFormatters) {
+	acs := mask.Access.(access.SingleNRegs)
+	chunks := makeAccessChunksContinuous(acs, Compact)
+
+	for _, c := range chunks {
+		code := fmt.Sprintf(`
+      if master_out.we = '1' then
+         %[1]s_o(%[2]s downto %[3]s) <= master_out.dat(%[4]d downto %[5]d);
+      end if;
+      master_in.dat(%[4]d downto %[5]d) <= %[1]s_o(%[2]s downto %[3]s);`,
+			mask.Name, c.range_[0], c.range_[1], c.endBit, c.startBit,
+		)
+
+		fmts.RegistersAccess.add([2]int64{c.addr[0], c.addr[1]}, code)
+	}
 }

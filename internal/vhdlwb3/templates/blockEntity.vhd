@@ -70,8 +70,7 @@ generic map (
    G_REGISTERED  => G_REGISTERED,
    G_ADDRESS     => C_ADDRESSES,
    G_MASK        => C_MASKS
-)
-port map (
+) port map (
    clk_sys_i   => clk_i,
    rst_n_i     => not rst_i,
    slave_i     => slave_i,
