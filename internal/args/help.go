@@ -77,8 +77,7 @@ Parameters:
 var pythonHelpMsg string = `Vfbdb help for Python target.
 
 Flags:
-  -help        Display help.
-  -no-asserts  Do not include asserts. Not yet implemented.
+  -help  Display help.
 
 Parameters:
   -path  Path for output files.

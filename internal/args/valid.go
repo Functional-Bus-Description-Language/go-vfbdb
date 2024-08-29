@@ -57,8 +57,7 @@ func isValidFlagJSON(flag string) bool {
 
 func isValidFlagPython(flag string) bool {
 	validFlags := map[string]bool{
-		"-help":       true,
-		"-no-asserts": true,
+		"-help": true,
 	}
 
 	if _, ok := validFlags[flag]; ok {
