@@ -1,6 +1,6 @@
 module github.com/Functional-Bus-Description-Language/go-vfbdb
 
-go 1.18
+go 1.22.1
 
 require github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20240105202638-0d6371e25766
 
