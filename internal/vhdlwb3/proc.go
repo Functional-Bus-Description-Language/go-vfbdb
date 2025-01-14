@@ -103,9 +103,10 @@ func genProcParamAccessSingleOneReg(proc *fn.Proc, fmts *BlockEntityFormatters, 
          %[1]s_o.%[2]s <= master_out.dat(%[3]d downto %[4]d);
       end if;
       master_in.dat(%[3]d downto %[4]d) <= %[1]s_o.%[2]s;`,
-		proc.Name, param.Name, acs.EndBit, acs.StartBit,
+		proc.Name, param.Name, acs.EndBit(), acs.StartBit(),
 	)
-	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
+	addr := acs.StartAddr()
+	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
 }
 
 func genProcParamAccessSingleNRegs(proc *fn.Proc, fmts *BlockEntityFormatters, param *fn.Param) {
@@ -129,16 +130,16 @@ func genProcParamAccessArrayNRegs(proc *fn.Proc, fmts *BlockEntityFormatters, pa
 
 	fmts.SignalDeclarations += fmt.Sprintf(
 		"signal %s_%s : slv_vector(%d downto 0)(%d downto 0);\n",
-		proc.Name, param.Name, acs.RegCount, busWidth-1,
+		proc.Name, param.Name, acs.RegCount(), busWidth-1,
 	)
 
 	code := fmt.Sprintf(`
       if master_out.we = '1' then
          %s_%s(addr - %d) <= master_out.dat;
       end if;`,
-		proc.Name, param.Name, acs.StartAddr,
+		proc.Name, param.Name, acs.StartAddr(),
 	)
-	fmts.RegistersAccess.add([2]int64{acs.StartAddr, acs.GetEndAddr()}, code)
+	fmts.RegistersAccess.add([2]int64{acs.StartAddr(), acs.EndAddr()}, code)
 
 	code = fmt.Sprintf(
 		`
@@ -172,7 +173,7 @@ begin
    end loop;
 end process;
 `,
-		proc.Name, param.Name, busWidth, acs.ItemWidth, acs.ItemCount, acs.StartBit, acs.RegCount-1,
+		proc.Name, param.Name, busWidth, acs.ItemWidth(), acs.ItemCount(), acs.StartBit(), acs.RegCount()-1,
 	)
 	fmts.CombinationalProcesses += code
 }
@@ -181,10 +182,10 @@ func genProcReturnsAccess(proc *fn.Proc, fmts *BlockEntityFormatters) {
 	for _, r := range proc.Returns {
 		switch acs := r.Access.(type) {
 		case access.SingleOneReg:
-			addr := [2]int64{acs.Addr, acs.Addr}
+			addr := [2]int64{acs.StartAddr(), acs.StartAddr()}
 			code := fmt.Sprintf(
 				"      master_in.dat(%[1]d downto %[2]d) <= %[3]s_i.%[4]s;\n",
-				acs.EndBit, acs.StartBit, proc.Name, r.Name,
+				acs.EndBit(), acs.StartBit(), proc.Name, r.Name,
 			)
 
 			fmts.RegistersAccess.add(addr, code)

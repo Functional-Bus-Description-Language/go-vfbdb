@@ -1,4 +1,15 @@
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20240105202638-0d6371e25766 h1:8yVuFJrY/RppLbBB8m7m2RDeeTSOVbtrJOavd7RuWNI=
 github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20240105202638-0d6371e25766/go.mod h1:hWVC4vv/yxcEz2L6XYHk8Jj/17rZ7JRxQu2jps/PgA4=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20250110180417-3e8d8026c534 h1:1VZq64j9WHgYTRjDR8WmS6Rr8azGOtHNsmcBVc3dB5M=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20250110180417-3e8d8026c534/go.mod h1:A5Au4v/sbf96F7M8Kun/QrlaLJ2Bt9XzyQSuUmg0FpM=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20250114143501-cf2d551cbbde h1:ctB+Uya2yICdZxDMfQWpbbnx88XrHu0zf6ihKYQYMnE=
+github.com/Functional-Bus-Description-Language/go-fbdl v0.0.0-20250114143501-cf2d551cbbde/go.mod h1:A5Au4v/sbf96F7M8Kun/QrlaLJ2Bt9XzyQSuUmg0FpM=
+github.com/mattn/go-isatty v0.0.20 h1:xfD0iDuEKnDkl03q4limB+vH+GxLEtL/jb4xVJSWWEY=
+github.com/mattn/go-isatty v0.0.20/go.mod h1:W+V8PltTTMOvKvAeJH7IuucS94S2C6jfK/D7dTCTo3Y=
 golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc h1:ao2WRsKSzW6KuUY9IWPwWahcHCgR0s52IfwutMfEbdM=
 golang.org/x/exp v0.0.0-20240103183307-be819d1f06fc/go.mod h1:iRJReGqOEeBhDZGkGbynYwcHlctCvnjTYIamk7uXpHI=
+golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8 h1:yqrTHse8TCMW1M1ZCP+VAR/l0kKxwaAIqN/il7x4voA=
+golang.org/x/exp v0.0.0-20250106191152-7588d65b2ba8/go.mod h1:tujkw807nyEEAamNbDrEGzRav+ilXA7PCRAd6xsmwiU=
+golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.29.0 h1:TPYlXGxvx1MGTn2GiZDhnjPA9wZzZeGKHHmKhHYvgaU=
+golang.org/x/sys v0.29.0/go.mod h1:/VUhepiaJMQUp4+oa/7Zr1D23ma6VTLIYjOOTFZPUcA=

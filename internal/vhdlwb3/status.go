@@ -58,10 +58,10 @@ func genStatusSingleOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i;\n",
-		acs.EndBit, acs.StartBit, st.Name,
+		acs.EndBit(), acs.StartBit(), st.Name,
 	)
-
-	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
+	addr := acs.StartAddr()
+	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
 }
 
 func genStatusSingleNRegs(st *fn.Status, fmts *BlockEntityFormatters) {
@@ -75,7 +75,7 @@ func genStatusSingleNRegs(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusSingleNRegsAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.SingleNRegs)
 	strategy := SeparateFirst
-	atomicShadowRange := [2]int64{st.Width - 1, acs.GetStartRegWidth()}
+	atomicShadowRange := [2]int64{st.Width - 1, acs.StartRegWidth()}
 	chunks := makeAccessChunksContinuous(acs, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
@@ -121,11 +121,11 @@ func genStatusArrayOneInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 
 	code := fmt.Sprintf(
 		"      master_in.dat(%d downto %d) <= %s_i(addr - %d);",
-		acs.EndBit, acs.StartBit, st.Name, acs.StartAddr,
+		acs.EndBit(), acs.StartBit(), st.Name, acs.StartAddr(),
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{acs.StartAddr, acs.StartAddr + acs.RegCount - 1},
+		[2]int64{acs.StartAddr(), acs.StartAddr() + acs.RegCount() - 1},
 		code,
 	)
 }
@@ -133,12 +133,12 @@ func genStatusArrayOneInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayOneReg)
 
-	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(i);
       end loop;`,
-		st.Count-1, acs.ItemWidth, acs.StartBit, st.Name,
+		st.Count-1, acs.ItemWidth(), acs.StartBit(), st.Name,
 	)
 
 	fmts.RegistersAccess.add(addr, code)
@@ -147,12 +147,12 @@ func genStatusArrayOneReg(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusArrayNInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayNInReg)
 
-	addr := [2]int64{acs.StartAddr, acs.GetEndAddr()}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, st.Name, acs.StartAddr, acs.ItemsInReg,
+		acs.ItemsInReg()-1, acs.ItemWidth(), acs.StartBit(), st.Name, acs.StartAddr(), acs.ItemsInReg(),
 	)
 
 	fmts.RegistersAccess.add(addr, code)
@@ -161,21 +161,21 @@ func genStatusArrayNInReg(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusArrayNInRegMInEndReg(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayNInRegMInEndReg)
 
-	addr := [2]int64{acs.StartAddr, acs.GetEndAddr() - 1}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr() - 1}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_i((addr-%[5]d)*%[6]d+i);
       end loop;`,
-		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, st.Name, acs.StartAddr, acs.ItemsInReg,
+		acs.ItemsInReg()-1, acs.ItemWidth(), acs.StartBit(), st.Name, acs.StartAddr(), acs.ItemsInReg(),
 	)
 	fmts.RegistersAccess.add(addr, code)
 
-	addr = [2]int64{acs.GetEndAddr(), acs.GetEndAddr()}
+	addr = [2]int64{acs.EndAddr(), acs.EndAddr()}
 	code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_i(%[5]d+i);
       end loop;`,
-		acs.ItemsInEndReg-1, acs.ItemWidth, acs.StartBit, st.Name, (acs.RegCount-1)*acs.ItemsInReg,
+		acs.ItemsInEndReg()-1, acs.ItemWidth(), acs.StartBit(), st.Name, (acs.RegCount()-1)*acs.ItemsInReg(),
 	)
 
 	fmts.RegistersAccess.add(addr, code)
@@ -193,10 +193,10 @@ func genStatusArrayOneInNRegs(st *fn.Status, fmts *BlockEntityFormatters) {
 func genStatusArrayOneInNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatters) {
 	acs := st.Access.(access.ArrayOneInNRegs)
 
-	addr := [2]int64{acs.StartAddr, acs.GetEndAddr()}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr()}
 
-	idx := fmt.Sprintf("(addr - %d) / %d", acs.StartAddr, acs.GetRegsPerItem())
-	bite := fmt.Sprintf("(addr - %d) mod %d", acs.StartAddr, acs.GetRegsPerItem())
+	idx := fmt.Sprintf("(addr - %d) / %d", acs.StartAddr(), acs.RegsPerItem())
+	bite := fmt.Sprintf("(addr - %d) mod %d", acs.StartAddr(), acs.RegsPerItem())
 	lowerBound := fmt.Sprintf("(%s) * %d", bite, busWidth)
 	upperBound := fmt.Sprintf("(%s) + %d", bite, busWidth-1)
 	code := fmt.Sprintf(`
@@ -205,7 +205,7 @@ func genStatusArrayOneInNRegsNonAtomic(st *fn.Status, fmts *BlockEntityFormatter
       else
           master_in.dat <= %[4]s_i(%[5]s)(%[8]s downto %[7]s);
       end if;`,
-		bite, acs.GetRegsPerItem()-1, acs.GetEndBit(), st.Name, idx, st.Width-1, lowerBound, upperBound,
+		bite, acs.RegsPerItem()-1, acs.EndBit(), st.Name, idx, st.Width-1, lowerBound, upperBound,
 	)
 
 	fmts.RegistersAccess.add(addr, code)

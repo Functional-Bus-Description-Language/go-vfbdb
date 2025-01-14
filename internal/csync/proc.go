@@ -77,7 +77,7 @@ func genProcParamsAccessSingleWriteNoDelayNoReturns(p *fn.Proc, blk *fn.Block, c
 
 		switch acs := p.Access.(type) {
 		case access.SingleOneReg:
-			cFmts.Code += fmt.Sprintf("%s << %d", p.Name, acs.StartBit)
+			cFmts.Code += fmt.Sprintf("%s << %d", p.Name, acs.StartBit())
 		default:
 			panic("unimplemented")
 		}
@@ -101,7 +101,7 @@ func genProcParamsAccessBlockWriteNoDelayNoReturns(proc *fn.Proc, blk *fn.Block,
 		case access.SingleOneReg:
 			cFmts.Code += fmt.Sprintf(
 				"\tbuf[%d] |= %s << %d;\n",
-				acs.Addr-proc.ParamsStartAddr(), p.Name, acs.StartBit,
+				acs.StartAddr()-proc.ParamsStartAddr(), p.Name, acs.StartBit(),
 			)
 		default:
 			panic("unimplemented")
@@ -133,7 +133,7 @@ func genProcReturnsAccessSingleRead(p *fn.Proc, blk *fn.Block, cFmts *BlockCForm
 		case access.SingleOneReg:
 			cFmts.Code += fmt.Sprintf(
 				"\t*%s = (_rdata >> %d) & 0x%X;\n",
-				r.Name, acs.StartBit, c.MaskToValue(acs.StartBit, acs.EndBit),
+				r.Name, acs.StartBit(), c.MaskToValue(acs.StartBit(), acs.EndBit()),
 			)
 		default:
 			panic("unimplemented")

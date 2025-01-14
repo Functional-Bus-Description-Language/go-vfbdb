@@ -66,10 +66,11 @@ func genConfigSingleOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
          %[1]s_o <= master_out.dat(%[2]d downto %[3]d);
       end if;
       master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;`,
-		cfg.Name, acs.EndBit, acs.StartBit,
+		cfg.Name, acs.EndBit(), acs.StartBit(),
 	)
 
-	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
+	addr := acs.StartAddr()
+	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
 }
 
 func genConfigSingleNRegs(cfg *fn.Config, fmts *BlockEntityFormatters) {
@@ -83,7 +84,7 @@ func genConfigSingleNRegs(cfg *fn.Config, fmts *BlockEntityFormatters) {
 func genConfigSingleNRegsAtomic(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	acs := cfg.Access.(access.SingleNRegs)
 	strategy := SeparateLast
-	atomicShadowRange := [2]int64{cfg.Width - 1 - acs.GetEndRegWidth(), 0}
+	atomicShadowRange := [2]int64{cfg.Width - 1 - acs.EndRegWidth(), 0}
 	chunks := makeAccessChunksContinuous(acs, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(
@@ -143,11 +144,11 @@ func genConfigArrayOneInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
          %[1]s_o(addr - %[2]d) <= master_out.dat(%[3]d downto %[4]d);
       end if;
       master_in.dat(%[3]d downto %[4]d) <= %[1]s_o(addr - %[2]d);`,
-		cfg.Name, acs.StartAddr, acs.EndBit, acs.StartBit,
+		cfg.Name, acs.StartAddr(), acs.EndBit(), acs.StartBit(),
 	)
 
 	fmts.RegistersAccess.add(
-		[2]int64{acs.StartAddr, acs.StartAddr + acs.RegCount - 1},
+		[2]int64{acs.StartAddr(), acs.StartAddr() + acs.RegCount() - 1},
 		code,
 	)
 }
@@ -155,7 +156,7 @@ func genConfigArrayOneInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	acs := cfg.Access.(access.ArrayOneReg)
 
-	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -163,7 +164,7 @@ func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
          end if;
          master_in.dat(%[3]d*(i+1)+%[4]d-1 downto %[3]d*i+%[4]d) <= %[2]s_o(i);
       end loop;`,
-		cfg.Count-1, cfg.Name, acs.ItemWidth, acs.StartBit,
+		cfg.Count-1, cfg.Name, acs.ItemWidth(), acs.StartBit(),
 	)
 
 	fmts.RegistersAccess.add(addr, code)
@@ -172,7 +173,7 @@ func genConfigArrayOneReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 func genConfigArrayNInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	acs := cfg.Access.(access.ArrayNInReg)
 
-	addr := [2]int64{acs.GetStartAddr(), acs.GetEndAddr()}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr()}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -180,7 +181,7 @@ func genConfigArrayNInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
          end if;
          master_in.dat(%[2]d*(i+1)+%[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_o((addr-%[5]d)*%[6]d+i);
       end loop;`,
-		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, cfg.Name, acs.StartAddr, acs.ItemsInReg,
+		acs.ItemsInReg()-1, acs.ItemWidth(), acs.StartBit(), cfg.Name, acs.StartAddr(), acs.ItemsInReg(),
 	)
 
 	fmts.RegistersAccess.add(addr, code)
@@ -189,7 +190,7 @@ func genConfigArrayNInReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 func genConfigArrayNInRegMInEndReg(cfg *fn.Config, fmts *BlockEntityFormatters) {
 	acs := cfg.Access.(access.ArrayNInRegMInEndReg)
 
-	addr := [2]int64{acs.StartAddr, acs.GetEndAddr() - 1}
+	addr := [2]int64{acs.StartAddr(), acs.EndAddr() - 1}
 	code := fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -197,11 +198,11 @@ func genConfigArrayNInRegMInEndReg(cfg *fn.Config, fmts *BlockEntityFormatters) 
          end if;
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i + %[3]d) <= %[4]s_o((addr-%[5]d)*%[6]d+i);
       end loop;`,
-		acs.ItemsInReg-1, acs.ItemWidth, acs.StartBit, cfg.Name, acs.StartAddr, acs.ItemsInReg,
+		acs.ItemsInReg()-1, acs.ItemWidth(), acs.StartBit(), cfg.Name, acs.StartAddr(), acs.ItemsInReg(),
 	)
 	fmts.RegistersAccess.add(addr, code)
 
-	addr = [2]int64{acs.GetEndAddr(), acs.GetEndAddr()}
+	addr = [2]int64{acs.EndAddr(), acs.EndAddr()}
 	code = fmt.Sprintf(`
       for i in 0 to %[1]d loop
          if master_out.we = '1' then
@@ -209,7 +210,7 @@ func genConfigArrayNInRegMInEndReg(cfg *fn.Config, fmts *BlockEntityFormatters) 
          end if;
          master_in.dat(%[2]d*(i+1) + %[3]d-1 downto %[2]d*i+%[3]d) <= %[4]s_o(%[5]d+i);
       end loop;`,
-		acs.ItemsInEndReg-1, acs.ItemWidth, acs.GetStartBit(), cfg.Name, (acs.RegCount-1)*acs.ItemsInReg,
+		acs.ItemsInEndReg()-1, acs.ItemWidth(), acs.StartBit(), cfg.Name, (acs.RegCount()-1)*acs.ItemsInReg(),
 	)
 
 	fmts.RegistersAccess.add(addr, code)

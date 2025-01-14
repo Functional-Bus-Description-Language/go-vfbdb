@@ -23,18 +23,18 @@ func genMaskSingle(mask *fn.Mask, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleOneReg(iface, %d, %d, %d)\n",
 			mask.Name,
-			blk.StartAddr()+acs.Addr,
-			acs.StartBit,
-			acs.EndBit,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.StartBit(),
+			acs.EndBit(),
 		)
 	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
 			"self.%s = MaskSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			mask.Name,
-			blk.StartAddr()+acs.StartAddr,
-			acs.RegCount,
-			busWidth-1, acs.StartBit,
-			acs.EndBit, 0,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.RegCount(),
+			busWidth-1, acs.StartBit(),
+			acs.EndBit(), 0,
 		)
 	default:
 		panic("unimplemented")

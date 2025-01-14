@@ -46,10 +46,11 @@ func genMaskSingleOneReg(mask *fn.Mask, fmts *BlockEntityFormatters) {
          %[1]s_o <= master_out.dat(%[2]d downto %[3]d);
       end if;
       master_in.dat(%[2]d downto %[3]d) <= %[1]s_o;`,
-		mask.Name, acs.EndBit, acs.StartBit,
+		mask.Name, acs.EndBit(), acs.StartBit(),
 	)
 
-	fmts.RegistersAccess.add([2]int64{acs.Addr, acs.Addr}, code)
+	addr := acs.StartAddr()
+	fmts.RegistersAccess.add([2]int64{addr, addr}, code)
 }
 
 func genMaskSingleNRegs(mask *fn.Mask, fmts *BlockEntityFormatters) {
@@ -63,7 +64,7 @@ func genMaskSingleNRegs(mask *fn.Mask, fmts *BlockEntityFormatters) {
 func genMaskSingleNRegsAtomic(mask *fn.Mask, fmts *BlockEntityFormatters) {
 	acs := mask.Access.(access.SingleNRegs)
 	strategy := SeparateLast
-	atomicShadowRange := [2]int64{mask.Width - 1 - acs.GetEndRegWidth(), 0}
+	atomicShadowRange := [2]int64{mask.Width - 1 - acs.EndRegWidth(), 0}
 	chunks := makeAccessChunksContinuous(acs, strategy)
 
 	fmts.SignalDeclarations += fmt.Sprintf(

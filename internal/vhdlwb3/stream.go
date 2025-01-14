@@ -70,10 +70,10 @@ func genUpstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	for _, r := range stream.Returns {
 		switch acs := r.Access.(type) {
 		case access.SingleOneReg:
-			addr := [2]int64{acs.Addr, acs.Addr}
+			addr := [2]int64{acs.StartAddr(), acs.StartAddr()}
 			code := fmt.Sprintf(
 				"      master_in.dat(%d downto %d) <= %s_i.%s;\n",
-				acs.EndBit, acs.StartBit, stream.Name, r.Name,
+				acs.EndBit(), acs.StartBit(), stream.Name, r.Name,
 			)
 
 			fmts.RegistersAccess.add(addr, code)
@@ -98,13 +98,13 @@ func genDownstreamAccess(stream *fn.Stream, fmts *BlockEntityFormatters) {
 	for _, p := range stream.Params {
 		switch acs := p.Access.(type) {
 		case access.SingleOneReg:
-			addr := [2]int64{acs.Addr, acs.Addr}
+			addr := [2]int64{acs.StartAddr(), acs.StartAddr()}
 			code := fmt.Sprintf(`
       if master_out.we = '1' then
          %s_o.%s <= master_out.dat(%d downto %d);
       end if;
 `,
-				stream.Name, p.Name, acs.EndBit, acs.StartBit,
+				stream.Name, p.Name, acs.EndBit(), acs.StartBit(),
 			)
 
 			fmts.RegistersAccess.add(addr, code)

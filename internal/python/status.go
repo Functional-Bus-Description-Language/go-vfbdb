@@ -23,18 +23,18 @@ func genStatusSingle(st *fn.Status, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleOneReg(iface, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.Addr,
-			acs.StartBit,
-			acs.EndBit,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.StartBit(),
+			acs.EndBit(),
 		)
 	case access.SingleNRegs:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusSingleNRegs(iface, %d, %d, (%d, %d), (%d, %d))\n",
 			st.Name,
-			blk.StartAddr()+acs.GetStartAddr(),
-			acs.GetRegCount(),
-			busWidth-1, acs.GetStartBit(),
-			acs.GetEndBit(), 0,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.RegCount(),
+			busWidth-1, acs.StartBit(),
+			acs.EndBit(), 0,
 		)
 	default:
 		panic("unimplemented")
@@ -51,50 +51,50 @@ func genStatusArray(st *fn.Status, blk *fn.Block) string {
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayOneInReg(iface, %d, (%d, %d), %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.StartAddr,
-			acs.EndBit,
-			acs.StartBit,
-			acs.RegCount,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.EndBit(),
+			acs.StartBit(),
+			acs.RegCount(),
 		)
 	case access.ArrayOneReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayOneReg(iface, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.Addr,
-			acs.StartBit,
-			acs.ItemWidth,
-			acs.ItemCount,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.StartBit(),
+			acs.ItemWidth(),
+			acs.ItemCount(),
 		)
 	case access.ArrayNInReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayNInReg(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.StartAddr,
-			acs.StartBit,
-			acs.ItemWidth,
-			acs.ItemCount,
-			acs.ItemsInReg,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.StartBit(),
+			acs.ItemWidth(),
+			acs.ItemCount(),
+			acs.ItemsInReg(),
 		)
 	case access.ArrayNInRegMInEndReg:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayNInRegMInEndReg(iface, %d, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.StartAddr,
-			acs.StartBit,
-			acs.ItemWidth,
-			acs.ItemCount,
-			acs.ItemsInReg,
+			blk.StartAddr()+acs.StartAddr(),
+			acs.StartBit(),
+			acs.ItemWidth(),
+			acs.ItemCount(),
+			acs.ItemsInReg(),
 		)
 	case access.ArrayOneInNRegs:
 		code += indent + fmt.Sprintf(
 			"self.%s = StatusArrayOneInNRegs(iface, %d, %d, %d, %d, %d, %d)\n",
 			st.Name,
-			blk.StartAddr()+acs.StartAddr,
-			acs.ItemWidth,
-			acs.ItemCount,
-			acs.GetRegsPerItem(),
-			acs.GetRegCount(),
-			acs.GetEndBit(),
+			blk.StartAddr()+acs.StartAddr(),
+			acs.ItemWidth(),
+			acs.ItemCount(),
+			acs.RegsPerItem(),
+			acs.RegCount(),
+			acs.EndBit(),
 		)
 	default:
 		panic("unimplemented")
