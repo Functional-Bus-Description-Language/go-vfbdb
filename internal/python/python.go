@@ -56,7 +56,7 @@ var indent string
 
 func increaseIndent(val int) {
 	// NOTE: Inefficient implementaion.
-	for i := 0; i < val; i++ {
+	for range val {
 		indent += "    "
 	}
 }

@@ -157,7 +157,7 @@ func genSubblock(
 	}
 
 	subblockAddr := sb.StartAddr() - superBlockAddrStart
-	for i := int64(0); i < sb.Count; i++ {
+	for range sb.Count {
 		fmts.SubblocksCount += 1
 
 		s := fmt.Sprintf(", %d => \"%032b\"", fmts.SubblocksCount, subblockAddr)
